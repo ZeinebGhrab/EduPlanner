@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CentreFormation Pro - Gestion Optimisée</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../style/style.css">
+        <script src=""></script>
+</head>
+<body>
+
+    <!-- BACKGROUND SHAPES -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        
+        <!-- Decorative elements -->
+        <div class="deco-shape deco-diamond"></div>
+        <div class="deco-shape deco-circle"></div>
+        <div class="deco-shape deco-plus"></div>
+        <div class="grid-pattern"></div>
+        <div class="line-deco line-deco-1"></div>
+        <div class="line-deco line-deco-2"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="my">Centre</span><span class="scol">Formation Pro</span>
+        </div>
+        
+        <nav>
+            <a href="#accueil">Accueil</a>
+            <a href="#fonctionnalites">Fonctionnalités <i class="fas fa-chevron-down"></i></a>
+            <a href="#planning">Planning</a>
+            <a href="#apropos">À propos</a>
+            <a href="#contact">Contact</a>
+        </nav>
+
+        <div class="nav-icons">
+            <i class="fas fa-home"></i>
+            <i class="fas fa-user"></i>
+            <i class="fas fa-search"></i>
+            <button class="menu-btn">
+                <i class="fas fa-th"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="accueil">
+        <div class="hero-content">
+            <!-- LEFT CONTENT -->
+            <div class="hero-left">
+                <h1 class="hero-title">
+                    <span class="outline">FormaPro</span>
+                    <span class="brand">Optimisez la gestion de votre centre de formation</span>
+                </h1>
+
+                <p class="hero-subtitle">
+                    Plateforme intelligente pour piloter la gestion quotidienne de votre centre. 
+                    Planification automatique, gestion des ressources, détection de conflits et 
+                    <a href="#stats">statistiques en temps réel</a> pour maximiser 
+                    <a href="#optimisation">l'utilisation de vos ressources</a>.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="#demo" class="btn btn-primary">
+                        <span>Générer mon planning</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#fonctionnalites" class="btn btn-secondary">
+                        <span>Découvrir les fonctionnalités</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- RIGHT CONTENT -->
+            <div class="hero-right">
+                <!-- Info Cards -->
+                <div class="info-card">
+                    <div class="info-icon green">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="info-text">
+                        <div class="info-title">Planification Automatique</div>
+                        <div class="info-subtitle green-text">Génération intelligente de planning optimisé</div>
+                    </div>
+                    <i class="fas fa-times close-btn"></i>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon yellow">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="info-text">
+                        <div class="info-title">Détection de Conflits</div>
+                        <div class="info-subtitle yellow-text">Identification automatique des conflits d'horaires</div>
+                    </div>
+                    <i class="fas fa-times close-btn"></i>
+                </div>
+
+                <!-- Illustration Card -->
+                <div class="illustration-card">
+                    <div class="illustration-bg"></div>
+                    
+                    <div class="illustration-content">
+                        <div class="person">
+                            <div class="person-avatar">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div class="person-item laptop">
+                                    <i class="fas fa-laptop"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="play-button">
+                            <i class="fas fa-play"></i>
+                        </div>
+
+                        <div class="person">
+                            <div class="person-avatar">
+                                <i class="fas fa-user-graduate"></i>
+                                <div class="person-item bulb">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <div class="person-item location">
+                                    <i class="fas fa-door-open"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Decorative elements -->
+                    <i class="fas fa-plus decoration deco-1"></i>
+                    <i class="fas fa-cube decoration deco-2"></i>
+                    <i class="fas fa-circle decoration deco-3"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATISTICS SECTION -->
+    <section class="stats-section" id="stats">
+        <div class="container">
+            <h2 class="section-title">Nos Résultats en Chiffres</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3 class="stat-number">150+</h3>
+                    <p class="stat-label">Formateurs Gérés</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="stat-number">5000+</h3>
+                    <p class="stat-label">Sessions Planifiées</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="stat-number">95%</h3>
+                    <p class="stat-label">Taux d'Optimisation</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <h3 class="stat-number">98%</h3>
+                    <p class="stat-label">Satisfaction Utilisateurs</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features-section" id="fonctionnalites">
+        <div class="container">
+            <h2 class="section-title">Fonctionnalités Complètes</h2>
+            <p class="section-subtitle">Tout ce dont vous avez besoin pour gérer efficacement votre centre</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3>Gestion des Formateurs</h3>
+                    <p>Ajoutez, modifiez et gérez vos formateurs avec leurs disponibilités et spécialités en quelques clics.</p>
+                    <a href="#" class="feature-link">En savoir plus <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Gestion des Étudiants</h3>
+                    <p>Organisez vos groupes d'étudiants, suivez leurs progressions et gérez leurs contraintes d'emploi du temps.</p>
+                    <a href="#" class="feature-link">En savoir plus <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Planification Automatique</h3>
+                    <p>Génération intelligente de planning hebdomadaire optimisé respectant toutes vos contraintes automatiquement.</p>
+                    <a href="#" class="feature-link">En savoir plus <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-door-open"></i>
+                    </div>
+                    <h3>Gestion des Salles</h3>
+                    <p>Optimisez l'utilisation de vos espaces avec la gestion intelligente des capacités et disponibilités.</p>
+                    <a href="#" class="feature-link">En savoir plus <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h3>Gestion du Matériel</h3>
+                    <p>Suivez et allouez le matériel nécessaire pour chaque session de formation en temps réel.</p>
+                    <a href="#" class="feature-link">En savoir plus <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Statistiques en Temps Réel</h3>
+                    <p>Analysez les performances, taux d'utilisation et satisfaction avec des rapports détaillés et visuels.</p>
+                    <a href="#" class="feature-link">En savoir plus <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PLANNING DEMO SECTION -->
+    <section class="planning-section" id="planning">
+        <div class="container">
+            <h2 class="section-title">Planning Hebdomadaire Optimisé</h2>
+            <p class="section-subtitle">Visualisez et gérez votre emploi du temps en un coup d'œil</p>
+            
+            <div class="planning-demo">
+                <div class="planning-mockup">
+                    <div class="mockup-header">
+                        <div class="mockup-controls">
+                            <span class="control red"></span>
+                            <span class="control yellow"></span>
+                            <span class="control green"></span>
+                        </div>
+                        <div class="mockup-title">Planning - Semaine 45</div>
+                    </div>
+                    <div class="mockup-calendar">
+                        <div class="calendar-grid">
+                            <div class="time-column">
+                                <div class="time-slot">08:00</div>
+                                <div class="time-slot">10:00</div>
+                                <div class="time-slot">12:00</div>
+                                <div class="time-slot">14:00</div>
+                                <div class="time-slot">16:00</div>
+                            </div>
+                            <div class="day-column">
+                                <div class="day-header">Lundi</div>
+                                <div class="session blue">Java Avancé</div>
+                                <div class="session green">HTML/CSS</div>
+                            </div>
+                            <div class="day-column">
+                                <div class="day-header">Mardi</div>
+                                <div class="session pink">React</div>
+                                <div class="session yellow">SQL</div>
+                            </div>
+                            <div class="day-column">
+                                <div class="day-header">Mercredi</div>
+                                <div class="session purple">Python</div>
+                                <div class="session orange">DevOps</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="planning-features">
+                    <div class="planning-feature">
+                        <div class="pf-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="pf-content">
+                            <h4>Détection Automatique des Conflits</h4>
+                            <p>Le système identifie et signale instantanément tout conflit d'horaire ou de ressource.</p>
+                        </div>
+                    </div>
+                    <div class="planning-feature">
+                        <div class="pf-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="pf-content">
+                            <h4>Respect des Contraintes</h4>
+                            <p>Toutes les préférences et contraintes sont prises en compte dans la génération du planning.</p>
+                        </div>
+                    </div>
+                    <div class="planning-feature">
+                        <div class="pf-icon">
+                            <i class="fas fa-mouse-pointer"></i>
+                        </div>
+                        <div class="pf-content">
+                            <h4>Interface Intuitive</h4>
+                            <p>Drag & drop, vue hebdomadaire/mensuelle et modifications en temps réel.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS SECTION -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">Comment Ça Marche ?</h2>
+            <p class="section-subtitle">4 étapes simples pour un planning optimisé</p>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <div class="step-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <h3>Ajoutez vos Ressources</h3>
+                    <p>Enregistrez vos formateurs, étudiants, salles et matériel dans le système.</p>
+                </div>
+
+                <div class="step-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <div class="step-icon">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    <h3>Définissez les Contraintes</h3>
+                    <p>Configurez les disponibilités, préférences et règles de gestion.</p>
+                </div>
+
+                <div class="step-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <div class="step-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3>Générez le Planning</h3>
+                    <p>L'algorithme crée automatiquement un planning optimisé en quelques secondes.</p>
+                </div>
+
+                <div class="step-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">04</div>
+                    <div class="step-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Visualisez et Ajustez</h3>
+                    <p>Consultez le résultat et apportez des modifications manuelles si nécessaire.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADVANTAGES SECTION -->
+    <section class="advantages-section">
+        <div class="container">
+            <h2 class="section-title">Pourquoi Choisir FormaPro ?</h2>
+            <div class="advantages-grid">
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Gain de Temps Considérable</h3>
+                    <p>Réduisez de 90% le temps passé à créer vos plannings manuellement.</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <h3>Zéro Conflit Garanti</h3>
+                    <p>Éliminez tous les conflits d'horaires et de ressources grâce à notre IA.</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Satisfaction Maximale</h3>
+                    <p>Respectez les préférences de chacun pour une meilleure ambiance de travail.</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Rapports Détaillés</h3>
+                    <p>Accédez à des statistiques complètes sur l'utilisation de vos ressources.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Prêt à Optimiser Votre Centre de Formation ?</h2>
+                <p>Rejoignez les centaines de centres qui ont déjà fait le choix de l'efficacité</p>
+                <a href="#demo" class="btn btn-cta">
+                    <span>Commencer Maintenant</span>
+                    <i class="fas fa-rocket"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>CentreFormation Pro</span>
+                    </div>
+                    <p>La solution complète pour gérer votre centre de formation avec intelligence et efficacité.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Liens Rapides</h4>
+                    <ul>
+                        <li><a href="#accueil">Accueil</a></li>
+                        <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+                        <li><a href="#planning">Planning</a></li>
+                        <li><a href="#apropos">À propos</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Guide d'utilisation</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Support technique</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-envelope"></i> contact@formapro.com</li>
+                        <li><i class="fas fa-phone"></i> +216 XX XXX XXX</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Tunis, Tunisie</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 CentreFormation Pro. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

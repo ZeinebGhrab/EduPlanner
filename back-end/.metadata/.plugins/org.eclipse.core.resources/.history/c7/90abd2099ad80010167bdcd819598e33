@@ -1,0 +1,83 @@
+package com.springboot.springboot.service.admin;
+
+import com.springboot.springboot.dto.admin.AdminDTO;
+import com.springboot.springboot.entity.admin.Admin;
+import com.springboot.springboot.repository.admin.AdminRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+public class AdminService {
+    
+    @Autowired
+    private AdminRepository adminRepository;
+    
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    
+    public List<AdminDTO> findAll() {
+        return adminRepository.findAll().stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+    
+    public Optional<AdminDTO> findById(int id) {
+        return adminRepository.findById(id).map(this::toDTO);
+    }
+    
+    public Optional<Admin> findByEmail(String email) {
+        return adminRepository.findByEmail(email);
+    }
+    
+    public AdminDTO createAdmin(Admin admin) {
+        if (adminRepository.existsByEmail(admin.getEmail())) {
+            throw new RuntimeException("Email déjà utilisé");
+        }
+        
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        ((Object) admin).setDateCreation(LocalDateTime.now());
+        admin.setActif(true);
+        
+        return toDTO(adminRepository.save(admin));
+    }
+    
+    public AdminDTO updateAdmin(int id, Admin admin) {
+        return adminRepository.findById(id)
+                .map(existing -> {
+                    existing.setNom(admin.getNom());
+                    existing.setPrenom(admin.getPrenom());
+                    existing.setEmail(admin.getEmail());
+                    existing.setRole(admin.getRole());
+                    existing.setActif(admin.getActif());
+                    if (admin.getPassword() != null && !admin.getPassword().isEmpty()) {
+                        existing.setPassword(passwordEncoder.encode(admin.getPassword()));
+                    }
+                    return toDTO(adminRepository.save(existing));
+                })
+                .orElseThrow(() -> new RuntimeException("Admin non trouvé"));
+    }
+    
+    public void deleteById(int id) {
+        adminRepository.deleteById(id);
+    }
+    
+    public boolean verifyPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+    
+    private AdminDTO toDTO(Admin admin) {
+        return AdminDTO.builder()
+                .id(admin.getId())
+                .email(admin.getEmail())
+                .nom(admin.getNom())
+                .prenom(admin.getPrenom())
+                .role(admin.getRole())
+                .actif(admin.getActif())
+                .build();
+    }
+}

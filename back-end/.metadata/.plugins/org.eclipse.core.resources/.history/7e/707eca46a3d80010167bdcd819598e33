@@ -1,0 +1,142 @@
+package com.springboot.springboot.service.admin;
+
+import com.springboot.springboot.dto.admin.DashboardDTO;
+import com.springboot.springboot.dto.admin.StatistiquesDTO;
+import com.springboot.springboot.entity.admin.Statistiques;
+import com.springboot.springboot.entity.planning.SessionFormation;
+import com.springboot.springboot.repository.admin.StatistiquesRepository;
+import com.springboot.springboot.repository.common.GroupeRepository;
+import com.springboot.springboot.repository.personne.EtudiantRepository;
+import com.springboot.springboot.repository.personne.FormateurRepository;
+import com.springboot.springboot.repository.planning.ConflitRepository;
+import com.springboot.springboot.repository.planning.SessionFormationRepository;
+import com.springboot.springboot.repository.ressources.SalleRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+public class StatistiquesService {
+
+    @Autowired
+    private StatistiquesRepository statistiquesRepository;
+
+    @Autowired
+    private SalleRepository salleRepository;
+
+    @Autowired
+    private EtudiantRepository etudiantRepository;
+
+    @Autowired
+    private FormateurRepository formateurRepository;
+
+    @Autowired
+    private GroupeRepository groupeRepository;
+
+    @Autowired
+    private SessionFormationRepository sessionRepository;
+
+    @Autowired
+    private ConflitRepository conflitRepository;
+
+    public void genererToutesStatistiques() {
+        saveStatistique("TOTAL_SALLES", (int) salleRepository.count(), "Nombre total de salles");
+        saveStatistique("TOTAL_ETUDIANTS", (int) etudiantRepository.count(), "Nombre total d'étudiants");
+        saveStatistique("TOTAL_FORMATEURS", (int) formateurRepository.count(), "Nombre total de formateurs");
+        saveStatistique("TOTAL_GROUPES", (int) groupeRepository.count(), "Nombre total de groupes");
+        saveStatistique("TOTAL_SESSIONS", (int) sessionRepository.count(), "Nombre total de sessions");
+        saveStatistique("TOTAL_CONFLITS", (int) conflitRepository.count(), "Nombre total de conflits détectés");
+    }
+
+    public DashboardDTO getDashboard() {
+        genererToutesStatistiques();
+
+        return new DashboardDTO(
+                (int) salleRepository.count(),
+                (int) etudiantRepository.count(),
+                (int) formateurRepository.count(),
+                (int) groupeRepository.count(),
+                (int) sessionRepository.count(),
+                (int) conflitRepository.count(),
+                getEtudiantsParGroupe(),
+                getJoursParSession()
+        );
+    }
+
+    public Map<Integer, Integer> getEtudiantsParGroupe() {
+        return groupeRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        groupe -> groupe.getId(),
+                        groupe -> groupe.getEtudiants() != null ? groupe.getEtudiants().size() : 0
+                ));
+    }
+
+    public Map<Integer, Integer> getJoursParSession() {
+        Map<Integer, Integer> joursParSession = new HashMap<>();
+        for (SessionFormation session : sessionRepository.findAll()) {
+            if (session.getCreneaux() != null && !session.getCreneaux().isEmpty()) {
+                Set<LocalDate> dates = session.getCreneaux().stream()
+                        .map(creneau -> creneau.getDate())
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
+
+                joursParSession.put(session.getId(), dates.size());
+            } else {
+                joursParSession.put(session.getId(), 0);
+            }
+        }
+        return joursParSession;
+    }
+
+    public List<StatistiquesDTO> findAll() {
+        return statistiquesRepository.findAllOrderByDateDesc().stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<StatistiquesDTO> findByType(String type) {
+        return statistiquesRepository.findByTypeStat(type).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<StatistiquesDTO> getLatestByType(String type) {
+        return statistiquesRepository.findFirstByTypeStatOrderByDateCalculDesc(type)
+                .map(this::toDTO);
+    }
+
+    public StatistiquesDTO saveStatistique(String type, Integer valeur, String description) {
+        Statistiques stat = new StatistiquesDTO(
+                null, // id (généré automatiquement)
+                type,
+                valeur,
+                null, // valeurDecimal
+                null, // valeurTexte
+                LocalDateTime.now(),
+                description
+        );
+        return toDTO(statistiquesRepository.save(stat));
+    }
+
+    public void deleteById(int id) {
+        statistiquesRepository.deleteById(id);
+    }
+
+    private StatistiquesDTO toDTO(Statistiques stat) {
+        return new StatistiquesDTO(
+                stat.getId(),
+                stat.getTypeStat(),
+                stat.getValeurNumerique(),
+                stat.getValeurDecimal(),
+                stat.getValeurTexte(),
+                stat.getDateCalcul(),
+                stat.getDescription()
+        );
+    }
+
+}
+

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFormation - Statistiques</title>
+    <link rel="stylesheet" href="../etudiant/style/statistique.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="statistiques.js"></script>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="deco-diamond"></div>
+        <div class="deco-circle"></div>
+        <div class="deco-plus"></div>
+        <div class="grid-pattern"></div>
+        <div class="line-deco line-deco-1"></div>
+        <div class="line-deco line-deco-2"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="my">My</span><span class="scol">Formation</span>
+        </div>
+        
+        <nav>
+            <a href="../etudiant/statistique.html"><i class="fas fa-home"></i> Tableau de Bord</a>
+            <a href="../etudiant/planning.html"><i class="fas fa-calendar-alt"></i> Planning</a>
+            <a href="../etudiant/formations.html"><i class="fas fa-book"></i> Formations</a>
+            <a href="#"><i class="fas fa-users"></i> Groupes</a>
+            <a href="../etudiant/statistique.html" class="active"><i class="fas fa-chart-bar"></i> Statistiques</a>
+        </nav>
+
+        <div class="nav-icons">
+            <i class="fas fa-bell"></i>
+            <i class="fas fa-envelope"></i>
+            <div class="user-menu">
+                <img src="https://ui-avatars.com/api/?name=John+Doe&background=00B8E6&color=fff" alt="John Doe" class="user-avatar">
+                <span class="user-name">John Doe</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="statistiques-main">
+        <div class="container">
+            <!-- Page Header -->
+            <section class="page-header">
+                <div class="header-content">
+                    <h1><i class="fas fa-chart-line"></i> Mes Statistiques</h1>
+                    <p>Analysez votre progression et vos performances dans toutes vos formations</p>
+                </div>
+                <div class="header-actions">
+                    <div class="period-selector">
+                        <select class="period-select">
+                            <option value="7days">7 derniers jours</option>
+                            <option value="30days" selected>30 derniers jours</option>
+                            <option value="90days">3 derniers mois</option>
+                            <option value="year">Cette année</option>
+                            <option value="all">Toute la période</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        Exporter Rapport
+                    </button>
+                </div>
+            </section>
+
+            <!-- Overview Stats -->
+            <section class="overview-stats">
+                <div class="stats-grid">
+                    <div class="stat-card main">
+                        <div class="stat-content">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Temps total de formation</h3>
+                                <div class="stat-number">156h</div>
+                                <div class="stat-trend up">
+                                    <i class="fas fa-arrow-up"></i>
+                                    +12h cette semaine
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-chart mini">
+                            <div class="chart-placeholder" data-percent="75"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card main">
+                        <div class="stat-content">
+                            <div class="stat-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Taux de complétion</h3>
+                                <div class="stat-number">78%</div>
+                                <div class="stat-trend up">
+                                    <i class="fas fa-arrow-up"></i>
+                                    +5% ce mois
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-chart mini">
+                            <div class="chart-placeholder" data-percent="78"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card main">
+                        <div class="stat-content">
+                            <div class="stat-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Moyenne générale</h3>
+                                <div class="stat-number">16.5/20</div>
+                                <div class="stat-trend up">
+                                    <i class="fas fa-arrow-up"></i>
+                                    +0.5 vs dernier mois
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-chart mini">
+                            <div class="chart-placeholder" data-percent="82"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card main">
+                        <div class="stat-content">
+                            <div class="stat-icon">
+                                <i class="fas fa-check-double"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Formations terminées</h3>
+                                <div class="stat-number">5</div>
+                                <div class="stat-trend up">
+                                    <i class="fas fa-plus"></i>
+                                    2 en cours
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-chart mini">
+                            <div class="chart-placeholder" data-percent="62"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="charts-grid">
+                    <!-- Progress Chart -->
+                    <div class="chart-card large">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-line"></i> Progression Hebdomadaire</h3>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: var(--primary-blue)"></span>
+                                    Heures de formation
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: var(--green)"></span>
+                                    Modules complétés
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-placeholder progress-chart">
+                                <!-- Graphique de progression simulé -->
+                                <div class="chart-bars">
+                                    <div class="bar-group">
+                                        <div class="bar hours" style="height: 60%"></div>
+                                        <div class="bar modules" style="height: 40%"></div>
+                                        <span class="bar-label">Lun</span>
+                                    </div>
+                                    <div class="bar-group">
+                                        <div class="bar hours" style="height: 80%"></div>
+                                        <div class="bar modules" style="height: 60%"></div>
+                                        <span class="bar-label">Mar</span>
+                                    </div>
+                                    <div class="bar-group">
+                                        <div class="bar hours" style="height: 45%"></div>
+                                        <div class="bar modules" style="height: 30%"></div>
+                                        <span class="bar-label">Mer</span>
+                                    </div>
+                                    <div class="bar-group">
+                                        <div class="bar hours" style="height: 90%"></div>
+                                        <div class="bar modules" style="height: 70%"></div>
+                                        <span class="bar-label">Jeu</span>
+                                    </div>
+                                    <div class="bar-group">
+                                        <div class="bar hours" style="height: 75%"></div>
+                                        <div class="bar modules" style="height: 55%"></div>
+                                        <span class="bar-label">Ven</span>
+                                    </div>
+                                    <div class="bar-group">
+                                        <div class="bar hours" style="height: 30%"></div>
+                                        <div class="bar modules" style="height: 20%"></div>
+                                        <span class="bar-label">Sam</span>
+                                    </div>
+                                    <div class="bar-group">
+                                        <div class="bar hours" style="height: 20%"></div>
+                                        <div class="bar modules" style="height: 10%"></div>
+                                        <span class="bar-label">Dim</span>
+                                    </div>
+                                </div>
+                                <div class="chart-y-axis">
+                                    <span>12h</span>
+                                    <span>9h</span>
+                                    <span>6h</span>
+                                    <span>3h</span>
+                                    <span>0h</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-pie"></i> Répartition par Catégorie</h3>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-placeholder pie-chart">
+                                <div class="pie-slices">
+                                    <div class="slice web" data-percent="40">
+                                        <div class="slice-inner"></div>
+                                    </div>
+                                    <div class="slice design" data-percent="25">
+                                        <div class="slice-inner"></div>
+                                    </div>
+                                    <div class="slice data" data-percent="20">
+                                        <div class="slice-inner"></div>
+                                    </div>
+                                    <div class="slice mobile" data-percent="15">
+                                        <div class="slice-inner"></div>
+                                    </div>
+                                </div>
+                                <div class="pie-center">
+                                    <span class="pie-total">100%</span>
+                                </div>
+                                <div class="pie-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-color web"></span>
+                                        Développement Web
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color design"></span>
+                                        Design UX/UI
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color data"></span>
+                                        Data Science
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color mobile"></span>
+                                        Mobile
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time Distribution -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-clock"></i> Temps par Formation</h3>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-placeholder bar-chart">
+                                <div class="horizontal-bars">
+                                    <div class="bar-item">
+                                        <span class="bar-label">Fullstack JS</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill" style="width: 75%"></div>
+                                        </div>
+                                        <span class="bar-value">45h</span>
+                                    </div>
+                                    <div class="bar-item">
+                                        <span class="bar-label">UX Design</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill" style="width: 45%"></div>
+                                        </div>
+                                        <span class="bar-value">27h</span>
+                                    </div>
+                                    <div class="bar-item">
+                                        <span class="bar-label">Machine Learning</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill" style="width: 25%"></div>
+                                        </div>
+                                        <span class="bar-value">15h</span>
+                                    </div>
+                                    <div class="bar-item">
+                                        <span class="bar-label">React Native</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill" style="width: 90%"></div>
+                                        </div>
+                                        <span class="bar-value">54h</span>
+                                    </div>
+                                    <div class="bar-item">
+                                        <span class="bar-label">HTML/CSS/JS</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill" style="width: 100%"></div>
+                                        </div>
+                                        <span class="bar-value">60h</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detailed Statistics -->
+            <section class="detailed-stats">
+                <div class="stats-tabs">
+                    <button class="stats-tab active" data-tab="performance">
+                        <i class="fas fa-chart-bar"></i>
+                        Performance
+                    </button>
+                    <button class="stats-tab" data-tab="attendance">
+                        <i class="fas fa-calendar-check"></i>
+                        Assiduité
+                    </button>
+                    <button class="stats-tab" data-tab="progress">
+                        <i class="fas fa-tasks"></i>
+                        Progression
+                    </button>
+                    <button class="stats-tab" data-tab="comparison">
+                        <i class="fas fa-users"></i>
+                        Comparaison
+                    </button>
+                </div>
+
+                <div class="stats-content">
+                    <!-- Performance Tab -->
+                    <div class="tab-content active" id="performance">
+                        <div class="performance-grid">
+                            <div class="performance-card">
+                                <h4>Notes par Formation</h4>
+                                <div class="grades-list">
+                                    <div class="grade-item">
+                                        <span class="course-name">HTML/CSS/JS</span>
+                                        <div class="grade-bar">
+                                            <div class="grade-fill" style="width: 90%"></div>
+                                        </div>
+                                        <span class="grade-value">18/20</span>
+                                    </div>
+                                    <div class="grade-item">
+                                        <span class="course-name">React Native</span>
+                                        <div class="grade-bar">
+                                            <div class="grade-fill" style="width: 80%"></div>
+                                        </div>
+                                        <span class="grade-value">16/20</span>
+                                    </div>
+                                    <div class="grade-item">
+                                        <span class="course-name">Fullstack JS</span>
+                                        <div class="grade-bar">
+                                            <div class="grade-fill" style="width: 75%"></div>
+                                        </div>
+                                        <span class="grade-value">15/20</span>
+                                    </div>
+                                    <div class="grade-item">
+                                        <span class="course-name">UX Design</span>
+                                        <div class="grade-bar">
+                                            <div class="grade-fill" style="width: 70%"></div>
+                                        </div>
+                                        <span class="grade-value">14/20</span>
+                                    </div>
+                                    <div class="grade-item">
+                                        <span class="course-name">Machine Learning</span>
+                                        <div class="grade-bar">
+                                            <div class="grade-fill" style="width: 65%"></div>
+                                        </div>
+                                        <span class="grade-value">13/20</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="performance-card">
+                                <h4>Tendances Mensuelles</h4>
+                                <div class="trend-chart">
+                                    <div class="trend-line">
+                                        <div class="trend-point" style="bottom: 30%"></div>
+                                        <div class="trend-point" style="bottom: 45%"></div>
+                                        <div class="trend-point" style="bottom: 60%"></div>
+                                        <div class="trend-point" style="bottom: 75%"></div>
+                                        <div class="trend-point" style="bottom: 82%"></div>
+                                    </div>
+                                    <div class="trend-labels">
+                                        <span>Jan</span>
+                                        <span>Fév</span>
+                                        <span>Mar</span>
+                                        <span>Avr</span>
+                                        <span>Mai</span>
+                                    </div>
+                                </div>
+                                <div class="trend-info">
+                                    <div class="trend-stat">
+                                        <span class="trend-value">+15%</span>
+                                        <span class="trend-label">Progression</span>
+                                    </div>
+                                    <div class="trend-stat">
+                                        <span class="trend-value">82%</span>
+                                        <span class="trend-label">Moyenne actuelle</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="performance-card">
+                                <h4>Compétences Maîtrisées</h4>
+                                <div class="skills-list">
+                                    <div class="skill-item">
+                                        <span class="skill-name">JavaScript</span>
+                                        <div class="skill-level">
+                                            <div class="skill-bar">
+                                                <div class="skill-fill" style="width: 90%"></div>
+                                            </div>
+                                            <span class="skill-percent">90%</span>
+                                        </div>
+                                    </div>
+                                    <div class="skill-item">
+                                        <span class="skill-name">React</span>
+                                        <div class="skill-level">
+                                            <div class="skill-bar">
+                                                <div class="skill-fill" style="width: 85%"></div>
+                                            </div>
+                                            <span class="skill-percent">85%</span>
+                                        </div>
+                                    </div>
+                                    <div class="skill-item">
+                                        <span class="skill-name">Node.js</span>
+                                        <div class="skill-level">
+                                            <div class="skill-bar">
+                                                <div class="skill-fill" style="width: 75%"></div>
+                                            </div>
+                                            <span class="skill-percent">75%</span>
+                                        </div>
+                                    </div>
+                                    <div class="skill-item">
+                                        <span class="skill-name">UI/UX Design</span>
+                                        <div class="skill-level">
+                                            <div class="skill-bar">
+                                                <div class="skill-fill" style="width: 70%"></div>
+                                            </div>
+                                            <span class="skill-percent">70%</span>
+                                        </div>
+                                    </div>
+                                    <div class="skill-item">
+                                        <span class="skill-name">Python</span>
+                                        <div class="skill-level">
+                                            <div class="skill-bar">
+                                                <div class="skill-fill" style="width: 65%"></div>
+                                            </div>
+                                            <span class="skill-percent">65%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Achievements -->
+            <section class="achievements-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-trophy"></i> Badges et Récompenses</h2>
+                    <span class="section-count">8 badges obtenus</span>
+                </div>
+                
+                <div class="achievements-grid">
+                    <div class="achievement-card gold">
+                        <div class="achievement-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <h4>Expert JavaScript</h4>
+                            <p>Maîtrise avancée du JavaScript moderne</p>
+                            <span class="achievement-date">Obtenu le 15 Mars 2024</span>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card silver">
+                        <div class="achievement-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <h4>Rapid Learner</h4>
+                            <p>5 formations complétées en moins de 3 mois</p>
+                            <span class="achievement-date">Obtenu le 10 Fév 2024</span>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card bronze">
+                        <div class="achievement-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <h4>Perfectionniste</h4>
+                            <p>Moyenne générale supérieure à 16/20</p>
+                            <span class="achievement-date">Obtenu le 5 Jan 2024</span>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card special">
+                        <div class="achievement-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <h4>Streak Master</h4>
+                            <p>30 jours consécutifs de formation</p>
+                            <span class="achievement-date">En cours - 25 jours</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Comparison Section -->
+            <section class="comparison-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-network"></i> Classement et Comparaison</h2>
+                    <span class="section-count">Position: 12ème sur 85 apprenants</span>
+                </div>
+                
+                <div class="comparison-content">
+                    <div class="ranking-card">
+                        <div class="ranking-header">
+                            <h4>Top Apprenants du Mois</h4>
+                            <span class="ranking-period">Mai 2024</span>
+                        </div>
+                        <div class="ranking-list">
+                            <div class="ranking-item first">
+                                <span class="rank">1</span>
+                                <img src="https://ui-avatars.com/api/?name=Marie+Laurent&background=FFB800&color=fff" alt="Marie Laurent" class="user-avatar">
+                                <div class="user-info">
+                                    <span class="user-name">Marie Laurent</span>
+                                    <span class="user-score">94%</span>
+                                </div>
+                            </div>
+                            <div class="ranking-item second">
+                                <span class="rank">2</span>
+                                <img src="https://ui-avatars.com/api/?name=Thomas+Moreau&background=64748B&color=fff" alt="Thomas Moreau" class="user-avatar">
+                                <div class="user-info">
+                                    <span class="user-name">Thomas Moreau</span>
+                                    <span class="user-score">89%</span>
+                                </div>
+                            </div>
+                            <div class="ranking-item third">
+                                <span class="rank">3</span>
+                                <img src="https://ui-avatars.com/api/?name=Sophie+Martin&background=8B5CF6&color=fff" alt="Sophie Martin" class="user-avatar">
+                                <div class="user-info">
+                                    <span class="user-name">Sophie Martin</span>
+                                    <span class="user-score">87%</span>
+                                </div>
+                            </div>
+                            <div class="ranking-item current">
+                                <span class="rank">12</span>
+                                <img src="https://ui-avatars.com/api/?name=John+Doe&background=00B8E6&color=fff" alt="John Doe" class="user-avatar">
+                                <div class="user-info">
+                                    <span class="user-name">John Doe</span>
+                                    <span class="user-score">78%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="progress-comparison">
+                        <h4>Votre Progression vs Moyenne</h4>
+                        <div class="comparison-bars">
+                            <div class="comparison-item">
+                                <span class="comparison-label">Taux de complétion</span>
+                                <div class="comparison-track">
+                                    <div class="comparison-bar user" style="width: 78%">
+                                        <span class="bar-label">Vous: 78%</span>
+                                    </div>
+                                    <div class="comparison-bar average" style="width: 65%">
+                                        <span class="bar-label">Moyenne: 65%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comparison-item">
+                                <span class="comparison-label">Notes moyennes</span>
+                                <div class="comparison-track">
+                                    <div class="comparison-bar user" style="width: 82%">
+                                        <span class="bar-label">Vous: 16.5/20</span>
+                                    </div>
+                                    <div class="comparison-bar average" style="width: 70%">
+                                        <span class="bar-label">Moyenne: 14/20</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comparison-item">
+                                <span class="comparison-label">Temps d'étude</span>
+                                <div class="comparison-track">
+                                    <div class="comparison-bar user" style="width: 85%">
+                                        <span class="bar-label">Vous: 12h/sem</span>
+                                    </div>
+                                    <div class="comparison-bar average" style="width: 60%">
+                                        <span class="bar-label">Moyenne: 8h/sem</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

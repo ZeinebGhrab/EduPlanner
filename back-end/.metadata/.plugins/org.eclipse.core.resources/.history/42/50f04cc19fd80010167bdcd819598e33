@@ -1,0 +1,16 @@
+package com.springboot.springboot.dto.admin;
+
+import lombok.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class LoginResponse {
+    public LoginResponse(String token2, String string, AdminDTO adminDTO) {
+		// TODO Auto-generated constructor stub
+	}
+	private String token;
+    private String type = "Bearer";
+    private AdminDTO admin;
+}

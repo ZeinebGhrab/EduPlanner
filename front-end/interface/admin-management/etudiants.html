@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Étudiants - CentreFormation Pro</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles CSS -->
+    <link rel="stylesheet" href="../../style/etudiants.css">
+
+    <!-- Script JavaScript -->
+    <script src="../../js/etudiants.js" defer></script>
+</head>
+
+<body>
+
+    <!-- BACKGROUND SHAPES -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="my">Centre</span><span class="scol">Formation Pro</span>
+        </div>
+
+        <nav>
+            <a href="../../interface/accueil/index.html">Accueil</a>
+            <a href="../../interface/admin-management/formateurs.html">Formateurs</a>
+            <a href="../../interface/admin-management/etudiants.html" class="active">Étudiants</a>
+            <a href="../../interface/admin-management/salles.html">Salles</a>
+            <a href="../../interface/admin-management/equipement.html">Equipements</a>
+            <a href="../../interface/admin-management/planning.html">Planning</a>
+            <a href="../../interface/admin-management/statistique.html">Statistiques</a>
+            <a href="../../interface/admin-management/contraintes.html">Contraintes</a>
+        </nav>
+
+        <div class="nav-icons">
+            <i class="fas fa-bell"></i>
+            <i class="fas fa-user"></i>
+            <button class="menu-btn">
+                <i class="fas fa-th"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="container">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <div class="page-title-section">
+                    <h1 class="page-title">
+                        <i class="fas fa-users"></i>
+                        Gestion des Étudiants par Groupes
+                    </h1>
+                    <p class="page-subtitle">Organisez vos étudiants par groupe pour une meilleure gestion</p>
+                </div>
+                <button class="btn btn-primary" id="addEtudiant">
+                    <i class="fas fa-plus"></i>
+                    <span>Ajouter un étudiant</span>
+                </button>
+            </div>
+
+
+            <!-- STATISTICS CARDS -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <h3 class="stat-number" id="totalEtudiants">0</h3>
+                        </div>
+                    </div>
+                    <p class="stat-label">Total Étudiants</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h3 class="stat-number" id="totalNiveaux">0</h3>
+                        </div>
+                    </div>
+                    <p class="stat-label">Niveaux Différents</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon green">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div>
+                            <h3 class="stat-number" id="totalGroupes">0</h3>
+                        </div>
+                    </div>
+                    <p class="stat-label">Groupes Différents</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div>
+                            <h3 class="stat-number" id="niveauPrincipal">Licence</h3>
+                        </div>
+                    </div>
+                    <p class="stat-label">Niveau Principal</p>
+                </div>
+            </div>
+
+            <!-- FILTERS & SEARCH -->
+            <div class="filters-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Rechercher un étudiant...">
+                </div>
+
+                <select class="sort-select" id="viewMode">
+                    <option value="groupes">Vue par groupes</option>
+                    <option value="liste">Vue en liste</option>
+                </select>
+            </div>
+
+            <!-- CONTAINER FOR GROUPS -->
+            <div class="groups-container" id="groupsContainer">
+                <!-- Les groupes seront ajoutés ici dynamiquement -->
+                <div class="empty-state">
+                    <div class="empty-content">
+                        <i class="fas fa-user-plus"></i>
+                        <h3>Aucun groupe d'étudiants</h3>
+                        <p>Commencez par ajouter votre premier étudiant</p>
+                        <button class="btn btn-primary" onclick="document.getElementById('addEtudiant').click()">
+                            <i class="fas fa-plus"></i>
+                            Ajouter un étudiant
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIST VIEW (hidden by default) -->
+            <div class="list-view-container" id="listViewContainer" style="display: none;">
+                <div class="table-container">
+                    <table class="formateurs-table">
+                        <thead>
+                            <tr>
+                                <th>Étudiants</th>
+                                <th>Email</th>
+                                <th>Téléphone</th>
+                                <th>Niveau</th>
+                                <th>Groupe</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listeTableBody">
+                            <!-- Les étudiants seront ajoutés ici dynamiquement -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINATION -->
+                <div class="pagination">
+                    <button class="page-btn" id="prevPage">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="page-numbers" id="pageNumbers">
+                        <button class="page-number active">1</button>
+                    </div>
+                    <button class="page-btn" id="nextPage">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODAL AJOUTER/MODIFIER ÉTUDIANT -->
+    <div class="modal" id="etudiantModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-user-plus"></i>
+                    <span id="modalTitle">Ajouter un étudiant</span>
+                </h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="etudiantForm" class="modal-body">
+                <!-- INFORMATIONS PERSONNELLES -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-user"></i>
+                        Informations personnelles
+                    </h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nom">Nom complet *</label>
+                            <input type="text" id="nom" name="nom" required placeholder="Entrez votre nom">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required placeholder="exemple@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="telephone">Téléphone *</label>
+                            <input type="tel" id="telephone" name="telephone" required placeholder="+216 XX XXX XXX">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="niveau">Niveau *</label>
+                            <select id="niveau" name="niveau" required>
+                                <option value="">Sélectionnez un niveau</option>
+                                <option value="Licence">Licence</option>
+                                <option value="Master">Master</option>
+                                <option value="Doctorat">Doctorat</option>
+                                <option value="Ingénieur">Ingénieur</option>
+                                <option value="Technicien">Technicien</option>
+                                <option value="Formation continue">Formation continue</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="groupe">Groupe *</label>
+                            <select id="groupe" name="groupe" required>
+                                <option value="">Sélectionnez un groupe</option>
+                                <option value="A1">Groupe A1</option>
+                                <option value="A2">Groupe A2</option>
+                                <option value="B1">Groupe B1</option>
+                                <option value="B2">Groupe B2</option>
+                                <option value="C1">Groupe C1</option>
+                                <option value="C2">Groupe C2</option>
+                                <option value="D1">Groupe D1</option>
+                                <option value="D2">Groupe D2</option>
+                                <option value="E1">Groupe E1</option>
+                                <option value="E2">Groupe E2</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODAL FOOTER -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">
+                        <i class="fas fa-times"></i>
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        <span id="submitBtnText">Enregistrer</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMATION SUPPRESSION -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Confirmer la suppression
+                </h2>
+                <button class="modal-close" id="closeDeleteModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer cet étudiant ? Cette action est irréversible.</p>
+                <p class="formateur-name" id="deleteEtudiantName"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelDelete">
+                    Annuler
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">
+                    <i class="fas fa-trash"></i>
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFormation - Mes Sessions</title>
+    <link rel="stylesheet" href="../../style/sessions.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="../../js/sessions.js"></script>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="deco-diamond"></div>
+        <div class="deco-circle"></div>
+        <div class="deco-plus"></div>
+        <div class="grid-pattern"></div>
+        <div class="line-deco line-deco-1"></div>
+        <div class="line-deco line-deco-2"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="my">My</span><span class="scol">Formation</span>
+        </div>
+        
+        <nav>
+            <a href="../aceuil/index.html"><i class="fas fa-home"></i> Acceuil</a>
+            <a href="../ensiegnant/dashbord.html" ><i class="fas fa-chart-bar"></i> Tableau de Bord</a>
+            <a href="../../interface/ensiegnant/formateur-sessions.html" class="active"><i class="fas fa-calendar-alt"></i> Planning</a>
+            <a href="../../interface/ensiegnant/cours.html"><i class="fas fa-users"></i> Mes sessions</a>
+        </nav>
+
+        <div class="nav-icons">
+            <div class="notification-badge">
+                <i class="fas fa-bell"></i>
+                <span class="badge">3</span>
+            </div>
+            <i class="fas fa-envelope"></i>
+            <div class="user-menu">
+                <img src="https://ui-avatars.com/api/?name=Prof+Martin&background=00B8E6&color=fff" alt="Prof. Martin" class="user-avatar">
+                <span class="user-name">Prof. Martin</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="formateur-sessions">
+        <div class="container">
+            <!-- Page Header -->
+            <section class="page-header">
+                <div class="header-content">
+                    <h1><i class="fas fa-calendar-alt"></i> Mon planning</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="createSessionBtn">
+                        <i class="fas fa-plus"></i>
+                        Nouvelle Session
+                    </button>
+                </div>
+            </section>
+<!-- Quick Stats -->
+ <!-- Gestion des Disponibilités -->
+<section class="availability-section">
+    <div class="section-header">
+        <h2><i class="fas fa-calendar-alt"></i> Mes Disponibilités</h2>
+    </div>
+    
+    <div class="availability-calendar">
+        <div class="week-view">
+            <div class="week-header">
+                <div class="day-header">Lun</div>
+                <div class="day-header">Mar</div>
+                <div class="day-header">Mer</div>
+                <div class="day-header">Jeu</div>
+                <div class="day-header">Ven</div>
+                <div class="day-header">Sam</div>
+                <div class="day-header">Dim</div>
+            </div>
+            <div class="week-slots">
+                <!-- Créneaux de disponibilité -->
+                <div class="time-slot available">08:00-10:00</div>
+                <div class="time-slot available">10:00-12:00</div>
+                <div class="time-slot unavailable">14:00-16:00</div>
+                <div class="time-slot available">16:00-18:00</div>
+            </div>
+        </div>
+                <button class="btn btn-primary">
+            <i class="fas fa-edit"></i> Modifier
+        </button>
+    </div>
+</section>
+            
+
+            <!-- Calendar View -->
+            <section class="calendar-view active" id="calendarView">
+                <div class="calendar-header">
+                    <div class="calendar-nav">
+                        <button class="nav-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h2>Mars 2024</h2>
+                        <button class="nav-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="calendar-actions">
+                        <button class="btn btn-outline">
+                            <i class="fas fa-today"></i>
+                            Aujourd'hui
+                        </button>
+                        <div class="view-options-small">
+                            <button class="view-option active">Mois</button>
+                            <button class="view-option">Semaine</button>
+                            <button class="view-option">Jour</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calendar-grid monthly">
+                    <!-- Week Days Header -->
+                    <div class="week-days">
+                        <div class="week-day">Lun</div>
+                        <div class="week-day">Mar</div>
+                        <div class="week-day">Mer</div>
+                        <div class="week-day">Jeu</div>
+                        <div class="week-day">Ven</div>
+                        <div class="week-day">Sam</div>
+                        <div class="week-day">Dim</div>
+                    </div>
+
+                    <!-- Calendar Days -->
+                    <div class="calendar-days">
+                        <!-- Previous month days -->
+                        <div class="calendar-day other-month">26</div>
+                        <div class="calendar-day other-month">27</div>
+                        <div class="calendar-day other-month">28</div>
+                        <div class="calendar-day other-month">29</div>
+                        
+                        <!-- Current month days -->
+                        <div class="calendar-day">
+                            <span class="day-number">1</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">2</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">3</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">4</span>
+                            <div class="calendar-event" data-status="completed">
+                                <div class="event-time">09:00-12:00</div>
+                                <div class="event-title">JavaScript Moderne</div>
+                                <div class="event-group">Groupe B</div>
+                            </div>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">5</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">6</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">7</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">8</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">9</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">10</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">11</span>
+                            <div class="calendar-event" data-status="upcoming">
+                                <div class="event-time">14:00-17:00</div>
+                                <div class="event-title">React Avancé</div>
+                                <div class="event-group">Groupe A</div>
+                            </div>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">12</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">13</span>
+                            <div class="calendar-event" data-status="upcoming">
+                                <div class="event-time">10:00-12:00</div>
+                                <div class="event-title">UX Design</div>
+                                <div class="event-group">Groupe C</div>
+                            </div>
+                            <div class="calendar-event" data-status="upcoming">
+                                <div class="event-time">14:00-16:00</div>
+                                <div class="event-title">JavaScript ES6+</div>
+                                <div class="event-group">Groupe B</div>
+                            </div>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">14</span>
+                            <div class="calendar-event" data-status="upcoming">
+                                <div class="event-time">09:00-11:00</div>
+                                <div class="event-title">Base de Données</div>
+                                <div class="event-group">Groupe C</div>
+                            </div>
+                            <div class="calendar-event" data-status="upcoming">
+                                <div class="event-time">15:00-17:00</div>
+                                <div class="event-title">API REST</div>
+                                <div class="event-group">Groupe A</div>
+                            </div>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">15</span>
+                            <div class="calendar-event" data-status="upcoming">
+                                <div class="event-time">10:00-12:00</div>
+                                <div class="event-title">Revue de Code</div>
+                                <div class="event-group">Groupe B</div>
+                            </div>
+                        </div>
+                        <div class="calendar-day today">
+                            <span class="day-number">16</span>
+                            <div class="calendar-event" data-status="ongoing">
+                                <div class="event-time">En cours</div>
+                                <div class="event-title">Projet Pratique</div>
+                                <div class="event-group">Groupe A</div>
+                            </div>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">17</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">18</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">19</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">20</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">21</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">22</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">23</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">24</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">25</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">26</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">27</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">28</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">29</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">30</span>
+                        </div>
+                        <div class="calendar-day">
+                            <span class="day-number">31</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- List View -->
+            <section class="list-view" id="listView">
+                <div class="sessions-header">
+                    <div class="sessions-count">
+                        <h3>12 Sessions trouvées</h3>
+                        <span>Filtrées selon vos critères</span>
+                    </div>
+                    <div class="sort-options">
+                        <select class="sort-select">
+                            <option value="date-asc">Date (plus ancien)</option>
+                            <option value="date-desc">Date (plus récent)</option>
+                            <option value="title-asc">Titre A-Z</option>
+                            <option value="title-desc">Titre Z-A</option>
+                            <option value="group">Groupe</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="sessions-list">
+                    <!-- Session 1 -->
+                    <div class="session-item" data-status="ongoing">
+                        <div class="session-main">
+                            <div class="session-date">
+                                <div class="date-day">16</div>
+                                <div class="date-month">MAR</div>
+                                <div class="date-year">2024</div>
+                            </div>
+                            <div class="session-info">
+                                <h4 class="session-title">Projet Pratique React</h4>
+                                <div class="session-meta">
+                                    <span class="session-time">
+                                        <i class="fas fa-clock"></i>
+                                        14:00 - 17:00 (En cours)
+                                    </span>
+                                    <span class="session-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Laboratoire B05
+                                    </span>
+                                    <span class="session-group">
+                                        <i class="fas fa-users"></i>
+                                        Groupe A • 15 étudiants
+                                    </span>
+                                </div>
+                                <div class="session-stats">
+                                    <div class="stat">
+                                        <i class="fas fa-user-check"></i>
+                                        <span>14/15 présents</span>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="fas fa-clock"></i>
+                                        <span>2h 15min écoulées</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="session-actions">
+                            <button class="action-btn primary">
+                                <i class="fas fa-stop"></i>
+                                Arrêter
+                            </button>
+                            <button class="action-btn secondary">
+                                <i class="fas fa-list"></i>
+                                Présence
+                            </button>
+                            <button class="action-btn outline">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Session 2 -->
+                    <div class="session-item" data-status="upcoming">
+                        <div class="session-main">
+                            <div class="session-date">
+                                <div class="date-day">18</div>
+                                <div class="date-month">MAR</div>
+                                <div class="date-year">2024</div>
+                            </div>
+                            <div class="session-info">
+                                <h4 class="session-title">Revue de Code - Projet Final</h4>
+                                <div class="session-meta">
+                                    <span class="session-time">
+                                        <i class="fas fa-clock"></i>
+                                        10:00 - 12:00
+                                    </span>
+                                    <span class="session-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Salle A12
+                                    </span>
+                                    <span class="session-group">
+                                        <i class="fas fa-users"></i>
+                                        Groupe B • 14 étudiants
+                                    </span>
+                                </div>
+                                <div class="session-preparation">
+                                    <div class="prep-item">
+                                        <i class="fas fa-file-alt"></i>
+                                        <span>Supports prêts</span>
+                                    </div>
+                                    <div class="prep-item">
+                                        <i class="fas fa-laptop"></i>
+                                        <span>Matériel vérifié</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="session-actions">
+                            <button class="action-btn primary">
+                                <i class="fas fa-play"></i>
+                                Démarrer
+                            </button>
+                            <button class="action-btn secondary">
+                                <i class="fas fa-edit"></i>
+                                Modifier
+                            </button>
+                            <button class="action-btn outline">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Session 3 -->
+                    <div class="session-item" data-status="completed">
+                        <div class="session-main">
+                            <div class="session-date">
+                                <div class="date-day">14</div>
+                                <div class="date-month">MAR</div>
+                                <div class="date-year">2024</div>
+                            </div>
+                            <div class="session-info">
+                                <h4 class="session-title">API REST & Middlewares</h4>
+                                <div class="session-meta">
+                                    <span class="session-time">
+                                        <i class="fas fa-clock"></i>
+                                        15:00 - 17:00
+                                    </span>
+                                    <span class="session-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Lab B05
+                                    </span>
+                                    <span class="session-group">
+                                        <i class="fas fa-users"></i>
+                                        Groupe A • 15 étudiants
+                                    </span>
+                                </div>
+                                <div class="session-results">
+                                    <div class="result-stat">
+                                        <span class="stat-value">93%</span>
+                                        <span class="stat-label">Présence</span>
+                                    </div>
+                                    <div class="result-stat">
+                                        <span class="stat-value">4.2/5</span>
+                                        <span class="stat-label">Satisfaction</span>
+                                    </div>
+                                    <div class="result-stat">
+                                        <span class="stat-value">12/15</span>
+                                        <span class="stat-label">Évalués</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="session-actions">
+                            <button class="action-btn secondary">
+                                <i class="fas fa-chart-bar"></i>
+                                Rapport
+                            </button>
+                            <button class="action-btn outline">
+                                <i class="fas fa-copy"></i>
+                                Dupliquer
+                            </button>
+                            <button class="action-btn outline">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Session 4 -->
+                    <div class="session-item" data-status="upcoming">
+                        <div class="session-main">
+                            <div class="session-date">
+                                <div class="date-day">20</div>
+                                <div class="date-month">MAR</div>
+                                <div class="date-year">2024</div>
+                            </div>
+                            <div class="session-info">
+                                <h4 class="session-title">UX Design Avancé - Atelier</h4>
+                                <div class="session-meta">
+                                    <span class="session-time">
+                                        <i class="fas fa-clock"></i>
+                                        09:00 - 12:00
+                                    </span>
+                                    <span class="session-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Salle C08
+                                    </span>
+                                    <span class="session-group">
+                                        <i class="fas fa-users"></i>
+                                        Groupe C • 12 étudiants
+                                    </span>
+                                </div>
+                                <div class="session-notes">
+                                    <i class="fas fa-sticky-note"></i>
+                                    <span>Prévoir les maquettes et prototypes</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="session-actions">
+                            <button class="action-btn primary">
+                                <i class="fas fa-play"></i>
+                                Démarrer
+                            </button>
+                            <button class="action-btn secondary">
+                                <i class="fas fa-edit"></i>
+                                Modifier
+                            </button>
+                            <button class="action-btn outline">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            
+        </div>
+    </main>
+
+    <!-- Create Session Modal -->
+    <div class="modal" id="createSessionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus"></i> Créer une Nouvelle Session</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Le contenu du modal serait chargé ici -->
+                <div class="modal-placeholder">
+                    <i class="fas fa-calendar-plus"></i>
+                    <p>Formulaire de création de session</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</body>
+</html>

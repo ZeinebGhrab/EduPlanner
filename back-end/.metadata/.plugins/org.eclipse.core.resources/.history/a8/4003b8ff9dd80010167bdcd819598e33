@@ -1,0 +1,59 @@
+package com.springboot.springboot.service.admin;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.security.Keys;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+
+
+@Service
+public class JwtService {
+    
+    private static final String SECRET = "MySecretKeyForJWTTokenGenerationInSpringBootApplicationCentreFormation2025";
+    private static final long EXPIRATION_TIME = 864_000_000; // 10 jours en millisecondes
+    
+    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    
+    public String generateToken(String username, String role) {
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+    
+    public String extractUsername(String token) {
+        return extractClaims(token).getSubject();
+    }
+    
+    public String extractRole(String token) {
+        return (String) extractClaims(token).get("role");
+    }
+    
+    public boolean isTokenValid(String token) {
+        try {
+            extractClaims(token);
+            return !isTokenExpired(token);
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+    
+    private Claims extractClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+    
+    private boolean isTokenExpired(String token) {
+        return extractClaims(token).getExpiration().before(new Date());
+    }
+}

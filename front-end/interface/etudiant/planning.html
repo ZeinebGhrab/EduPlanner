@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFormation - Planning</title>
+    <link rel="stylesheet" href="../../style/planning-etudiant.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="../../js/planning-etudiant.js"></script>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="deco-diamond"></div>
+        <div class="deco-circle"></div>
+        <div class="deco-plus"></div>
+        <div class="grid-pattern"></div>
+        <div class="line-deco line-deco-1"></div>
+        <div class="line-deco line-deco-2"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="my">My</span><span class="scol">Formation</span>
+        </div>
+        
+        <nav>
+            <a href="../index.html">Accueil</a>
+            <a href="../etudiant/dashbord.html"><i class="fas fa-home"></i> Tableau de Bord</a>
+            <a href="../etudiant/planning.html" class="active"><i class="fas fa-calendar-alt"></i> Planning</a>
+            <a href="../etudiant/formations.html"><i class="fas fa-book"></i> Formations</a>
+        </nav>
+
+        <div class="nav-icons">
+            <div class="user-menu">
+                <img src="https://ui-avatars.com/api/?name=John+Doe&background=00B8E6&color=fff" alt="John Doe" class="user-avatar">
+                <span class="user-name">John Doe</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="planning-main">
+        <div class="container">
+            <!-- Page Header -->
+            <section class="page-header">
+                <div class="header-content">
+                    <h1><i class="fas fa-calendar-alt"></i> Mon Planning Hebdomadaire</h1>
+                    <p>Consultez votre emploi du temps et gérez vos sessions de formation</p>
+                </div>
+            </section>
+
+            <!-- Week Navigation -->
+            <section class="week-navigation">
+                <div class="nav-controls">
+                    <button class="nav-btn">
+                        <i class="fas fa-chevron-left"></i>
+                        Semaine Précédente
+                    </button>
+                    
+                    <div class="current-week">
+                        <h2>Semaine du 11 Mars 2024</h2>
+                        <span class="week-dates">11 Mars - 15 Mars 2024</span>
+                    </div>
+                    
+                    <button class="nav-btn">
+                        Semaine Suivante
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <div class="view-options">
+                    <button class="view-btn active">
+                        <i class="fas fa-calendar-week"></i>
+                        Vue Semaine
+                    </button>
+                    <button class="view-btn">
+                        <i class="fas fa-calendar-day"></i>
+                        Vue Jour
+                    </button>
+                    <button class="view-btn">
+                        <i class="fas fa-list"></i>
+                        Vue Liste
+                    </button>
+                </div>
+            </section>
+
+            <!-- Weekly Calendar - Version corrigée -->
+<section class="calendar-section">
+    <div class="calendar-container">
+        <!-- En-tête avec les jours -->
+        <div class="calendar-header">
+            <div class="time-header">Heures</div>
+            <div class="day-header">Lundi 11</div>
+            <div class="day-header">Mardi 12</div>
+            <div class="day-header">Mercredi 13</div>
+            <div class="day-header">Jeudi 14</div>
+            <div class="day-header">Vendredi 15</div>
+        </div>
+
+        <!-- Grille des créneaux horaires -->
+        <div class="calendar-grid">
+            <!-- Colonne des heures -->
+            <div class="time-column">
+                <div class="time-slot">08:00</div>
+                <div class="time-slot">09:00</div>
+                <div class="time-slot">10:00</div>
+                <div class="time-slot">11:00</div>
+                <div class="time-slot">12:00</div>
+                <div class="time-slot">13:00</div>
+                <div class="time-slot">14:00</div>
+                <div class="time-slot">15:00</div>
+                <div class="time-slot">16:00</div>
+                <div class="time-slot">17:00</div>
+                <div class="time-slot">18:00</div>
+            </div>
+
+            <!-- Lundi -->
+            <div class="day-column">
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="calendar-event session-1" data-time="09:00-12:00">
+                    <div class="event-content">
+                        <h4>React Avancé</h4>
+                        <p>Prof. Martin Dupont</p>
+                        <span class="event-location">Salle A12</span>
+                    </div>
+                </div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+            </div>
+
+            <!-- Mardi -->
+            <div class="day-column">
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="calendar-event session-2" data-time="14:00-17:00">
+                    <div class="event-content">
+                        <h4>Projet Pratique</h4>
+                        <p>Prof. Sophie Martin</p>
+                        <span class="event-location">Lab B05</span>
+                    </div>
+                </div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+            </div>
+
+            <!-- Mercredi -->
+            <div class="day-column">
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="calendar-event session-3" data-time="10:00-12:00">
+                    <div class="event-content">
+                        <h4>UX Design</h4>
+                        <p>Prof. Alain Petit</p>
+                        <span class="event-location">Salle C08</span>
+                    </div>
+                </div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="calendar-event session-4" data-time="14:00-16:00">
+                    <div class="event-content">
+                        <h4>JavaScript ES6+</h4>
+                        <p>Prof. Martin Dupont</p>
+                        <span class="event-location">Salle A12</span>
+                    </div>
+                </div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+            </div>
+
+            <!-- Jeudi -->
+            <div class="day-column">
+                <div class="time-cell"></div>
+                <div class="calendar-event session-5" data-time="09:00-11:00">
+                    <div class="event-content">
+                        <h4>Base de Données</h4>
+                        <p>Prof. Marie Laurent</p>
+                        <span class="event-location">Salle D15</span>
+                    </div>
+                </div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="calendar-event session-6" data-time="15:00-17:00">
+                    <div class="event-content">
+                        <h4>API REST</h4>
+                        <p>Prof. Thomas Moreau</p>
+                        <span class="event-location">Lab B05</span>
+                    </div>
+                </div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+            </div>
+
+            <!-- Vendredi -->
+            <div class="day-column">
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="calendar-event session-7" data-time="10:00-12:00">
+                    <div class="event-content">
+                        <h4>Revue de Code</h4>
+                        <p>Prof. Sophie Martin</p>
+                        <span class="event-location">Salle A12</span>
+                    </div>
+                </div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+                <div class="time-cell"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+            <!-- Today's Sessions -->
+            <section class="today-sessions">
+                <div class="section-header">
+                    <h2><i class="fas fa-clock"></i> Sessions d'Aujourd'hui</h2>
+                    <span class="current-date">Mercredi 13 Mars 2024</span>
+                </div>
+                
+                <div class="sessions-list">
+                    <div class="session-card upcoming">
+                        <div class="session-time">
+                            <span class="time">10:00 - 12:00</span>
+                            <span class="duration">2h</span>
+                        </div>
+                        <div class="session-details">
+                            <h4>UX Design</h4>
+                            <div class="session-meta">
+                                <span class="instructor">
+                                    <i class="fas fa-user"></i>
+                                    Prof. Alain Petit
+                                </span>
+                                <span class="location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Salle C08
+                                </span>
+                            </div>
+                            <div class="session-tags">
+                                <span class="tag tag-theory">Théorie</span>
+                                <span class="tag tag-mandatory">Obligatoire</span>
+                            </div>
+                        </div>
+                    
+                    </div>
+
+                    <div class="session-card upcoming">
+                        <div class="session-time">
+                            <span class="time">14:00 - 16:00</span>
+                            <span class="duration">2h</span>
+                        </div>
+                        <div class="session-details">
+                            <h4>JavaScript ES6+</h4>
+                            <div class="session-meta">
+                                <span class="instructor">
+                                    <i class="fas fa-user"></i>
+                                    Prof. Martin Dupont
+                                </span>
+                                <span class="location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Salle A12
+                                </span>
+                            </div>
+                            <div class="session-tags">
+                                <span class="tag tag-practice">Pratique</span>
+                                <span class="tag tag-group">Groupe 2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upcoming Sessions -->
+            <section class="upcoming-sessions">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-check"></i> Prochaines Sessions</h2>
+                    <a href="#" class="view-all">Voir tout <i class="fas fa-arrow-right"></i></a>
+                </div>
+                
+                <div class="upcoming-list">
+                    <div class="upcoming-card">
+                        <div class="upcoming-date">
+                            <span class="day">Jeu</span>
+                            <span class="date">14</span>
+                            <span class="month">Mars</span>
+                        </div>
+                        <div class="upcoming-details">
+                            <h4>Base de Données</h4>
+                            <p>09:00 - 11:00 • Salle D15</p>
+                            <span class="instructor">Prof. Marie Laurent</span>
+                        </div>
+                        <div class="upcoming-status">
+                            <span class="status-badge confirmed">Confirmée</span>
+                        </div>
+                    </div>
+
+                    <div class="upcoming-card">
+                        <div class="upcoming-date">
+                            <span class="day">Jeu</span>
+                            <span class="date">14</span>
+                            <span class="month">Mars</span>
+                        </div>
+                        <div class="upcoming-details">
+                            <h4>API REST</h4>
+                            <p>15:00 - 17:00 • Lab B05</p>
+                            <span class="instructor">Prof. Thomas Moreau</span>
+                        </div>
+                        <div class="upcoming-status">
+                            <span class="status-badge confirmed">Confirmée</span>
+                        </div>
+                    </div>
+
+                    <div class="upcoming-card">
+                        <div class="upcoming-date">
+                            <span class="day">Ven</span>
+                            <span class="date">15</span>
+                            <span class="month">Mars</span>
+                        </div>
+                        <div class="upcoming-details">
+                            <h4>Revue de Code</h4>
+                            <p>10:00 - 12:00 • Salle A12</p>
+                            <span class="instructor">Prof. Sophie Martin</span>
+                        </div>
+                        <div class="upcoming-status">
+                            <span class="status-badge pending">En attente</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    
+</body>
+</html>

@@ -1,0 +1,20 @@
+package com.springboot.springboot.dto.disponibilite;
+
+import com.springboot.springboot.entity.personne.DisponibiliteFormateur;
+import lombok.Data;
+
+import java.time.LocalTime;
+
+@Data
+public class DisponibiliteFormateurDTO {
+    private int id;
+    private Integer formateurId;
+    private DisponibiliteFormateur.JourEnum jourSemaine;
+    private LocalTime heureDebut;
+    private LocalTime heureFin;
+    private Boolean estDisponible;
+	public void setId(int id2) {
+		// TODO Auto-generated method stub
+		
+	}
+}

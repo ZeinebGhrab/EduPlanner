@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentification - CentreFormation Pro</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../style/auth.css">
+</head>
+<body>
+
+    <!-- BACKGROUND SHAPES -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        
+        <!-- FLOATING ICONS -->
+        <div class="floating-element el-1">
+            <i class="fas fa-code"></i>
+        </div>
+        <div class="floating-element el-2">
+            <i class="fas fa-laptop-code"></i>
+        </div>
+        <div class="floating-element el-3">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="floating-element el-4">
+            <i class="fas fa-book"></i>
+        </div>
+        <div class="floating-element el-5">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="floating-element el-6">
+            <i class="fas fa-database"></i>
+        </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Chargement...</p>
+        </div>
+    </div>
+
+    <!-- AUTH CONTAINER -->
+    <div class="auth-container">
+        <!-- LOGO -->
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="my">Centre</span><span class="scol">Formation Pro</span>
+        </div>
+
+        <!-- AUTH CARD -->
+        <div class="auth-card">
+            <!-- HEADER -->
+            <div class="auth-header">
+                <h1 class="auth-title">Bienvenue !</h1>
+                <p class="auth-subtitle">Connectez-vous pour accéder à votre espace</p>
+            </div>
+
+            <!-- TABS -->
+            <div class="form-tabs">
+                <button class="tab-btn active" data-tab="login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Connexion
+                </button>
+                <button class="tab-btn" data-tab="register">
+                    <i class="fas fa-user-plus"></i>
+                    Inscription
+                </button>
+            </div>
+
+            <!-- FORMS CONTAINER -->
+            <div class="form-container">
+                
+                <!-- LOGIN FORM -->
+                <form class="auth-form active" id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="loginEmail" class="form-input" placeholder="votre@email.com" required>
+                        </div>
+                        <div class="validation-message" id="loginEmailValidation"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Mot de passe</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+                            <button type="button" class="password-toggle" data-target="loginPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="validation-message" id="loginPasswordValidation"></div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <span class="btn-text">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Se connecter
+                        </span>
+                        <div class="btn-spinner"></div>
+                        <div class="btn-success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </button>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form class="auth-form" id="registerForm">
+                    <!-- INFORMATIONS PERSONNELLES -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-user"></i>
+                            Informations personnelles
+                        </h3>
+                        
+                        <div class="form-group">
+                            <label for="registerName">Nom complet *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="registerName" class="form-input" placeholder="Votre nom complet" required>
+                            </div>
+                            <div class="validation-message" id="registerNameValidation"></div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="registerEmail">Email *</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-envelope"></i>
+                                    <input type="email" id="registerEmail" class="form-input" placeholder="votre@email.com" required>
+                                </div>
+                                <div class="validation-message" id="registerEmailValidation"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="registerTelephone">Téléphone *</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-phone"></i>
+                                    <input type="tel" id="registerTelephone" class="form-input" placeholder="+216 XX XXX XXX" required>
+                                </div>
+                                <div class="validation-message" id="registerTelephoneValidation"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerRole">Rôle *</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user-tag"></i>
+                                <select id="registerRole" class="form-input" required>
+                                    <option value="">Sélectionnez votre rôle</option>
+                                    <option value="etudiant">Étudiant</option>
+                                    <option value="formateur">Formateur</option>
+                                </select>
+                            </div>
+                            <div class="validation-message" id="registerRoleValidation"></div>
+                        </div>
+                            <div class="form-group">
+                                <label for="registerPassword">Mot de passe *</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-lock"></i>
+                                    <input type="password" id="registerPassword" class="form-input" placeholder="••••••••" required>
+                                    <button type="button" class="password-toggle" data-target="registerPassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="validation-message" id="registerPasswordValidation"></div>
+                            </div>
+                    </div>
+
+                    <!-- INFORMATIONS ÉTUDIANT -->
+                    <div class="form-section" id="etudiantSection">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-user-graduate"></i>
+                            Informations étudiant
+                        </h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="etudiantNiveau">Niveau d'études *</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    <select id="etudiantNiveau" class="form-input" required>
+                                        <option value="">Sélectionnez votre niveau</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </div>
+                                <div class="validation-message" id="etudiantNiveauValidation"></div>
+                            </div>
+
+                            <div class="form-group">
+                            <label>Sélectionnez vos groupes *</label>
+                            <div class="specialites-grid">
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="Java">
+                                    <span class="checkbox-content">
+                                        <i class="fab fa-java"></i>
+                                        <span>Java</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="Python">
+                                    <span class="checkbox-content">
+                                        <i class="fab fa-python"></i>
+                                        <span>Python</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="JavaScript">
+                                    <span class="checkbox-content">
+                                        <i class="fab fa-js"></i>
+                                        <span>JavaScript</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="React">
+                                    <span class="checkbox-content">
+                                        <i class="fab fa-react"></i>
+                                        <span>React</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="Angular">
+                                    <span class="checkbox-content">
+                                        <i class="fab fa-angular"></i>
+                                        <span>Angular</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="SQL">
+                                    <span class="checkbox-content">
+                                        <i class="fas fa-database"></i>
+                                        <span>SQL</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="DevOps">
+                                    <span class="checkbox-content">
+                                        <i class="fas fa-server"></i>
+                                        <span>DevOps</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="Cloud">
+                                    <span class="checkbox-content">
+                                        <i class="fas fa-cloud"></i>
+                                        <span>Cloud</span>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="validation-message" id="specialitesValidation"></div>
+                        </div>
+                    </div>
+                        </div>
+                    </div>
+
+                    <!-- SPÉCIALITÉS FORMATEUR -->
+                    <div class="form-section" id="specialitesSection">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-book"></i>
+                            Spécialités
+                        </h3>
+                        
+                        <div class="form-group">
+                            <label>Sélectionnez vos spécialités *</label>
+                            <div class="specialites-grid">
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="Java">
+                                    <span class="checkbox-content">
+                                        <i class="fab fa-java"></i>
+                                        <span>Java</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="Python">
+                                    <span class="checkbox-content">
+                                        <i class="fab fa-python"></i>
+                                        <span>Python</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="JavaScript">
+                                    <span class="checkbox-content">
+                                        <i class="fab fa-js"></i>
+                                        <span>JavaScript</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="React">
+                                    <span class="checkbox-content">
+                                        <i class="fab fa-react"></i>
+                                        <span>React</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="Angular">
+                                    <span class="checkbox-content">
+                                        <i class="fab fa-angular"></i>
+                                        <span>Angular</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="SQL">
+                                    <span class="checkbox-content">
+                                        <i class="fas fa-database"></i>
+                                        <span>SQL</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="DevOps">
+                                    <span class="checkbox-content">
+                                        <i class="fas fa-server"></i>
+                                        <span>DevOps</span>
+                                    </span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="specialite" value="Cloud">
+                                    <span class="checkbox-content">
+                                        <i class="fas fa-cloud"></i>
+                                        <span>Cloud</span>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="validation-message" id="specialitesValidation"></div>
+                        </div>
+                    </div>
+
+                    <!-- DISPONIBILITÉS FORMATEUR -->
+                    <div class="form-section" id="disponibilitesSection">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Disponibilités hebdomadaires
+                        </h3>
+                        
+                        <div class="disponibilites-grid">
+                            <div class="jour-disponibilite" id="lundiContainer">
+                                <div class="jour-header">
+                                    <input type="checkbox" id="lundi" name="jour" value="Lundi" checked>
+                                    <label for="lundi">Lundi</label>
+                                </div>
+                                <div class="horaires">
+                                    <input type="time" name="lundi_debut" value="08:00">
+                                    <span>à</span>
+                                    <input type="time" name="lundi_fin" value="17:00">
+                                </div>
+                            </div>
+
+                            <div class="jour-disponibilite" id="mardiContainer">
+                                <div class="jour-header">
+                                    <input type="checkbox" id="mardi" name="jour" value="Mardi" checked>
+                                    <label for="mardi">Mardi</label>
+                                </div>
+                                <div class="horaires">
+                                    <input type="time" name="mardi_debut" value="08:00">
+                                    <span>à</span>
+                                    <input type="time" name="mardi_fin" value="17:00">
+                                </div>
+                            </div>
+
+                            <div class="jour-disponibilite" id="mercrediContainer">
+                                <div class="jour-header">
+                                    <input type="checkbox" id="mercredi" name="jour" value="Mercredi" checked>
+                                    <label for="mercredi">Mercredi</label>
+                                </div>
+                                <div class="horaires">
+                                    <input type="time" name="mercredi_debut" value="08:00">
+                                    <span>à</span>
+                                    <input type="time" name="mercredi_fin" value="17:00">
+                                </div>
+                            </div>
+
+                            <div class="jour-disponibilite" id="jeudiContainer">
+                                <div class="jour-header">
+                                    <input type="checkbox" id="jeudi" name="jour" value="Jeudi" checked>
+                                    <label for="jeudi">Jeudi</label>
+                                </div>
+                                <div class="horaires">
+                                    <input type="time" name="jeudi_debut" value="08:00">
+                                    <span>à</span>
+                                    <input type="time" name="jeudi_fin" value="17:00">
+                                </div>
+                            </div>
+
+                            <div class="jour-disponibilite" id="vendrediContainer">
+                                <div class="jour-header">
+                                    <input type="checkbox" id="vendredi" name="jour" value="Vendredi" checked>
+                                    <label for="vendredi">Vendredi</label>
+                                </div>
+                                <div class="horaires">
+                                    <input type="time" name="vendredi_debut" value="08:00">
+                                    <span>à</span>
+                                    <input type="time" name="vendredi_fin" value="17:00">
+                                </div>
+                            </div>
+
+                            <div class="jour-disponibilite" id="samediContainer">
+                                <div class="jour-header">
+                                    <input type="checkbox" id="samedi" name="jour" value="Samedi">
+                                    <label for="samedi">Samedi</label>
+                                </div>
+                                <div class="horaires">
+                                    <input type="time" name="samedi_debut" value="08:00" disabled>
+                                    <span>à</span>
+                                    <input type="time" name="samedi_fin" value="12:00" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <span class="btn-text">
+                            <i class="fas fa-user-plus"></i>
+                            Créer un compte
+                        </span>
+                        <div class="btn-spinner"></div>
+                        <div class="btn-success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="auth.js"></script>
+</body>
+</html>

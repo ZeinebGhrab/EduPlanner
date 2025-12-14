@@ -1,0 +1,79 @@
+package com.springboot.springboot.entity.admin;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "admin")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Admin {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    
+    @Column(nullable = false, length = 255)
+    private String password;
+    
+    @Column(nullable = false, unique = true, length = 150)
+    private String email;
+    
+    @Column(nullable = false, length = 100)
+    private String nom;
+    
+    @Column(nullable = false, length = 100)
+    private String prenom;
+    
+    @Column(length = 50)
+    private String role = "ADMIN";
+    
+    @Column(name = "date_creation")
+    private LocalDateTime dateCreation = LocalDateTime.now();
+    
+    @Column(nullable = false)
+    private Boolean actif = true;
+
+	public void setDateCreation(LocalDateTime now) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public CharSequence getPassword() {
+		// TODO Auto-generated method stub
+		return password;
+	}
+
+	public String getEmail() {
+		// TODO Auto-generated method stub
+		return email;
+	}
+
+	public void setPassword(String encode) {
+		this.password = encode;
+		
+	}
+
+	public void setActif(boolean b) {
+		actif  = b;
+		
+	}
+
+	public Object getNom() {
+		// TODO Auto-generated method stub
+		return this.nom;
+	}
+
+	public void setNom(String nom2) {
+		this.nom = nom2;
+		
+	}
+
+	public String getNom() {
+		// TODO Auto-generated method stub
+		return nom;
+	}
+}

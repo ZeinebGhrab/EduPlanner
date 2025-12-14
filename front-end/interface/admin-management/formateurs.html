@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Formateurs - CentreFormation Pro</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Styles CSS -->
+    <link rel="stylesheet" href="../../style/formateurs.css">
+    <!-- Script JavaScript -->
+    <script src="../../js/formateurs.js"></script>
+<script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=bwnX4dPkIJqexXy4l9hAu5b4grk-nWeDW5vc8mcPAGy9L1bPn29Fui0oyFPDPnuU72Nq91UV5UFRWB1OOMny9qBo89WxefvMaAMi5PmQmIatctn-Q-kdnpub4SFz1UhRP3Pc4rOOvXGql0snBUeQN4GrF3yIGJMc5yU6c0EB9ClusQtCr1Z9n1MzVZ0HFsR3X0brCZNDC8au2cFdoDsMfKT9IgfXCulQLxa9pEmaguqDxqWgFHQDtwBqRq0qoL73j9x4G8SltM3RCKyyMlmIVOVvAg1VHSpaupVjoDv7-1zOfk5PZecO80ue9ACLIhH_Ua0f6Mjrv7R5J7uK3Kg9b3mQTQcDB2Phl2813RwywCNGWkyP5I_7xmTztro7hLBcp-GoVKxZs9wdpMkBA7BA3k804tULTsLf-zQPPCVwYlZRxfoQ7zrzjldXR-PuFb4ztLdgo3N6BZwRPheFUxcx9LZK0PzhMt6lG5QxcB5QxSQurEiMGdREj__hRN0J5IPlmycoxlJBpEAivq9DSFerxNdfoCEJphZpg-8NSfDJOREp-D-aMLaUMibPGj8BCLoSOcFlQ3_miXecDjwPfD2wKr8idi2HhRYvnEbwY1H4wi61hHgxDn5tqImBJI6I11X-cXIAFQJLO4FhB9Wpdr7oEvEuj9loDEAvTIZGG3MOhCVYr7EYWiPxQhSbplzhNmgGJF9uEyqifD6qwWSV_AYVjnP-j2xOLR9_9EQ3MWhgLlLxc_UBgwbLnp9bEfVlJURXwfNRJOwxjqoIJMP9RENBX985n_pLmElX3aV9wv7QPKZOGYxwKMmwaRZGbZm1frt-xTCws5o6pv5AdVtpNcf2Zb9C9R2tz5p2ecqATBCcyK1kALMEZZdXAiNW10we0jrvljOOhc_crnKrbYlXD6f9QuB5GZnvHDhBUwAQFWsbgJUuxPoqRnQnzy4j7FnfaX0DQfxKyE_tk2Shy9662g8of9K-1r3XT9jr14nBq6D8dJhRhknFSKCBKpxBbgMA3yuge4aNnEKxclbb8cinjHFm2XuZpwmSqEoV5chH4oNnNsMyCVTYK41dbseDrttBljbIwuHwBp05_6Xu1Sibhz8aLj6geCA5lra_xYXhhNHqi7iq03Fk-sFXLheRyNvDyNcJcqSEi-sZnAg2Q7OJ2j_q7sa4LD6eXLDoO9QnxbKKo761vafG6QD-_M-vWNKUSzFWF-wOOm3GkL8BybJlUSYSgW5rj8PMEuUIgnEQGHNICq1xqOw3Z3bvKLiFhpDxMsfemMxYk9cbxjqEtbGm_jYwx4vW2pK31a6pQqVAciTDLKgKVpTVS5NviEfXFqytt6q4KqNznMI0vFwa91GtWVsoHbpK-iJPbZf7bME1xq7fpGSXPk-b-wu9TnEute3et7W0rlClXgW2VYiazvq7ZHlNmJAHINjC9LTSrzbXLK5FucBaxrEe5wZLv4X6CFPEmC4v65ca_U38uYDj1qGUs4mOys1M9-RIIfT3A-MoYgLH_N2eN21Zmi-nRdCKJe2vDZ8DzGL1h5oWpr7qcdcvan5Sy0rbCE__FAl-LQVTdbhIW3sR2TZRVf1HhkifsAXBR7QXW0CudgS-_lNNvYl0OS4SeskxYjpEhcsvNkNP2of34AF7X-h-z0N6av3gjYOelY7WW7nAtRY2RSLxd-jK_1ykbXsIahz3WUzwUQwaT13j7U9XkWrJxSsyFuH12RkU_TcKGG6KSSQFMzGk9IHox0uT4w" nonce="07ff54b1129d7fd717e0a2935d7eac47" charset="UTF-8"></script><link rel="stylesheet" crossorigin="anonymous" href="https://gc.kis.v2.scr.kaspersky-labs.com/E3E8934C-235A-4B0E-825A-35A08381A191/abn/main.css?attr=aHR0cHM6Ly9tYWlsLWF0dGFjaG1lbnQuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2F0dGFjaG1lbnQvdS8xLz91aT0yJmlrPWQwMDQ4YTRhM2ImYXR0aWQ9MC4xJnBlcm1tc2dpZD1tc2ctZjoxODQ4ODY3NjU4MjMwMDcyMzE1JnRoPTE5YTg3ZjU2ZTU4MzAzZmImdmlldz1hdHQmZGlzcD1zYWZlJnJlYWxhdHRpZD1mX21pMGU3Y3oyMCZ6dyZzYWRkYmF0PUFOR2pkSl9QbjZ0YWZoeFFrMzRKblI2N2NiZVozREstVkw1dGd2LWZUYjdJc2syOFpZbGhPc3l6ZkVzazZCam0zWk41T0Y3LWZieGFGNkwzQ1BJSHN3RUh5cE1ablhQS0RSVjgwNE9XeTBrM0FYeFRVdkRuRWl6T0Y3dFZ4Mk9ZY2hsRWxuNXhsajZBRXd3NnhNWVdTMl9Pa1J1QVBMRTlfbkFhZHFHUFUzVnBoMHRfbGtzSlR6OEp4bnR2OVg0Ty1pU0dUS2Y4WVlDX2pFNnlacHZOMld6OG5Pd2x0M1F6TkM1SkZxTXFjRHNqaFl1SjduT2F4VkxqWTFGY2dHSGE0U19XTHJheUZIejAtRzJOZlEzY25kQXIySEI0YTRxSEh5VjU3NWVRd3dfeVdjUFN6bzdNLTY5bExUZGMxbXF1VGF2c1N3N1Y4SW5XREJWV0RteHlPSE9FNUdZMWk1cUZiTWtLV19NUUcza1Z5Y2xYSW1LMjE4RkhDMWMtRDAyUjZNNGtURUJFLVNaZFRveXIyNVBHRHp1Q00wSzFYaFU4LW40RnB4QlBqLVNrak1tUUFYSEVOYTh6cjB5WFltR016c2ZnZ0p3V3dNQ3BTNUtjSmVqNTA5ZzZUaldVM0xWaDU3ZU5UTzJnTk1Kbmp1alFKSU1JcG14Y0FmTk1zTlFwdUhGcWV6LUQ0RW1JeHFwN1ZUUlZveWEyRk43OWdhcEJfTnN4SldXLVlJMEo0b0FrNXM4eFpoaTlLWW9nVkJCdGpUNWczSjg0ODRpVEREbWdVZDZFWFVIN1lkVzUzMGYxYXRiR19Dc3JTdXZ1S2Q1dUNaQUNldFp6R1lWeFZaOFB1NFdDUFNaQlh5WFZqb3huTXNGalhOTUFYOVBUNGhBVDlzbjU4MnJsVE9aUjkyaDRlMEREeGE4QS1NY1FCRlg4MkNqbmVxbWNhUUd4OVVOY3lRdnMyVGdwLTlKNU1ISTZPVDl0bE9xQVZTWTN6TDh0UVJDazFPZ3lkYk9aUENYZzRvbGJFejVya2p4YldsM1JFNFFBbS1zZ3Q0c1otMnJmaElsR1doaGNlMUNvT2xfZjFWLVlXNUJsdnNTNTMzTGxMN0NTR25sX0g4bkNyU1VYVFVxRFhJZWxqNERHdkRZNzZEOFdRc21MenJVWnFmbEdRUDh0Y3dZTzlJdVVvcnRvajRKX0JFMTI5QVdlbS0yellpcDRObjFfOG8yano4LTFDZ29XQkdiUmZob3RFdFN5bmUwUzZMUXBxb0VxSTlCdnZhdG93T011NFNubnB5dEg3aldpb0IwX05OLTNFR2o5eHRnd3NUZWxYZWRSelQtbklmWkNoWW5KaEQzNVh2SmhoUV96NTJqNVV2TGVOcktPSjJxLVlJZE5xa3l4RFVTQkdWemJoNm1lLUtGZGVrN2s4dmp2aXY5VGlUdktOM1E"/></head>
+<body>
+
+    <!-- BACKGROUND SHAPES -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="my">Centre</span><span class="scol">Formation Pro</span>
+        </div>
+        
+        <nav>
+            <a href="../../interface/accueil/index.html">Accueil</a>
+            <a href="../../interface/admin-management/formateurs.html" class="active">Formateurs</a>
+            <a href="../../interface/admin-management/etudiants.html">Étudiants</a>
+            <a href="../../interface/admin-management/salles.html">Salles</a>
+            <a href="../../interface/admin-management/equipement.html">Equipements</a>
+            <a href="../../interface/admin-management/planning.html">Planning</a>
+            <a href="../../interface/admin-management/statistique.html">Statistiques</a>
+            <a href="../../interface/admin-management/contraintes.html" >Contraintes</a>
+            
+        </nav>
+
+        <div class="nav-icons">
+            <i class="fas fa-bell"></i>
+            <i class="fas fa-user"></i>
+            <button class="menu-btn">
+                <i class="fas fa-th"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="container">
+            
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <div class="page-title-section">
+                    <h1 class="page-title">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        Gestion des Formateurs
+                    </h1>
+                    <p class="page-subtitle">Gérez vos formateurs, leurs spécialités et disponibilités</p>
+                </div>
+                <button class="btn btn-primary" id="addFormateur">
+                    <i class="fas fa-plus"></i>
+                    <span>Ajouter un formateur</span>
+                </button>
+            </div>
+
+            <!-- STATISTICS CARDS -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <h3 class="stat-number">0</h3>
+                        </div>
+                    </div>
+                    <p class="stat-label">Total Formateurs</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <h3 class="stat-number">0</h3>
+                        </div>
+                    </div>
+                    <p class="stat-label">Formateurs Actifs</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon green">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div>
+                            <h3 class="stat-number">0</h3>
+                        </div>
+                    </div>
+                    <p class="stat-label">Spécialités Totales</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <h3 class="stat-number">0h</h3>
+                        </div>
+                    </div>
+                    <p class="stat-label">Heures Planifiées</p>
+                </div>
+            </div>
+
+            <!-- FILTERS & SEARCH -->
+            <div class="filters-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Rechercher un formateur...">
+                </div>
+
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">
+                        <i class="fas fa-list"></i>
+                        Tous
+                    </button>
+                    <button class="filter-btn" data-filter="disponible">
+                        <i class="fas fa-check-circle"></i>
+                        Disponibles
+                    </button>
+                    <button class="filter-btn" data-filter="occupe">
+                        <i class="fas fa-calendar-times"></i>
+                        Occupés
+                    </button>
+                </div>
+
+                <select class="sort-select" id="sortSelect">
+                    <option value="nom">Trier par nom</option>
+                    <option value="specialite">Trier par spécialité</option>
+                    <option value="disponibilite">Trier par disponibilité</option>
+                </select>
+            </div>
+
+            <!-- FORMATEURS TABLE -->
+            <div class="table-container">
+                <table class="formateurs-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Spécialités</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Disponibilité</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="formateursTableBody">
+                        <!-- Les formateurs seront ajoutés ici dynamiquement -->
+                        <tr class="empty-state">
+                            <td colspan="7">
+                                <div class="empty-content">
+                                    <i class="fas fa-user-plus"></i>
+                                    <h3>Aucun formateur enregistré</h3>
+                                    <p>Commencez par ajouter votre premier formateur</p>
+                                    <button class="btn btn-primary" onclick="document.getElementById('addFormateur').click()">
+                                        <i class="fas fa-plus"></i>
+                                        Ajouter un formateur
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINATION -->
+            <div class="pagination">
+                <button class="page-btn" id="prevPage">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="page-numbers" id="pageNumbers">
+                    <button class="page-number active">1</button>
+                </div>
+                <button class="page-btn" id="nextPage">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODAL AJOUTER/MODIFIER FORMATEUR -->
+    <div class="modal" id="formateurModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-user-plus"></i>
+                    <span id="modalTitle">Ajouter un formateur</span>
+                </h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="formateurForm" class="modal-body">
+                <!-- INFORMATIONS PERSONNELLES -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-user"></i>
+                        Informations personnelles
+                    </h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nom">Nom complet *</label>
+                            <input type="text" id="nom" name="nom" required placeholder="Donnez le nom du formateur">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required placeholder="exemple@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="telephone">Téléphone *</label>
+                            <input type="tel" id="telephone" name="telephone" required placeholder="+216 XX XXX XXX">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SPÉCIALITÉS -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-book"></i>
+                        Spécialités
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label for="specialites">Sélectionnez les spécialités *</label>
+                        <div class="specialites-grid" id="specialitesGrid">
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="specialite" value="Java">
+                                <span class="checkbox-content">
+                                    <i class="fab fa-java"></i>
+                                    <span>Java</span>
+                                </span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="specialite" value="Python">
+                                <span class="checkbox-content">
+                                    <i class="fab fa-python"></i>
+                                    <span>Python</span>
+                                </span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="specialite" value="JavaScript">
+                                <span class="checkbox-content">
+                                    <i class="fab fa-js"></i>
+                                    <span>JavaScript</span>
+                                </span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="specialite" value="React">
+                                <span class="checkbox-content">
+                                    <i class="fab fa-react"></i>
+                                    <span>React</span>
+                                </span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="specialite" value="Angular">
+                                <span class="checkbox-content">
+                                    <i class="fab fa-angular"></i>
+                                    <span>Angular</span>
+                                </span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="specialite" value="SQL">
+                                <span class="checkbox-content">
+                                    <i class="fas fa-database"></i>
+                                    <span>SQL</span>
+                                </span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="specialite" value="DevOps">
+                                <span class="checkbox-content">
+                                    <i class="fas fa-server"></i>
+                                    <span>DevOps</span>
+                                </span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="specialite" value="Cloud">
+                                <span class="checkbox-content">
+                                    <i class="fas fa-cloud"></i>
+                                    <span>Cloud</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DISPONIBILITÉS -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        Disponibilités hebdomadaires
+                    </h3>
+                    
+                    <div class="disponibilites-grid">
+                        <div class="jour-disponibilite">
+                            <div class="jour-header">
+                                <input type="checkbox" id="lundi" name="jour" value="Lundi" checked>
+                                <label for="lundi">Lundi</label>
+                            </div>
+                            <div class="horaires">
+                                <input type="time" name="lundi_debut" value="08:00">
+                                <span>à</span>
+                                <input type="time" name="lundi_fin" value="17:00">
+                            </div>
+                        </div>
+
+                        <div class="jour-disponibilite">
+                            <div class="jour-header">
+                                <input type="checkbox" id="mardi" name="jour" value="Mardi" checked>
+                                <label for="mardi">Mardi</label>
+                            </div>
+                            <div class="horaires">
+                                <input type="time" name="mardi_debut" value="08:00">
+                                <span>à</span>
+                                <input type="time" name="mardi_fin" value="17:00">
+                            </div>
+                        </div>
+
+                        <div class="jour-disponibilite">
+                            <div class="jour-header">
+                                <input type="checkbox" id="mercredi" name="jour" value="Mercredi" checked>
+                                <label for="mercredi">Mercredi</label>
+                            </div>
+                            <div class="horaires">
+                                <input type="time" name="mercredi_debut" value="08:00">
+                                <span>à</span>
+                                <input type="time" name="mercredi_fin" value="17:00">
+                            </div>
+                        </div>
+
+                        <div class="jour-disponibilite">
+                            <div class="jour-header">
+                                <input type="checkbox" id="jeudi" name="jour" value="Jeudi" checked>
+                                <label for="jeudi">Jeudi</label>
+                            </div>
+                            <div class="horaires">
+                                <input type="time" name="jeudi_debut" value="08:00">
+                                <span>à</span>
+                                <input type="time" name="jeudi_fin" value="17:00">
+                            </div>
+                        </div>
+
+                        <div class="jour-disponibilite">
+                            <div class="jour-header">
+                                <input type="checkbox" id="vendredi" name="jour" value="Vendredi" checked>
+                                <label for="vendredi">Vendredi</label>
+                            </div>
+                            <div class="horaires">
+                                <input type="time" name="vendredi_debut" value="08:00">
+                                <span>à</span>
+                                <input type="time" name="vendredi_fin" value="17:00">
+                            </div>
+                        </div>
+
+                        <div class="jour-disponibilite">
+                            <div class="jour-header">
+                                <input type="checkbox" id="samedi" name="jour" value="Samedi">
+                                <label for="samedi">Samedi</label>
+                            </div>
+                            <div class="horaires">
+                                <input type="time" name="samedi_debut" value="08:00" disabled>
+                                <span>à</span>
+                                <input type="time" name="samedi_fin" value="12:00" disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- MODAL FOOTER -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">
+                        <i class="fas fa-times"></i>
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        <span id="submitBtnText">Enregistrer</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMATION SUPPRESSION -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Confirmer la suppression
+                </h2>
+                <button class="modal-close" id="closeDeleteModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer ce formateur ? Cette action est irréversible.</p>
+                <p class="formateur-name" id="deleteFormateurName"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelDelete">
+                    Annuler
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">
+                    <i class="fas fa-trash"></i>
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

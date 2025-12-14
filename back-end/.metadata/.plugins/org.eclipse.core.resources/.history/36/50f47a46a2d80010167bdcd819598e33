@@ -1,0 +1,48 @@
+package com.springboot.springboot.entity.admin;
+
+import java.time.LocalDateTime;
+
+public class StatistiquesDTO {
+
+    private Integer id;
+    private String typeStat;
+    private Integer valeurNumerique;
+    private Double valeurDecimal;
+    private String valeurTexte;
+    private LocalDateTime dateCalcul;
+    private String description;
+
+    // Constructeur complet
+    public Statistiques(Integer id, String typeStat, Integer valeurNumerique, Double valeurDecimal,
+                        String valeurTexte, LocalDateTime dateCalcul, String description) {
+        this.id = id;
+        this.typeStat = typeStat;
+        this.valeurNumerique = valeurNumerique;
+        this.valeurDecimal = valeurDecimal;
+        this.valeurTexte = valeurTexte;
+        this.dateCalcul = dateCalcul;
+        this.description = description;
+    }
+
+    // Getters et Setters
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
+
+    public String getTypeStat() { return typeStat; }
+    public void setTypeStat(String typeStat) { this.typeStat = typeStat; }
+
+    public Integer getValeurNumerique() { return valeurNumerique; }
+    public void setValeurNumerique(Integer valeurNumerique) { this.valeurNumerique = valeurNumerique; }
+
+    public Double getValeurDecimal() { return valeurDecimal; }
+    public void setValeurDecimal(Double valeurDecimal) { this.valeurDecimal = valeurDecimal; }
+
+    public String getValeurTexte() { return valeurTexte; }
+    public void setValeurTexte(String valeurTexte) { this.valeurTexte = valeurTexte; }
+
+    public LocalDateTime getDateCalcul() { return dateCalcul; }
+    public void setDateCalcul(LocalDateTime dateCalcul) { this.dateCalcul = dateCalcul; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+}
