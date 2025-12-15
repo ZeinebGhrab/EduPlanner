@@ -1,6 +1,7 @@
 import { API_BASE_URL } from './config.js';
 import { showToast, showLoadingState, hideLoadingState, showSuccessState } from './toast.js';
 import { switchTab } from './ui.js';
+
 // Redirection selon le rôle
 export function redirectToDashboard(role) {
     switch(role.toUpperCase()) { // pour éviter les problèmes de casse
@@ -18,9 +19,10 @@ export function redirectToDashboard(role) {
     }
 }
 
-// Gestion du login
+// Gestion du login "passe-partout"
 export async function handleLogin(e) {
     e.preventDefault();
+
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
 
@@ -28,31 +30,39 @@ export async function handleLogin(e) {
         return showToast('error', 'Erreur', 'Tous les champs sont requis');
     }
 
+    const roles = ['formateur', 'admin', 'etudiant'];
+
     try {
-        const response = await fetch(`${API_BASE_URL}/formateur/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
+        let loggedIn = false;
 
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem('authToken', data.token);
-            localStorage.setItem('userRole', data.role); // stocker le rôle
-            showToast('success', 'Connexion réussie', 'Bienvenue !');
+        for (const role of roles) {
+            const response = await fetch(`${API_BASE_URL}/${role}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
 
-            // Redirection selon le rôle
-            redirectToDashboard(data.role);
-
-        } else {
-            const errorText = await response.text();
-            showToast('error', 'Erreur', errorText || 'Identifiants invalides');
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('userRole', role);
+                showToast('success', 'Connexion réussie', `Bienvenue ${role} !`);
+                redirectToDashboard(role);
+                loggedIn = true;
+                break; // arrêter la boucle si login réussi
+            }
         }
+
+        if (!loggedIn) {
+            showToast('error', 'Erreur', 'Identifiants invalides');
+        }
+
     } catch (err) {
         console.error(err);
         showToast('error', 'Erreur', 'Problème de connexion au serveur');
     }
 }
+
 
 export async function handleRegister(e) {
     e.preventDefault();

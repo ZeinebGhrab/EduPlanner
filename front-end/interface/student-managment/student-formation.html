@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFormation - Mes Formations</title>
+    <link rel="stylesheet" href="../../style/student-managment/formations-etudiant.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="../../js/student/api.js"></script>
+    <script src="../../js/student/formations.js"></script>
+</head>
+
+<body>
+    <!-- Background Shapes -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="deco-diamond"></div>
+        <div class="deco-circle"></div>
+        <div class="deco-plus"></div>
+        <div class="grid-pattern"></div>
+        <div class="line-deco line-deco-1"></div>
+        <div class="line-deco line-deco-2"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="my">Edu</span><span class="scol">Planner</span>
+        </div>
+
+        <nav>
+            <a href="../accueil/index.html">Accueil</a>
+            <a href="../student-managment/student-dashbord.html"><i class="fas fa-home"></i> Tableau de Bord</a>
+            <a href="../student-managment/student-planning.html"><i class="fas fa-calendar-alt"></i> Planning</a>
+            <a href="../student-managment/student-formation.html" class="active"><i class="fas fa-book"></i> Formations</a>
+        </nav>
+
+        <div class="nav-icons">
+            <div class="user-menu">
+                <img src="https://ui-avatars.com/api/?name=John+Doe&background=00B8E6&color=fff" alt="John Doe"
+                    class="user-avatar">
+                <span class="user-name">John Doe</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="formations-main">
+        <div class="container">
+            <!-- Page Header -->
+            <section class="page-header">
+                <div class="header-content">
+                    <h1><i class="fas fa-book-open"></i> Mes Formations</h1>
+                    <p>Découvrez et gérez toutes vos formations en cours et à venir</p>
+                </div>
+            </section>
+
+            <!-- Filters -->
+            <section class="filters-section">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">
+                        <i class="fas fa-layer-group"></i>
+                        Toutes les formations
+                    </button>
+                    <button class="filter-tab" data-filter="active">
+                        <i class="fas fa-play-circle"></i>
+                        En cours
+                        <span class="tab-badge">3</span>
+                    </button>
+                    <button class="filter-tab" data-filter="completed">
+                        <i class="fas fa-check-circle"></i>
+                        Terminées
+                        <span class="tab-badge">2</span>
+                    </button>
+                    <button class="filter-tab" data-filter="upcoming">
+                        <i class="fas fa-clock"></i>
+                        À venir
+                        <span class="tab-badge">1</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Active Formations -->
+            <section class="formations-section">
+
+                <div class="formations-grid">
+                    <!-- Formation 1 -->
+                    <div class="formation-card active">
+                        <div class="formation-header">
+
+                            <div class="formation-status">
+                                <span class="status-badge active">En cours</span>
+                            </div>
+                        </div>
+
+                        <div class="formation-content">
+                            <h3>Développement Fullstack JavaScript</h3>
+                            <p class="formation-description">
+                                Maîtrisez le développement web moderne avec React, Node.js et les bases de données.
+                                Créez des applications complètes from scratch.
+                            </p>
+
+                            <div class="formation-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>Prof. Martin Dupont</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>120 heures</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Jan 2024 - Juin 2024</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formation 2 -->
+                    <div class="formation-card active">
+                        <div class="formation-header">
+                            <div class="formation-status">
+                                <span class="status-badge active">En cours</span>
+                            </div>
+                        </div>
+
+                        <div class="formation-content">
+                            <h3>UX Design Avancé & Recherche Utilisateur</h3>
+                            <p class="formation-description">
+                                Apprenez les méthodologies de recherche utilisateur et concevez des interfaces
+                                intuitives et accessibles.
+                            </p>
+
+                            <div class="formation-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>Prof. Sophie Martin</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>80 heures</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Fév 2024 - Mai 2024</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formation 3 -->
+                    <div class="formation-card active">
+                        <div class="formation-header">
+                            <div class="formation-status">
+                                <span class="status-badge active">En cours</span>
+                            </div>
+                        </div>
+
+                        <div class="formation-content">
+                            <h3>Machine Learning avec Python</h3>
+                            <p class="formation-description">
+                                Initiation aux algorithmes de machine learning et mise en pratique avec Python, Pandas
+                                et Scikit-learn.
+                            </p>
+
+                            <div class="formation-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>Prof. Thomas Moreau</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>100 heures</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Mars 2024 - Juil 2024</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Completed Formations -->
+            <section class="formations-section">
+                <div class="formations-grid">
+
+                </div>
+        </div>
+        </section>
+        </div>
+    </main>
+</body>
+</html>

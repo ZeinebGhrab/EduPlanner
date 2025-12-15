@@ -1,0 +1,81 @@
+package com.springboot.springboot.service.planning;
+
+import com.springboot.springboot.model.Session;
+import com.springboot.springboot.repository.SessionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Service
+public class SessionStatusUpdater {
+
+    @Autowired
+    private SessionRepository sessionRepository;
+
+    /**
+     * Met à jour automatiquement les statuts des sessions selon leurs dates
+     * - Sessions passées (dateFin < aujourd'hui) -> "Terminé"
+     * - Sessions en cours (dateDebut <= aujourd'hui <= dateFin) -> "En cours"
+     * - Sessions futures (dateDebut > aujourd'hui) -> "À venir"
+     */
+    @Transactional
+    public void updateSessionStatuses() {
+        LocalDate today = LocalDate.now();
+        List<Session> allSessions = sessionRepository.findAll();
+
+        for (Session session : allSessions) {
+            String newStatus = determineStatus(session, today);
+            
+            // Met à jour seulement si le statut a changé
+            if (!newStatus.equals(session.getStatut())) {
+                session.setStatut(newStatus);
+                sessionRepository.save(session);
+            }
+        }
+    }
+
+    /**
+     * Détermine le statut d'une session selon sa date
+     */
+    private String determineStatus(Session session, LocalDate today) {
+        LocalDate dateDebut = session.getDateDebut();
+        LocalDate dateFin = session.getDateFin();
+
+        if (dateFin.isBefore(today)) {
+            return "Terminé";
+        } else if (dateDebut.isAfter(today)) {
+            return "À venir";
+        } else {
+            return "En cours";
+        }
+    }
+
+    /**
+     * Mise à jour automatique tous les jours à minuit
+     * Décommentez cette méthode pour activer la mise à jour automatique
+     */
+    // @Scheduled(cron = "0 0 0 * * *") // Tous les jours à 00:00
+    // public void scheduledStatusUpdate() {
+    //     updateSessionStatuses();
+    //     System.out.println("Statuts des sessions mis à jour automatiquement");
+    // }
+
+    /**
+     * Met à jour le statut d'une session spécifique
+     */
+    @Transactional
+    public void updateSingleSessionStatus(Long sessionId) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session non trouvée"));
+        
+        LocalDate today = LocalDate.now();
+        String newStatus = determineStatus(session, today);
+        
+        session.setStatut(newStatus);
+        sessionRepository.save(session);
+    }
+}

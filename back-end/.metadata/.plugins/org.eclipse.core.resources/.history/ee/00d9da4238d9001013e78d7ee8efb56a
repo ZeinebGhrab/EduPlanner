@@ -1,0 +1,5 @@
+package com.springboot.springboot.dto.salle;
+
+public class UpdateMaterielDTO {
+
+}

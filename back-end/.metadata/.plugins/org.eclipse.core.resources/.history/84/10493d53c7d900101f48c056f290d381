@@ -1,0 +1,5 @@
+package com.springboot.springboot.dto.formateur;
+
+public class FormateurStatistiquesDTO {
+
+}

@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyFormation - Tableau de Bord</title>
-    <link rel="stylesheet" href="../../style/dashbord-etudiant.css">
+    <link rel="stylesheet" href="../../style/student-managment/dashboard-etudiant.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="../../js/dashbord.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="../../js/student/api-config.js"></script>
+    <script src="../../js/student/dashboard.js"></script>
 </head>
+
 <body>
     <!-- Background Shapes -->
     <div class="bg-shapes">
@@ -29,19 +33,20 @@
     <header>
         <div class="logo">
             <i class="fas fa-graduation-cap"></i>
-            <span class="my">My</span><span class="scol">Formation</span>
+            <span class="my">Edu</span><span class="scol">Planner</span>
         </div>
-        
+
         <nav>
-            <a href="../aceuil/index.html">Accueil</a>
-            <a href="../../interface/etudiant/dashbord.html" class="active"><i class="fas fa-home"></i> Tableau de Bord</a>
-            <a href="../../interface/etudiant/planning.html"><i class="fas fa-calendar-alt"></i> Planning</a>
-            <a href="../../interface/etudiant/formations.html"><i class="fas fa-book"></i> Formations</a>
+            <a href="../accueil/index.html">Accueil</a>
+            <a href="../student-managment/student-dashbord.html" class="active"><i class="fas fa-home"></i> Tableau de Bord</a>
+            <a href="../student-managment/student-planning.html"><i class="fas fa-calendar-alt"></i> Planning</a>
+            <a href="../student-managment/student-formation.html"><i class="fas fa-book"></i> Formations</a>
         </nav>
 
         <div class="nav-icons">
             <div class="user-menu">
-                <img src="https://ui-avatars.com/api/?name=John+Doe&background=00B8E6&color=fff" alt="John Doe" class="user-avatar">
+                <img src="https://ui-avatars.com/api/?name=John+Doe&background=00B8E6&color=fff" alt="John Doe"
+                    class="user-avatar">
                 <span class="user-name">John Doe</span>
                 <i class="fas fa-chevron-down"></i>
             </div>
@@ -105,9 +110,10 @@
             <section class="schedule-section">
                 <div class="section-header">
                     <h2><i class="fas fa-calendar-alt"></i> Planning d'Aujourd'hui</h2>
-                    <a href="../etudiant/planning.html" class="view-all">Voir tout le planning <i class="fas fa-arrow-right"></i></a>
+                    <a href="../student-managment/student-planning.html" class="view-all">Voir tout le planning <i
+                            class="fas fa-arrow-right"></i></a>
                 </div>
-                
+
                 <div class="schedule-cards">
                     <div class="schedule-card">
                         <div class="session-time">
@@ -160,114 +166,37 @@
                     </div>
                 </div>
             </section>
+            <!-- Mes Groupes Section -->
+            <section class="my-groups-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> Mes Groupes</h2>
+                </div>
 
-            <!-- Charts Section -->
-            <section class="charts-section">
-                <div class="charts-grid">
-
-
-                    <!-- Performance Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-chart-pie"></i> Répartition par Catégorie</h3>
-                        </div>
-                        <div class="chart-container">
-                            <div class="chart-placeholder pie-chart">
-                                <div class="pie-slices">
-                                    <div class="slice web" data-percent="40">
-                                        <div class="slice-inner"></div>
-                                    </div>
-                                    <div class="slice design" data-percent="25">
-                                        <div class="slice-inner"></div>
-                                    </div>
-                                    <div class="slice data" data-percent="20">
-                                        <div class="slice-inner"></div>
-                                    </div>
-                                    <div class="slice mobile" data-percent="15">
-                                        <div class="slice-inner"></div>
-                                    </div>
-                                </div>
-                                <div class="pie-center">
-                                    <span class="pie-total">100%</span>
-                                </div>
-                                <div class="pie-legend">
-                                    <div class="legend-item">
-                                        <span class="legend-color web"></span>
-                                        Développement Web
-                                    </div>
-                                    <div class="legend-item">
-                                        <span class="legend-color design"></span>
-                                        Design UX/UI
-                                    </div>
-                                    <div class="legend-item">
-                                        <span class="legend-color data"></span>
-                                        Data Science
-                                    </div>
-                                    <div class="legend-item">
-                                        <span class="legend-color mobile"></span>
-                                        Mobile
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Time Distribution -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-clock"></i> Temps par Formation</h3>
-                        </div>
-                        <div class="chart-container">
-                            <div class="chart-placeholder bar-chart">
-                                <div class="horizontal-bars">
-                                    <div class="bar-item">
-                                        <span class="bar-label">Fullstack JS</span>
-                                        <div class="bar-track">
-                                            <div class="bar-fill" style="width: 75%"></div>
-                                        </div>
-                                        <span class="bar-value">45h</span>
-                                    </div>
-                                    <div class="bar-item">
-                                        <span class="bar-label">UX Design</span>
-                                        <div class="bar-track">
-                                            <div class="bar-fill" style="width: 45%"></div>
-                                        </div>
-                                        <span class="bar-value">27h</span>
-                                    </div>
-                                    <div class="bar-item">
-                                        <span class="bar-label">Machine Learning</span>
-                                        <div class="bar-track">
-                                            <div class="bar-fill" style="width: 25%"></div>
-                                        </div>
-                                        <span class="bar-value">15h</span>
-                                    </div>
-                                    <div class="bar-item">
-                                        <span class="bar-label">React Native</span>
-                                        <div class="bar-track">
-                                            <div class="bar-fill" style="width: 90%"></div>
-                                        </div>
-                                        <span class="bar-value">54h</span>
-                                    </div>
-                                    <div class="bar-item">
-                                        <span class="bar-label">HTML/CSS/JS</span>
-                                        <div class="bar-track">
-                                            <div class="bar-fill" style="width: 100%"></div>
-                                        </div>
-                                        <span class="bar-value">60h</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="groups-container" id="groupsContainer">
+                    <!-- Rempli dynamiquement par JavaScript -->
+                    <div class="groups-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Chargement de vos groupes...</p>
                     </div>
                 </div>
             </section>
 
-
-                
-            </div>
+            <!-- Prochaines Sessions Section -->
+            <section class="next-sessions-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-week"></i> Sessions à venir</h2>
+                    <a href="../student-managment/student-planning.html" class="view-all">Voir le planning complet <i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="sessions-container" id="nextSessionsContainer">
+                    <!-- Rempli dynamiquement par JavaScript -->
+                    <div class="sessions-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Chargement des sessions...</p>
+                    </div>
+                </div>
+            </section>
         </div>
     </main>
-
-    
 </body>
 </html>

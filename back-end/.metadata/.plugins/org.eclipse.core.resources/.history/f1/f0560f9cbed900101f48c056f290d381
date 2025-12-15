@@ -1,0 +1,5 @@
+package com.springboot.springboot.entity.planning;
+
+public class CreneauStatusScheduler {
+
+}

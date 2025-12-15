@@ -1,11 +1,9 @@
-// ==========================================
 // CONFIGURATION DE L'API
-// ==========================================
+
 export const API_BASE_URL = 'http://localhost:8080/api';
 
-// ==========================================
 // VARIABLES GLOBALES
-// ==========================================
+
 export const tabButtons = document.querySelectorAll('.tab-btn');
 export const authForms = document.querySelectorAll('.auth-form');
 export const loginForm = document.getElementById('loginForm');

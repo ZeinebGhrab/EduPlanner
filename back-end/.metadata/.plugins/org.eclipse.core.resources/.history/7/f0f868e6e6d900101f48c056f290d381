@@ -1,0 +1,31 @@
+package com.springboot.springboot.dto.session;
+
+public class SessionFormationEtudiantDTO {
+	
+	public int id;
+
+    public String titre;
+
+    public String description;
+
+    public Integer duree;
+
+    public String statut;
+
+    public String nomFormateur;
+
+    public String nomGroupe;
+
+    public LocalDate dateDebut;
+
+    public LocalDate dateFin;
+
+    
+
+    // Constructeur par défaut (important pour Spring)
+
+    public SessionFormationEtudiantDTO() {
+
+    }
+
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFormation - Mes Sessions</title>
+    <link rel="stylesheet" href="../../style/formateur-managmenet/planning-formateur.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="module" src="../../js/formateur/planning-management/main.js"></script>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="deco-diamond"></div>
+        <div class="deco-circle"></div>
+        <div class="deco-plus"></div>
+        <div class="grid-pattern"></div>
+        <div class="line-deco line-deco-1"></div>
+        <div class="line-deco line-deco-2"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="my">Edu</span><span class="scol">Planner</span>
+        </div>
+        <nav>
+            <a href="../accueil/index.html"><i class="fas fa-home"></i> Accueil</a>
+            <a href="../formateur-management/formateur-dashbord.html"><i class="fas fa-chart-bar"></i> Tableau de Bord</a>
+            <a href="../../interface/formateur-management/formateur-planning.html" class="active"><i class="fas fa-calendar-alt"></i> Planning</a>
+            <a href="../../interface/formateur-management/formateur-sessions.html"><i class="fas fa-users"></i> Mes sessions</a>
+        </nav>
+        <div class="nav-icons">
+            <div class="user-menu">
+                <img src="https://ui-avatars.com/api/?name=Prof+Martin&background=00B8E6&color=fff" alt="Prof. Martin" class="user-avatar">
+                <span class="user-name">Prof. Martin</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="formateur-sessions">
+        <div class="container">
+            <!-- Page Header -->
+            <section class="page-header">
+                <div class="header-content">
+                    <h1><i class="fas fa-calendar-alt"></i> Mon planning</h1>
+                </div>
+            </section>
+
+            <!-- Gestion des Disponibilités -->
+            <section class="availability-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-alt"></i> Mes Disponibilités</h2>
+                </div>
+                <div class="availability-calendar">
+                    <div class="week-view"></div>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Modifier
+                    </button>
+                </div>
+            </section>
+
+            <!-- Calendar & List Views -->
+            <section class="calendar-view" id="calendarView">
+                <div class="calendar-header">
+                    <div class="calendar-nav">
+                        <button class="nav-btn" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                        <h2 id="calendarMonthYear">Mars 2024</h2>
+                        <button class="nav-btn" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-actions">
+                        <button class="btn btn-outline" id="todayBtn">
+                            Aujourd'hui
+                        </button>
+                        <div class="view-options">
+                            <button class="view-btn active" data-view="month">Mois</button>
+                            <button class="view-btn" data-view="week">Semaine</button>
+                            <button class="view-btn" data-view="day">Jour</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="calendar-grid monthly">
+                    <div class="week-days">
+                        <div class="week-day">Lun</div>
+                        <div class="week-day">Mar</div>
+                        <div class="week-day">Mer</div>
+                        <div class="week-day">Jeu</div>
+                        <div class="week-day">Ven</div>
+                        <div class="week-day">Sam</div>
+                        <div class="week-day">Dim</div>
+                    </div>
+                    <div class="calendar-days"></div>
+                </div>
+            </section>
+
+            <section class="list-view" id="listView">
+                <!-- liste des sessions -->
+            </section>
+        </div>
+    </main>
+</body>
+</html>

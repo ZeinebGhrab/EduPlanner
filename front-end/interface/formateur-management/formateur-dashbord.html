@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyFormation - Espace Formateur</title>
-    <link rel="stylesheet" href="../../style/dashbord-enseignant.css">
+    <link rel="stylesheet" href="../../style/formateur-managmenet/dashbord-formateur.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="../../js/dash-formateur.js"></script>
+    <script type="module" src="../../js/formateur/dashboard-formateur.js"></script>
 </head>
 <body>
     <!-- Background Shapes -->
@@ -29,22 +29,17 @@
     <header>
         <div class="logo">
             <i class="fas fa-graduation-cap"></i>
-            <span class="my">My</span><span class="scol">Formation</span>
+            <span class="my">Edu</span><span class="scol">Planner</span>
         </div>
         
         <nav>
-            <a href="../accueil/index.html"><i class="fas fa-home"></i> Acceuil</a>
+            <a href="../accueil/index.html"><i class="fas fa-home" class="active"></i> Acceuil</a>
             <a href="../formateur-management/formateur-dashbord.html" ><i class="fas fa-chart-bar"></i> Tableau de Bord</a>
-            <a href="../../interface/formateur-management/formateur-sessions.html"><i class="fas fa-calendar-alt"></i> Planning</a>
-            <a href="../../interface/formateur-management/formateur-cours.html" class="active"><i class="fas fa-users"></i> Mes sessions</a>
+            <a href="../../interface/formateur-management/formateur-planning.html"><i class="fas fa-calendar-alt"></i> Planning</a>
+            <a href="../../interface/formateur-management/formateur-sessions.html"><i class="fas fa-users"></i> Mes sessions</a>
         </nav>
 
         <div class="nav-icons">
-            <div class="notification-badge">
-                <i class="fas fa-bell"></i>
-                <span class="badge">3</span>
-            </div>
-            <i class="fas fa-envelope"></i>
             <div class="user-menu">
                 <img src="https://ui-avatars.com/api/?name=Prof+Martin&background=00B8E6&color=fff" alt="Prof. Martin" class="user-avatar">
                 <span class="user-name">Prof. Martin</span>
@@ -79,7 +74,15 @@
                             <div class="stat-number">12</div>
                         </div>
                     </div>
-
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Sessions terminées</h3>
+                            <div class="stat-number">92</div>
+                        </div>
+                    </div>
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-users"></i>
@@ -87,16 +90,6 @@
                         <div class="stat-content">
                             <h3>Étudiants actifs</h3>
                             <div class="stat-number">42</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Taux de présence</h3>
-                            <div class="stat-number">92%</div>
                         </div>
                     </div>
                 </div>
@@ -107,7 +100,7 @@
                 <section class="today-sessions">
                     <div class="section-header">
                         <h2><i class="fas fa-clock"></i> Sessions d'Aujourd'hui</h2>
-                        <a href="#" class="view-all">Voir tout le planning <i class="fas fa-arrow-right"></i></a>
+                        <a href="./formateur-planning.html" class="view-all">Voir tout le planning <i class="fas fa-arrow-right"></i></a>
                     </div>
                     
                     <div class="sessions-list">
@@ -127,16 +120,6 @@
                                         <i class="fas fa-users"></i>
                                         15 étudiants
                                     </span>
-                                </div>
-                                <div class="session-actions">
-                                    <button class="action-btn primary">
-                                        <i class="fas fa-play"></i>
-                                        Démarrer
-                                    </button>
-                                    <button class="action-btn secondary">
-                                        <i class="fas fa-list"></i>
-                                        Présence
-                                    </button>
                                 </div>
                             </div>
                             <div class="session-status">
@@ -161,16 +144,6 @@
                                         14 étudiants
                                     </span>
                                 </div>
-                                <div class="session-stats">
-                                    <div class="stat">
-                                        <span class="stat-value">93%</span>
-                                        <span class="stat-label">Présence</span>
-                                    </div>
-                                    <div class="stat">
-                                        <span class="stat-value">12/14</span>
-                                        <span class="stat-label">Évalués</span>
-                                    </div>
-                                </div>
                             </div>
                             <div class="session-status">
                                 <span class="status-badge completed">Terminée</span>
@@ -178,185 +151,20 @@
                         </div>
                     </div>
                 </section>
-
-                <!-- Alerts & Notifications -->
-                <section class="alerts-section">
-                    <div class="section-header">
-                        <h2><i class="fas fa-bell"></i> Alertes & Notifications</h2>
-                        <span class="alert-count">3 nouvelles</span>
-                    </div>
-                    
-                    <div class="alerts-list">
-                        <div class="alert-item urgent">
-                            <div class="alert-icon">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="alert-content">
-                                <h4>Conflit de salle détecté</h4>
-                                <p>Session "UX Design" en conflit avec "React Native" le vendredi 15 Mars</p>
-                                <span class="alert-time">Il y a 15 min</span>
-                            </div>
-                            <button class="alert-action">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </div>
-
-                        <div class="alert-item success">
-                            <div class="alert-icon">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="alert-content">
-                                <h4>Session confirmée</h4>
-                                <p>Votre session "API REST" du 20 Mars a été approuvée</p>
-                                <span class="alert-time">Il y a 2 jours</span>
-                            </div>
-                            <button class="alert-action">
-                                <i class="fas fa-check"></i>
-                            </button>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Upcoming Sessions & Recent Activity -->
-            <div class="bottom-grid">
                 <!-- Upcoming Sessions -->
                 <section class="upcoming-sessions">
                     <div class="section-header">
                         <h2><i class="fas fa-calendar-check"></i> Prochaines Sessions</h2>
-                        <a href="#" class="view-all">Voir tout <i class="fas fa-arrow-right"></i></a>
+                        <a href="./formateur-sessions.html" class="view-all">Voir tout <i class="fas fa-arrow-right"></i></a>
                     </div>
                     
                     <div class="upcoming-list">
                         <div class="upcoming-card">
-                            <div class="upcoming-date">
-                                <span class="day">Jeu</span>
-                                <span class="date">14</span>
-                                <span class="month">Mars</span>
-                            </div>
-                            <div class="upcoming-details">
-                                <h4>UX Design Avancé</h4>
-                                <p>09:00 - 12:00 • Salle C08</p>
-                                <span class="group">Groupe C • 12 étudiants</span>
-                            </div>
-                            <div class="upcoming-actions">
-                                <button class="action-btn outline">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn outline">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="upcoming-card">
-                            <div class="upcoming-date">
-                                <span class="day">Ven</span>
-                                <span class="date">15</span>
-                                <span class="month">Mars</span>
-                            </div>
-                            <div class="upcoming-details">
-                                <h4>Projet Pratique React</h4>
-                                <p>14:00 - 17:00 • Lab B05</p>
-                                <span class="group">Groupe A • 15 étudiants</span>
-                            </div>
-                            <div class="upcoming-actions">
-                                <button class="action-btn outline">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn outline">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="upcoming-card">
-                            <div class="upcoming-date">
-                                <span class="day">Lun</span>
-                                <span class="date">18</span>
-                                <span class="month">Mars</span>
-                            </div>
-                            <div class="upcoming-details">
-                                <h4>Revue de Code</h4>
-                                <p>10:00 - 12:00 • Salle A12</p>
-                                <span class="group">Groupe B • 14 étudiants</span>
-                            </div>
-                            <div class="upcoming-actions">
-                                <button class="action-btn outline">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn outline">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Recent Activity -->
-                <section class="recent-activity">
-                    <div class="section-header">
-                        <h2><i class="fas fa-history"></i> Activité Récente</h2>
-                        <a href="#" class="view-all">Voir tout <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                    
-                    <div class="activity-list">
-                        <div class="activity-item">
-                            <div class="activity-icon success">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p>Vous avez terminé la session "JavaScript Moderne"</p>
-                                <span class="activity-time">Aujourd'hui, 12:05</span>
-                            </div>
-                        </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon primary">
-                                <i class="fas fa-upload"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p>Nouveaux supports de cours uploadés pour React</p>
-                                <span class="activity-time">Aujourd'hui, 11:30</span>
-                            </div>
-                        </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon warning">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p>2 étudiants absents à la session du matin</p>
-                                <span class="activity-time">Aujourd'hui, 09:45</span>
-                            </div>
-                        </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon info">
-                                <i class="fas fa-comment"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p>Nouveau message de l'étudiant Marie Dupont</p>
-                                <span class="activity-time">Hier, 16:20</span>
-                            </div>
-                        </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon success">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p>Rapport de satisfaction mis à jour : 4.7/5</p>
-                                <span class="activity-time">Hier, 14:15</span>
-                            </div>
                         </div>
                     </div>
                 </section>
             </div>
-
         </div>
     </main>
-
-    
 </body>
 </html>

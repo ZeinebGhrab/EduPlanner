@@ -1,0 +1,84 @@
+package com.springboot.springboot.controller.personne;
+
+
+import com.springboot.springboot.dto.formateur.FormateurStatistiquesDTO;
+import com.springboot.springboot.entity.personne.Formateur;
+import com.springboot.springboot.service.personne.FormateurService;
+import com.springboot.springboot.service.personne.FormateurStatService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/formateurs")
+@CrossOrigin(origins = "*")
+public class FormateurController {
+
+    @Autowired
+    private FormateurService service;
+    private FormateurStatService formateurService;
+
+    @GetMapping
+    public ResponseEntity<List<Formateur>> getAll() {
+        return ResponseEntity.ok(service.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Formateur> getById(@PathVariable int id) {
+        return service.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
+    /**
+     * GET /api/formateurs/{id}/statistiques
+     * Récupère les statistiques d'un formateur
+     */
+    @GetMapping("/{id}/statistiques")
+    public ResponseEntity<FormateurStatistiquesDTO> getStatistiques(@PathVariable Long id) {
+        try {
+            FormateurStatistiquesDTO stats = formateurService.getStatistiques(id);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<Formateur> createFormateur(@RequestBody Formateur formateur) {
+        Formateur savedFormateur = service.save(formateur);
+        return ResponseEntity.ok(savedFormateur); // renvoie l'ID généré
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Formateur> update(@PathVariable int id, @RequestBody Formateur formateur) {
+        return service.findById(id)
+                .map(existing -> {
+                    // Mettre à jour uniquement les champs modifiables
+                    existing.setNom(formateur.getNom());
+                    existing.setPrenom(formateur.getPrenom());
+                    existing.setEmail(formateur.getEmail());
+                    existing.setTelephone(formateur.getTelephone());
+                    existing.setSpecialite(formateur.getSpecialite());
+                    existing.setMatricule(formateur.getMatricule());
+                    
+                    // Ne pas toucher aux relations (sessions, disponibilités)
+                    return ResponseEntity.ok(service.save(existing));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable int id) {
+        return service.findById(id)
+                .map(f -> {
+                    service.deleteById(id);
+                    return ResponseEntity.noContent().<Void>build();
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+}
