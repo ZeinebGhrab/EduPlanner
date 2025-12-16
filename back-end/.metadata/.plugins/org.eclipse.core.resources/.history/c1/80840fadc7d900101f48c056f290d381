@@ -1,5 +1,0 @@
-package com.springboot.springboot.repository.planning;
-
-public class SessionRepository {
-
-}
