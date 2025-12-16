@@ -1,10 +1,17 @@
-// Configuration
-const API_BASE_URL = 'http://localhost:8080/api';
+import { API_BASE_URL, getAuthHeaders, updateUserUI } from '../../shared/config.js';
+import { fetchEtudiantProfile } from '../shared/api-utils.js'; 
 
-// Fonction pour récupérer le planning
-async function fetchPlanning() {
+// Récupérer toutes les sessions/planning de l'étudiant connecté
+export async function fetchPlanning() {
     try {
-        const response = await fetch(`${API_BASE_URL}/sessions/etudiant/planning`);
+        // Récupérer l'ID de l'étudiant connecté
+        const etudiant = await fetchEtudiantProfile();
+        updateUserUI(etudiant);
+        const etudiantId = etudiant.id;
+
+        const response = await fetch(`${API_BASE_URL}/etudiants/${etudiantId}/planning`, {
+            headers: getAuthHeaders()
+        });
 
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status}`);
@@ -17,17 +24,3 @@ async function fetchPlanning() {
         return [];
     }
 }
-
-// Fonction pour formater une date au format YYYY-MM-DD
-function formatDateForAPI(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-// Exporter les fonctions pour une utilisation externe
-window.planningAPI = {
-    fetchPlanning,
-    formatDateForAPI
-};

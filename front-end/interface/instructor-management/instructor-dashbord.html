@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFormation - Espace Formateur</title>
+    <link rel="stylesheet" href="../../style/instructor-managmenet/dashbord-instructor.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="module" src="../../js/instructor/dashboard-instructor.js"></script>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="deco-diamond"></div>
+        <div class="deco-circle"></div>
+        <div class="deco-plus"></div>
+        <div class="grid-pattern"></div>
+        <div class="line-deco line-deco-1"></div>
+        <div class="line-deco line-deco-2"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="my">Edu</span><span class="scol">Planner</span>
+        </div>
+        
+        <nav>
+            <a href="../accueil/index.html"><i class="fas fa-home" class="active"></i> Acceuil</a>
+            <a href="./instructor-dashbord.html" ><i class="fas fa-chart-bar"></i> Tableau de Bord</a>
+            <a href="./instructor-planning.html"><i class="fas fa-calendar-alt"></i> Planning</a>
+            <a href="./instructor-sessions.html"><i class="fas fa-users"></i> Mes sessions</a>
+        </nav>
+
+        <div class="nav-icons">
+            <div class="user-menu">
+                <img src="https://ui-avatars.com/api/?name=Prof+Martin&background=00B8E6&color=fff" alt="Prof. Martin" class="user-avatar">
+                <span class="user-name">Prof. Martin</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="formateur-dashboard">
+        <div class="container">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <div class="welcome-card">
+                    <div class="welcome-content">
+                        <h1>Bonjour, Professeur Martin ! <span class="welcome-emoji"></span></h1>
+                        <p>Bienvenue dans votre espace formateur. Gérez vos sessions et suivez la progression de vos étudiants.</p>
+                        
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Stats -->
+            <section class="quick-stats">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Sessions à venir</h3>
+                            <div class="stat-number">12</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Sessions terminées</h3>
+                            <div class="stat-number">92</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Étudiants actifs</h3>
+                            <div class="stat-number">42</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Today's Sessions & Alerts -->
+            <div class="main-grid">
+                <!-- Today's Sessions -->
+                <section class="today-sessions">
+                    <div class="section-header">
+                        <h2><i class="fas fa-clock"></i> Sessions d'Aujourd'hui</h2>
+                        <a href="./formateur-planning.html" class="view-all">Voir tout le planning <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    
+                    <div class="sessions-list">
+                        <div class="session-card upcoming">
+                            <div class="session-time">
+                                <span class="time">14:00 - 17:00</span>
+                                <span class="duration">3h</span>
+                            </div>
+                            <div class="session-details">
+                                <h4>React Avancé - Groupe A</h4>
+                                <div class="session-meta">
+                                    <span class="location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Salle A12
+                                    </span>
+                                    <span class="students">
+                                        <i class="fas fa-users"></i>
+                                        15 étudiants
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="session-status">
+                                <span class="status-badge upcoming">À venir</span>
+                            </div>
+                        </div>
+
+                        <div class="session-card completed">
+                            <div class="session-time">
+                                <span class="time">09:00 - 12:00</span>
+                                <span class="duration">3h</span>
+                            </div>
+                            <div class="session-details">
+                                <h4>JavaScript Moderne - Groupe B</h4>
+                                <div class="session-meta">
+                                    <span class="location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Lab B05
+                                    </span>
+                                    <span class="students">
+                                        <i class="fas fa-users"></i>
+                                        14 étudiants
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="session-status">
+                                <span class="status-badge completed">Terminée</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Upcoming Sessions -->
+                <section class="upcoming-sessions">
+                    <div class="section-header">
+                        <h2><i class="fas fa-calendar-check"></i> Prochaines Sessions</h2>
+                        <a href="./formateur-sessions.html" class="view-all">Voir tout <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    
+                    <div class="upcoming-list">
+                        <div class="upcoming-card">
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

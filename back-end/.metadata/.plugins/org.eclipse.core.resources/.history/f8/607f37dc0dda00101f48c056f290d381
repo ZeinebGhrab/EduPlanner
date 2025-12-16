@@ -1,0 +1,14 @@
+package com.springboot.springboot.dto.planning;
+
+import java.time.LocalDate;
+
+import java.time.LocalTime;
+import java.util.List;
+
+import com.springboot.springboot.dto.conflit.ConflitDTO;
+
+
+
+public class PlanningEtudiantDTO {
+
+}

@@ -9,7 +9,7 @@ export function redirectToDashboard(role) {
             window.location.href = '../admin-management/admin-dashboard.html';
             break;
         case 'FORMATEUR':
-            window.location.href = '../formateur-management/formateur-dashbord.html';
+            window.location.href = '../instructor-management/instructor-dashbord.html';
             break;
         case 'ETUDIANT':
             window.location.href = '../student-managment/student-dashbord.html';
@@ -44,10 +44,10 @@ export async function handleLogin(e) {
 
             if (response.ok) {
                 const data = await response.json();
-                localStorage.setItem('authToken', data.token);
-                localStorage.setItem('userRole', role);
-                showToast('success', 'Connexion réussie', `Bienvenue ${role} !`);
-                redirectToDashboard(role);
+                const normalizedRole = role.toUpperCase();
+                localStorage.setItem('authToken', data.token); 
+                localStorage.setItem('userRole', normalizedRole);
+                redirectToDashboard(normalizedRole);
                 loggedIn = true;
                 break; // arrêter la boucle si login réussi
             }

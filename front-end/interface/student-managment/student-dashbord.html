@@ -9,8 +9,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
-    <script src="../../js/student/api-config.js"></script>
-    <script src="../../js/student/dashboard.js"></script>
+    <script type="module" src="../../js/student/dashboard-management/api-config.js"></script>
+    <script type="module" src="../../js/student/dashboard-management/dashboard-student.js"></script>
 </head>
 
 <body>
@@ -40,14 +40,14 @@
             <a href="../accueil/index.html">Accueil</a>
             <a href="../student-managment/student-dashbord.html" class="active"><i class="fas fa-home"></i> Tableau de Bord</a>
             <a href="../student-managment/student-planning.html"><i class="fas fa-calendar-alt"></i> Planning</a>
-            <a href="../student-managment/student-formation.html"><i class="fas fa-book"></i> Formations</a>
+            <a href="../student-managment/student-session.html"><i class="fas fa-book"></i> Formations</a>
         </nav>
 
         <div class="nav-icons">
             <div class="user-menu">
-                <img src="https://ui-avatars.com/api/?name=John+Doe&background=00B8E6&color=fff" alt="John Doe"
+                <img src="https://ui-avatars.com/api/?name=John+Doe&background=00B8E6&color=fff" alt=""
                     class="user-avatar">
-                <span class="user-name">John Doe</span>
+                <span class="user-name"></span>
                 <i class="fas fa-chevron-down"></i>
             </div>
         </div>
@@ -60,7 +60,7 @@
             <section class="welcome-section">
                 <div class="welcome-card">
                     <div class="welcome-content">
-                        <h1>Bonjour, John ! <span class="welcome-emoji">👋</span></h1>
+                        <h1>Bonjour, ! <span class="welcome-emoji">👋</span></h1>
                         <p>Bienvenue sur votre espace de formation. Voici votre résumé de la semaine.</p>
                     </div>
                 </div>
@@ -116,53 +116,6 @@
 
                 <div class="schedule-cards">
                     <div class="schedule-card">
-                        <div class="session-time">
-                            <span class="time">09:00 - 12:00</span>
-                            <span class="duration">3h</span>
-                        </div>
-                        <div class="session-details">
-                            <h4>React Avancé</h4>
-                            <div class="session-info">
-                                <i class="fas fa-user"></i>
-                                <span>Prof. Martin Dupont</span>
-                            </div>
-                            <div class="session-info">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>Salle A12</span>
-                            </div>
-                            <div class="session-tags">
-                                <span class="tag tag-theory">Théorie</span>
-                                <span class="tag tag-mandatory">Obligatoire</span>
-                            </div>
-                        </div>
-                        <div class="session-status">
-                            <span class="status-badge status-upcoming">À venir</span>
-                        </div>
-                    </div>
-
-                    <div class="schedule-card">
-                        <div class="session-time">
-                            <span class="time">14:00 - 17:00</span>
-                            <span class="duration">3h</span>
-                        </div>
-                        <div class="session-details">
-                            <h4>Projet Pratique</h4>
-                            <div class="session-info">
-                                <i class="fas fa-user"></i>
-                                <span>Prof. Sophie Martin</span>
-                            </div>
-                            <div class="session-info">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>Laboratoire B05</span>
-                            </div>
-                            <div class="session-tags">
-                                <span class="tag tag-practice">Pratique</span>
-                                <span class="tag tag-group">En groupe</span>
-                            </div>
-                        </div>
-                        <div class="session-status">
-                            <span class="status-badge status-upcoming">À venir</span>
-                        </div>
                     </div>
                 </div>
             </section>

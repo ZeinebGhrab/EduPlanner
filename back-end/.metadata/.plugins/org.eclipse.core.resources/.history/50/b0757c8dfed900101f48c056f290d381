@@ -1,0 +1,150 @@
+package com.springboot.springboot.service.planning;
+
+import com.springboot.springboot.dto.conflit.ConflitDTO;
+import com.springboot.springboot.dto.session.SessionFormationDTO;
+import com.springboot.springboot.entity.planning.Conflit;
+import com.springboot.springboot.entity.planning.SessionFormation;
+import com.springboot.springboot.repository.planning.ConflitRepository;
+import com.springboot.springboot.repository.planning.SessionFormationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+@Transactional
+public class SessionFormationService {
+
+    private final SessionFormationRepository sessionRepository;
+    private final ConflitRepository conflitRepository;
+    private final ConflitService conflitService;
+
+    @Autowired
+    public SessionFormationService(SessionFormationRepository sessionRepository,
+                                   ConflitRepository conflitRepository,
+                                   ConflitService conflitService) {
+        this.sessionRepository = sessionRepository;
+        this.conflitRepository = conflitRepository;
+        this.conflitService = conflitService;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SessionFormation> findAll() {
+        List<SessionFormation> sessions = sessionRepository.findAll();
+        // Force le chargement des collections lazy
+        sessions.forEach(s -> {
+            if (s.getMaterielRequis() != null) {
+                s.getMaterielRequis().size();
+            }
+        });
+        return sessions;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<SessionFormation> findById(int id) {
+        Optional<SessionFormation> session = sessionRepository.findById(id);
+        session.ifPresent(s -> {
+            if (s.getMaterielRequis() != null) {
+                s.getMaterielRequis().size();
+            }
+        });
+        return session;
+    }
+
+    /**
+     * Détermine le type de conflit selon la description.
+     */
+    private Conflit.TypeConflit determineTypeConflit(String description) {
+        String desc = description.toLowerCase(); // ignore case
+        if (desc.contains("formateur")) {
+            return Conflit.TypeConflit.CONFLIT_FORMATEUR;
+        } else if (desc.contains("salle")) {
+            return Conflit.TypeConflit.CONFLIT_SALLE;
+        } else if (desc.contains("materiel")) {
+            return Conflit.TypeConflit.CONFLIT_MATERIEL;
+        } else if (desc.contains("groupe")) {
+            return Conflit.TypeConflit.CONFLIT_GROUPE;
+        } else if (desc.contains("contrainte")) {
+            return Conflit.TypeConflit.CONTRAINTE_NON_RESPECTEE;
+        } else {
+            return Conflit.TypeConflit.CHEVAUCHEMENT_SESSION;
+        }
+    }
+
+    /**
+     * Sauvegarde une session avec gestion des conflits.
+     * Retourne toujours une liste de ConflitDTO (vide si aucun conflit).
+     */
+    @Transactional
+    public List<ConflitDTO> saveAvecConflit(SessionFormation session) {
+        List<ConflitDTO> conflitsDTO = new ArrayList<>();
+
+        // Détecter TOUS les conflits via le service dédié AVANT de sauvegarder
+        List<String> conflitsDetectes = conflitService.detecterConflits(session);
+
+        // Si des conflits sont détectés, les créer et retourner SANS sauvegarder la session
+        if (!conflitsDetectes.isEmpty()) {
+            List<Conflit> conflits = new ArrayList<>();
+            for (String description : conflitsDetectes) {
+                Conflit conflit = new Conflit();
+                conflit.setDescription(description);
+                conflit.setSeverite(1);
+                conflit.setType(determineTypeConflit(description));
+                // Note: on ne peut pas lier les sessions impliquées car la nouvelle session n'a pas d'ID
+                conflits.add(conflit);
+            }
+
+            List<Conflit> savedConflits = conflitRepository.saveAll(conflits);
+            conflitsDTO = savedConflits.stream()
+                .map(ConflitDTO::fromEntity)
+                .collect(Collectors.toList());
+            
+            // NE PAS sauvegarder la session si des conflits existent
+            return conflitsDTO;
+        }
+
+        // Aucun conflit : sauvegarder la session normalement
+        sessionRepository.save(session);
+
+        return conflitsDTO; // Liste vide
+    }
+
+
+    /**
+     * Supprime une session par ID.
+     */
+    @Transactional
+    public void deleteById(int id) {
+        if (!sessionRepository.existsById(id)) {
+            throw new RuntimeException("Session introuvable avec ID: " + id);
+        }
+        sessionRepository.deleteById(id);
+    }
+    
+    // Méthodes de recherche
+    public List<SessionFormation> findByFormateurId(int formateurId) {
+        return sessionRepository.findByFormateurId(formateurId);
+    }
+    
+    public List<SessionFormation> findBySalleId(int salleId) {
+        return sessionRepository.findBySalleId(salleId);
+    }
+    
+    public List<SessionFormation> findByGroupeId(int groupeId) {
+        return sessionRepository.findByGroupeId(groupeId);
+    }
+    
+    public List<SessionFormation> findByCreneauId(int creneauId) {
+        return sessionRepository.findByCreneauId(creneauId);
+    }
+
+    public List<SessionFormation> findByEtudiantId(Long etudiantId) {
+        return sessionRepository.findByEtudiants_Id(etudiantId);
+    }
+
+}

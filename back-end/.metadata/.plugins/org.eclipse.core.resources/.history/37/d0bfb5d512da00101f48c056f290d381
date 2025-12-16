@@ -1,0 +1,27 @@
+package com.springboot.springboot.dto.planning;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.springboot.springboot.entity.planning.SessionFormation;
+
+public class SessionAVenirDTO {
+    private String nom;
+    private String formateurNom;
+    private String salle;
+    private List<CreneauDTO> creneaux;
+
+    public SessionAVenirDTO(SessionFormation session) {
+        this.nom = session.getNomCours();
+        // Evite le lazy proxy
+        this.formateurNom = session.getFormateur() != null ? session.getFormateur().getNom() + ' ' +  session.getFormateur().getPrenom() : null;
+        this.creneaux = session.getCreneaux().stream()
+                               .map(CreneauDTO::new)
+                               .collect(Collectors.toList());
+    }
+
+    // getters
+    public String getNom() { return nom; }
+    public String getFormateurNom() { return formateurNom; }
+    public List<CreneauDTO> getCreneaux() { return creneaux; }
+}

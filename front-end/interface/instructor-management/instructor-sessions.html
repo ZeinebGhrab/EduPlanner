@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFormation - Gestion des Cours</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../style/instructor-managmenet/sessions-instructor.css">
+    <script type="module" src="../../js/instructor/sessions-management/ui.js"></script>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="deco-diamond"></div>
+        <div class="deco-circle"></div>
+        <div class="deco-plus"></div>
+        <div class="grid-pattern"></div>
+        <div class="line-deco line-deco-1"></div>
+        <div class="line-deco line-deco-2"></div>
+    </div>
+    
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="my">Edu</span><span class="scol">Planner</span>
+        </div>
+        
+        <nav>
+            <a href="../accueil/index.html"><i class="fas fa-home"></i> Accueil</a>
+            <a href="./instructor-dashbord.html"><i class="fas fa-chart-bar"></i> Tableau de Bord</a>
+            <a href="./instructor-planning.html"><i class="fas fa-calendar-alt"></i> Planning</a>
+            <a href="./instructor-sessions.html" class="active"><i class="fas fa-users"></i> Mes sessions</a>
+        </nav>
+        <div class="nav-icons">
+            <div class="user-menu">
+                <img src="https://ui-avatars.com/api/?name=Prof+Martin&background=00B8E6&color=fff" alt="Prof. Martin" class="user-avatar">
+                <span class="user-name">Prof. Martin</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <section class="page-header">
+            <div class="header-content">
+                <h1><i class="fas fa-calendar-alt"></i> Mes sessions</h1>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Statut</label>
+                    <select class="filter-select" id="filterStatut">
+                        <option value="all">Tous les statuts</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Salle</label>
+                    <select class="filter-select" id="filterSalle">
+                        <option value="all">Toutes les salles</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Groupe</label>
+                    <select class="filter-select" id="filterGroupe">
+                        <option value="all">Tous les groupes</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Courses Grid -->
+        <div class="courses-grid">                  
+        </div>
+    </main>
+
+    <!-- Modal pour la demande de matériel -->
+    <div id="materialModal" class="material-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-tools"></i>
+                    Demande de Matériel Supplémentaire
+                </h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="materialForm" class="material-form">
+                <input type="hidden" id="courseId" name="courseId">
+                
+                <div class="form-group">
+                    <label class="form-label">Session concernée</label>
+                    <div class="form-input" id="modalCourseTitle" style="background: var(--gray-lighter); padding: 0.75rem; border-radius: 8px;">
+                        React Avancé - Composants
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Type de matériel</label>
+                    <select class="form-select" name="materialType" required>
+                        <option value="">Sélectionnez un type</option>
+                        <option value="ordinateur">Ordinateur portable</option>
+                        <option value="tablette">Tablette graphique</option>
+                        <option value="projecteur">Projecteur</option>
+                        <option value="ecran">Écran supplémentaire</option>
+                        <option value="cable">Câbles et adaptateurs</option>
+                        <option value="logiciel">Logiciel spécialisé</option>
+                        <option value="autre">Autre matériel</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Quantité nécessaire</label>
+                    <input type="number" class="form-input" name="quantity" min="1" max="20" value="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Niveau d'urgence</label>
+                    <div class="urgency-select">
+                        <div class="urgency-option" data-urgency="low">Faible</div>
+                        <div class="urgency-option selected" data-urgency="medium">Moyen</div>
+                        <div class="urgency-option high" data-urgency="high">Élevé</div>
+                    </div>
+                    <input type="hidden" name="urgency" value="medium">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description détaillée</label>
+                    <textarea class="form-textarea" name="description" placeholder="Décrivez précisément le matériel dont vous avez besoin et son utilisation prévue..." required></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel">Annuler</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Envoyer la demande
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+package com.springboot.springboot.dto.planning;
+
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+import com.springboot.springboot.entity.planning.Creneau;
+
+public class CreneauDTO {
+    private LocalTime heureDebut;
+    private LocalTime heureFin;
+    private String statut;
+
+    public CreneauDTO(Creneau creneau) {
+        this.heureDebut = creneau.getHeureDebut();
+        this.heureFin = creneau.getHeureFin();
+        this.statut = creneau.getStatut();
+    }
+
+    // getters
+    public LocalDateTime getDateDebut() { return heureDebut; }
+    public LocalDateTime getDateFin() { return heureFin; }
+    public String getStatut() { return statut; }
+}

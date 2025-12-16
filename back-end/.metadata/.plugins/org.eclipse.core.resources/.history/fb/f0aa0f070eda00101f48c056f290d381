@@ -1,0 +1,18 @@
+package com.springboot.springboot.dto.planning;
+
+public class CreneauDTO {
+    private LocalDateTime dateDebut;
+    private LocalDateTime dateFin;
+    private String statut;
+
+    public CreneauDTO(Creneau creneau) {
+        this.dateDebut = creneau.getDateDebut();
+        this.dateFin = creneau.getDateFin();
+        this.statut = creneau.getStatut();
+    }
+
+    // getters
+    public LocalDateTime getDateDebut() { return dateDebut; }
+    public LocalDateTime getDateFin() { return dateFin; }
+    public String getStatut() { return statut; }
+}

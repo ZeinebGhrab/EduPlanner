@@ -1,0 +1,22 @@
+package com.springboot.springboot.dto.planning;
+
+import java.time.LocalDate;
+
+import java.time.LocalTime;
+import java.util.List;
+
+import com.springboot.springboot.dto.conflit.ConflitDTO;
+
+
+public class PlanningEtudiantDTO {
+    public int sessionId;
+    public String titre;
+    public LocalDate date;
+    public LocalTime heureDebut;
+    public LocalTime heureFin;
+    public String jourSemaine;
+    public String nomFormateur;
+    public String nomSalle;
+    public String nomGroupe;
+    public String statut;
+}

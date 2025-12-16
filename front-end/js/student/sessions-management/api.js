@@ -1,17 +1,23 @@
-// Configuration de l'API
-const API_BASE_URL = 'http://localhost:8080/api';
-const SESSIONS_API = `${API_BASE_URL}/sessions/etudiant`;
+import { getAuthHeaders, API_BASE_URL, updateUserUI } from '../../shared/config.js'
+import { fetchEtudiantProfile } from '../shared/api-utils.js';
 
-// Fonction pour récupérer toutes les formations
+// Fonction pour récupérer les formations d'un étudiant
 async function fetchFormations() {
     try {
-        const response = await fetch(SESSIONS_API);
+        // Récupérer l'ID de l'étudiant depuis son profil
+        const etudiant = await fetchEtudiantProfile();
+        updateUserUI(etudiant);
+        const etudiantId = etudiant.id;
+
+        const SESSIONS_API = `${API_BASE_URL}/etudiants/${etudiantId}/sessions`;
+        const response = await fetch(SESSIONS_API, { headers: getAuthHeaders() });
 
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status}`);
         }
 
         const formations = await response.json();
+        console.log(formations);
         return formations;
     } catch (error) {
         console.error('Erreur lors de la récupération des formations:', error);
@@ -19,18 +25,15 @@ async function fetchFormations() {
     }
 }
 
-// Fonction pour formater la date
+// --------------------------------
+// UTILS
+// --------------------------------
 function formatDate(dateString) {
     if (!dateString) return 'Non défini';
-
     const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', {
-        month: 'short',
-        year: 'numeric'
-    });
+    return date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
 }
 
-// Fonction pour convertir le statut
 function getStatusText(statut) {
     const statusMap = {
         'EN_COURS': 'En cours',
@@ -40,7 +43,6 @@ function getStatusText(statut) {
     return statusMap[statut] || statut;
 }
 
-// Fonction pour générer une carte de formation HTML
 function createFormationCard(formation) {
     const statusText = getStatusText(formation.statut);
     const statusClass = formation.statut === 'TERMINEE' ? 'completed' : 'active';
@@ -55,7 +57,7 @@ function createFormationCard(formation) {
             
             <div class="formation-content">
                 <h3>${formation.titre}</h3>
-                <p class="formation-description">${formation.description}</p>
+                <p class="formation-description">${formation.nomGroupe}</p>
                 
                 <div class="formation-meta">
                     <div class="meta-item">
@@ -64,11 +66,11 @@ function createFormationCard(formation) {
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-clock"></i>
-                        <span>${formation.duree} heures</span>
+                        <span>${formation.heureDebut} - ${formation.heureFin}</span>
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-calendar"></i>
-                        <span>${formatDate(formation.dateDebut)} - ${formatDate(formation.dateFin)}</span>
+                        <span>${formatDate(formation.date)}</span>
                     </div>
                 </div>
             </div>
@@ -76,101 +78,76 @@ function createFormationCard(formation) {
     `;
 }
 
-// Fonction pour afficher toutes les formations
-async function displayFormations() {
-    const formationsGrid = document.querySelector('.formations-grid');
-    if (!formationsGrid) return;
-
-    // Afficher un indicateur de chargement
-    formationsGrid.innerHTML = '<div class="loading">Chargement des formations...</div>';
-
-    // Récupérer les données
-    const formations = await fetchFormations();
-
-    // Vider le contenu
-    formationsGrid.innerHTML = '';
-
-    if (formations.length === 0) {
-        formationsGrid.innerHTML = '<div class="no-data">Aucune formation disponible.</div>';
-        return;
-    }
-
-    // Créer et ajouter les cartes
-    formations.forEach(formation => {
-        const cardHTML = createFormationCard(formation);
-        formationsGrid.innerHTML += cardHTML;
-    });
-
-    // Mettre à jour les compteurs des filtres
-    updateFilterCounts(formations);
-}
-
-// Fonction pour mettre à jour les compteurs des filtres
-function updateFilterCounts(formations) {
-    const counts = {
-        active: formations.filter(f => f.statut === 'EN_COURS').length,
-        completed: formations.filter(f => f.statut === 'TERMINEE').length,
-        upcoming: formations.filter(f => f.statut === 'A_VENIR').length
-    };
-
-    // Mettre à jour les badges
-    document.querySelectorAll('.tab-badge').forEach(badge => {
-        const filter = badge.closest('.filter-tab').dataset.filter;
-        if (counts[filter]) {
-            badge.textContent = counts[filter];
-        }
-    });
-}
-
-// Variables globales pour partager entre fichiers
+// --------------------------------
+// AFFICHAGE
+// --------------------------------
 let allFormations = [];
 
-// Fonction pour initialiser les filtres après chargement
 function initializeFilters() {
     const filterTabs = document.querySelectorAll('.filter-tab');
-    const formationCards = document.querySelectorAll('.formation-card');
 
     filterTabs.forEach(tab => {
-        // Supprime les anciens écouteurs
-        const newTab = tab.cloneNode(true);
-        tab.parentNode.replaceChild(newTab, tab);
+        tab.addEventListener('click', function () {
 
-        newTab.addEventListener('click', function () {
-            const filter = this.dataset.filter;
-
-            // Mise à jour des tabs actives
+            // Onglet actif
             filterTabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
 
-            // Filtrage des cartes
-            formationCards.forEach(card => {
-                if (filter === 'all') {
-                    card.style.display = 'flex';
-                } else {
-                    const cardStatus = card.dataset.status;
-                    const shouldShow = filter === 'active' ? cardStatus === 'EN_COURS' :
-                        filter === 'completed' ? cardStatus === 'TERMINEE' :
-                            filter === 'upcoming' ? cardStatus === 'A_VENIR' : true;
+            const filter = this.dataset.filter;
 
-                    card.style.display = shouldShow ? 'flex' : 'none';
+            // récupérer les cartes AU MOMENT du clic
+            const formationCards = document.querySelectorAll('.formation-card');
+
+            formationCards.forEach(card => {
+                const cardStatus = card.dataset.status;
+
+                let shouldShow = true;
+
+                if (filter === 'active') {
+                    shouldShow = cardStatus === 'EN_COURS';
+                } else if (filter === 'completed') {
+                    shouldShow = cardStatus === 'TERMINEE';
+                } else if (filter === 'upcoming') {
+                    shouldShow = cardStatus === 'A_VENIR';
+                } else if (filter === 'coming') {
+                    shouldShow = cardStatus === 'PLANIFIEE';
                 }
+
+                card.style.display = shouldShow ? 'flex' : 'none';
             });
+
+            // Mettre à jour les badges après le filtrage
+            updateFilterCounts(allFormations);
         });
     });
 }
 
-// Fonction pour afficher toutes les formations
+
+
+function updateFilterCounts(formations) {
+    const counts = {
+        active: formations.filter(f => f.statut === 'EN_COURS').length,
+        completed: formations.filter(f => f.statut === 'TERMINEE').length,
+        upcoming: formations.filter(f => f.statut === 'A_VENIR').length,
+        coming: formations.filter(f => f.statut === 'PLANIFIEE').length
+    };
+
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        const filter = tab.dataset.filter;
+        const badge = tab.querySelector('.tab-badge');
+        if (badge) {
+            badge.textContent = counts[filter] || 0;
+        }
+    });
+}
+
+
 async function displayFormations() {
     const formationsGrid = document.querySelector('.formations-grid');
     if (!formationsGrid) return;
 
-    // Afficher un indicateur de chargement
     formationsGrid.innerHTML = '<div class="loading">Chargement des formations...</div>';
-
-    // Récupérer les données
     allFormations = await fetchFormations();
-
-    // Vider le contenu
     formationsGrid.innerHTML = '';
 
     if (allFormations.length === 0) {
@@ -178,16 +155,8 @@ async function displayFormations() {
         return;
     }
 
-    // Créer et ajouter les cartes
-    allFormations.forEach(formation => {
-        const cardHTML = createFormationCard(formation);
-        formationsGrid.innerHTML += cardHTML;
-    });
-
-    // Mettre à jour les compteurs des filtres
+    allFormations.forEach(f => formationsGrid.innerHTML += createFormationCard(f));
     updateFilterCounts(allFormations);
-
-    // Initialiser les filtres APRÈS avoir créé les cartes
     initializeFilters();
 
     // Lancer les animations
@@ -198,15 +167,7 @@ async function displayFormations() {
     }, 100);
 }
 
-// Initialisation
-document.addEventListener('DOMContentLoaded', function () {
-    // Afficher les formations au chargement
-    displayFormations();
-});
-
-// Exporter les fonctions pour formations.js
-window.formationsAPI = {
-    fetchFormations,
-    displayFormations,
-    allFormations
-};
+// --------------------------------
+// INIT
+// --------------------------------
+document.addEventListener('DOMContentLoaded', displayFormations);
