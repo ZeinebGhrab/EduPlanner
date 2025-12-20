@@ -2,19 +2,12 @@ package com.springboot.springboot.controller.planning;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.springboot.springboot.dto.conflit.ConflitDTO;
 import com.springboot.springboot.dto.conflit.ConflitDetectionDTO;
@@ -27,6 +20,7 @@ import com.springboot.springboot.entity.planning.Creneau;
 import com.springboot.springboot.entity.planning.Planning;
 import com.springboot.springboot.entity.planning.SessionFormation;
 import com.springboot.springboot.entity.ressources.Salle;
+import com.springboot.springboot.repository.planning.ConflitRepository;
 import com.springboot.springboot.service.common.GroupeService;
 import com.springboot.springboot.service.personne.FormateurService;
 import com.springboot.springboot.service.planning.CreneauService;
@@ -55,14 +49,19 @@ public class PlanningController {
     @Autowired
     private CreneauService creneauService;
     
+    @Autowired
+    private ConflitRepository conflitRepository;
+    
+    /**
+     * GET tous les plannings avec conflits récupérés via créneaux
+     */
     @GetMapping
     @Transactional
     public ResponseEntity<List<PlanningDTO>> getAll() {
         List<PlanningDTO> dtos = service.findAll().stream()
                 .map(planning -> {
-                    List<ConflitDTO> conflitsDTO = planning.getConflits().stream()
-                            .map(ConflitDTO::fromEntity)
-                            .toList();
+                    // ✅ CORRECTION : Récupérer les conflits via créneaux des sessions
+                    List<ConflitDTO> conflitsDTO = getConflitsFromPlanning(planning);
 
                     PlanningDTO dto = new PlanningDTO();
                     dto.id = planning.getId();
@@ -73,6 +72,58 @@ public class PlanningController {
                 .toList();
 
         return ResponseEntity.ok(dtos);
+    }
+    
+    /**
+     * GET planning par ID avec conflits
+     */
+    @GetMapping("/{id}")
+    @Transactional
+    public ResponseEntity<PlanningDTO> getById(@PathVariable int id) {
+        return service.findById(id)
+                .map(planning -> {
+                    // ✅ CORRECTION : Récupérer les conflits via créneaux
+                    List<ConflitDTO> conflitsDTO = getConflitsFromPlanning(planning);
+
+                    PlanningDTO dto = new PlanningDTO();
+                    dto.id = planning.getId();
+                    dto.statut = planning.getStatut();
+                    dto.conflits = conflitsDTO;
+
+                    return ResponseEntity.ok(dto);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
+    /**
+     * ✅ NOUVELLE MÉTHODE : Récupère les conflits d'un planning via ses créneaux
+     * Structure : Planning → Sessions → Créneaux → Conflits
+     */
+    private List<ConflitDTO> getConflitsFromPlanning(Planning planning) {
+        // 1. Récupérer toutes les sessions du planning
+        List<SessionFormation> sessions = planning.getSessions();
+        
+        // 2. Récupérer tous les créneaux de ces sessions
+        List<Integer> creneauIds = sessions.stream()
+            .flatMap(session -> session.getCreneaux().stream())
+            .map(Creneau::getId)
+            .distinct()
+            .collect(Collectors.toList());
+        
+        // 3. Récupérer tous les conflits associés à ces créneaux
+        if (creneauIds.isEmpty()) {
+            return List.of();
+        }
+        
+        List<Conflit> conflits = conflitRepository.findAll().stream()
+            .filter(conflit -> conflit.getCreneau() != null && 
+                              creneauIds.contains(conflit.getCreneau().getId()))
+            .collect(Collectors.toList());
+        
+        // 4. Convertir en DTO
+        return conflits.stream()
+            .map(ConflitDTO::fromEntity)
+            .collect(Collectors.toList());
     }
     
     @PutMapping("/{id}")
@@ -96,27 +147,6 @@ public class PlanningController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /** GET by ID avec DTO */
-    @GetMapping("/{id}")
-    @Transactional
-    public ResponseEntity<PlanningDTO> getById(@PathVariable int id) {
-        return service.findById(id)
-                .map(planning -> {
-                    // Convertir en DTO pour éviter LazyInitializationException
-                    List<ConflitDTO> conflitsDTO = planning.getConflits().stream()
-                            .map(ConflitDTO::fromEntity)
-                            .toList();
-
-                    PlanningDTO dto = new PlanningDTO();
-                    dto.id = planning.getId();
-                    dto.statut = planning.getStatut();
-                    dto.conflits = conflitsDTO;
-
-                    return ResponseEntity.ok(dto);
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-    
     @PostMapping
     public ResponseEntity<Planning> createPlanning(@RequestBody Planning planning) {
         Planning saved = service.save(planning);
@@ -157,10 +187,8 @@ public class PlanningController {
 
         if (!success) return ResponseEntity.status(400).body("Erreur lors de l'ajout de la session");
 
-        // Retourner les conflits sous forme de DTO
-        List<ConflitDTO> conflitsDTO = planning.getConflits().stream()
-                .map(ConflitDTO::fromEntity)
-                .toList();
+        // ✅ Retourner les conflits via la nouvelle méthode
+        List<ConflitDTO> conflitsDTO = getConflitsFromPlanning(planning);
 
         return ResponseEntity.ok(conflitsDTO);
     }

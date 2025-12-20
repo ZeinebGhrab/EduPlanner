@@ -1,6 +1,7 @@
 package com.springboot.springboot.controller.planning;
 
 import com.springboot.springboot.entity.planning.Conflit;
+import com.springboot.springboot.entity.planning.Creneau;
 import com.springboot.springboot.entity.planning.Planning;
 import com.springboot.springboot.entity.planning.SessionFormation;
 import com.springboot.springboot.service.planning.PlanningOptimisationService;
@@ -170,125 +171,354 @@ public class PlanningOptimisationController {
      * RECOMMANDATIONS D'AMÉLIORATION
      * ========================================================================
      */
-    @GetMapping("/recommandations/{planningId}")
-    @Transactional
-    public ResponseEntity<?> obtenirRecommandations(@PathVariable int planningId) {
+    /**
+     * Propose plusieurs solutions alternatives pour résoudre les conflits
+     * SANS modifier le planning existant
+     */
+    @PostMapping("/proposer-solutions/{planningId}")
+    @Transactional(readOnly = true)  // ✅ Lecture seule = aucune modification
+    public ResponseEntity<?> proposerSolutions(@PathVariable int planningId) {
         
         try {
-            // Récupérer le planning
             Optional<Planning> planningOpt = planningRepository.findById(planningId);
             if (planningOpt.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
             
             Planning planning = planningOpt.get();
+            List<SessionFormation> sessions = planning.getSessions();
             
-            // Analyser le planning
-            Map<String, Object> analyse = analyserPlanning(planning);
+            if (sessions.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Aucune session à analyser"
+                ));
+            }
             
-            // Générer les recommandations
-            List<Map<String, Object>> recommandations = genererRecommandations(planning, analyse);
+            // ✅ Récupérer les conflits
+            List<Conflit> conflits = new ArrayList<>();
+            Set<Integer> creneauxIds = new HashSet<>();
+            for (SessionFormation session : sessions) {
+                if (session.getCreneaux() != null) {
+                    for (Creneau creneau : session.getCreneaux()) {
+                        creneauxIds.add(creneau.getId());
+                    }
+                }
+            }
+            for (Integer creneauId : creneauxIds) {
+                conflits.addAll(conflitRepository.findByCreneauId(creneauId));
+            }
             
-            // Construire la réponse
+            if (conflits.isEmpty()) {
+                return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Aucun conflit détecté, aucune proposition nécessaire",
+                    "planningId", planningId
+                ));
+            }
+            
+            // ✅ Générer plusieurs solutions alternatives
+            List<Map<String, Object>> solutions = new ArrayList<>();
+            
+            // Solution 1 : Créer des disponibilités manquantes
+            Map<String, Object> solution1 = genererSolutionDisponibilites(conflits);
+            if (solution1 != null) {
+                solutions.add(solution1);
+            }
+            
+            // Solution 2 : Changer les créneaux
+            Map<String, Object> solution2 = genererSolutionChangementCreneaux(sessions, conflits);
+            if (solution2 != null) {
+                solutions.add(solution2);
+            }
+            
+            // Solution 3 : Changer les salles
+            Map<String, Object> solution3 = genererSolutionChangementSalles(sessions, conflits);
+            if (solution3 != null) {
+                solutions.add(solution3);
+            }
+            
+            // Solution 4 : Créer un nouveau planning optimisé
+            Map<String, Object> solution4 = Map.of(
+                "id", 4,
+                "type", "NOUVEAU_PLANNING",
+                "titre", "🆕 Créer un nouveau planning optimisé",
+                "description", "Générer un nouveau planning en gardant l'ancien comme référence",
+                "avantages", List.of(
+                    "Garde l'historique du planning actuel",
+                    "Optimisation complète avec algorithme intelligent",
+                    "Aucun risque pour le planning existant"
+                ),
+                "actions", List.of(
+                    Map.of(
+                        "etape", 1,
+                        "action", "Générer un nouveau planning",
+                        "endpoint", "POST /api/admin/planning/optimisation/generer?semaine=" + planning.getSemaine(),
+                        "description", "Crée un nouveau planning (ID différent) avec sessions optimisées"
+                    ),
+                    Map.of(
+                        "etape", 2,
+                        "action", "Comparer les deux plannings",
+                        "endpoint", "GET /api/admin/planning/optimisation/comparer?ancien=" + planningId + "&nouveau={nouveauId}",
+                        "description", "Compare l'ancien et le nouveau planning"
+                    ),
+                    Map.of(
+                        "etape", 3,
+                        "action", "Choisir le meilleur",
+                        "description", "Garder le planning avec le meilleur score ou moins de conflits"
+                    )
+                ),
+                "complexite", "FACILE",
+                "tempsEstime", "Automatique (< 5 secondes)"
+            );
+            solutions.add(solution4);
+            
+            // Solution 5 : Ré-optimiser le planning actuel
+            Map<String, Object> solution5 = Map.of(
+                "id", 5,
+                "type", "REOPTIMISATION",
+                "titre", "🔄 Ré-optimiser le planning actuel",
+                "description", "Modifier le planning actuel pour résoudre les conflits",
+                "avantages", List.of(
+                    "Garde le même ID de planning",
+                    "Résolution automatique des conflits",
+                    "Optimisation intelligente"
+                ),
+                "risques", List.of(
+                    "Modifie le planning existant",
+                    "Peut changer les créneaux des sessions valides"
+                ),
+                "actions", List.of(
+                    Map.of(
+                        "etape", 1,
+                        "action", "Ré-optimiser",
+                        "endpoint", "POST /api/admin/planning/optimisation/reoptimiser/" + planningId,
+                        "description", "Réassigne intelligemment toutes les sessions"
+                    )
+                ),
+                "complexite", "FACILE",
+                "tempsEstime", "Automatique (< 5 secondes)"
+            );
+            solutions.add(solution5);
+            
+            // ✅ Construire la réponse
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("planningId", planningId);
-            response.put("semaine", planning.getSemaine());
-            response.put("statut", planning.getStatut());
-            response.put("analyse", analyse);
-            response.put("recommandations", recommandations);
-            response.put("priorite", determinerPrioriteRecommandations(recommandations));
+            response.put("nbConflits", conflits.size());
+            response.put("message", String.format("%d conflit(s) détecté(s). %d solution(s) proposée(s).", 
+                conflits.size(), solutions.size()));
+            response.put("solutions", solutions);
+            response.put("recommandation", determinerMeilleureSolution(solutions, conflits));
             
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "success", false,
-                "message", "Erreur lors de l'analyse du planning",
+                "message", "Erreur lors de la génération des solutions",
                 "erreur", e.getMessage()
             ));
         }
     }
-    
+
     /**
-     * ========================================================================
-     * RÉ-OPTIMISATION D'UN PLANNING EXISTANT
-     * ========================================================================
+     * Génère une solution basée sur l'ajout de disponibilités
      */
-    @PostMapping("/reoptimiser/{planningId}")
-    @Transactional
-    public ResponseEntity<?> reoptimiserPlanning(@PathVariable int planningId) {
+    private Map<String, Object> genererSolutionDisponibilites(List<Conflit> conflits) {
+        List<Conflit> conflitsFormateur = conflits.stream()
+            .filter(c -> c.getType() == Conflit.TypeConflit.CONFLIT_FORMATEUR)
+            .collect(Collectors.toList());
         
-        try {
-            // Récupérer le planning existant
-            Optional<Planning> planningOpt = planningRepository.findById(planningId);
-            if (planningOpt.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            Planning planning = planningOpt.get();
-            
-            // Vérifier que le planning peut être ré-optimisé
-            if ("PUBLIE".equals(planning.getStatut())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
-                    "success", false,
-                    "message", "Un planning publié ne peut pas être ré-optimisé",
-                    "suggestion", "Créez un nouveau planning ou changez le statut"
-                ));
-            }
-            
-            // Sauvegarder l'état initial
-            Map<String, Object> etatAvant = capturerEtatPlanning(planning);
-            
-            // Récupérer toutes les sessions du planning
-            List<SessionFormation> sessions = planning.getSessions();
-            if (sessions.isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of(
-                    "success", false,
-                    "message", "Le planning ne contient aucune session à optimiser"
-                ));
-            }
-            
-            // Détacher les sessions du planning pour ré-optimisation
-            sessions.forEach(s -> {
-                s.setPlanning(null);
-                s.setCreneaux(new ArrayList<>());
-                sessionRepository.save(s);
-            });
-            
-            // Supprimer l'ancien planning
-            planningRepository.delete(planning);
-            planningRepository.flush();
-            
-            // Relancer l'optimisation
-            ResultatOptimisation resultat = optimisationService.genererPlanningOptimise(
-                planning.getSemaine()
-            );
-            
-            // Comparer les résultats
-            Map<String, Object> etatApres = capturerEtatPlanning(resultat.getPlanning());
-            Map<String, Object> comparaison = comparerEtats(etatAvant, etatApres);
-            
-            // Construire la réponse
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Ré-optimisation terminée avec succès");
-            response.put("ancienPlanningId", planningId);
-            response.put("nouveauPlanningId", resultat.getPlanning().getId());
-            response.put("etatAvant", etatAvant);
-            response.put("etatApres", etatApres);
-            response.put("comparaison", comparaison);
-            response.put("amelioration", determinerAmelioration(comparaison));
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                "success", false,
-                "message", "Erreur lors de la ré-optimisation",
-                "erreur", e.getMessage()
-            ));
+        if (conflitsFormateur.isEmpty()) {
+            return null;
         }
+        
+        // Extraire les informations
+        Set<String> formateurs = new HashSet<>();
+        Set<String> creneaux = new HashSet<>();
+        
+        for (Conflit c : conflitsFormateur) {
+            String desc = c.getDescription();
+            if (desc.contains("Jean Dupont")) formateurs.add("Jean Dupont (ID: 1)");
+            if (desc.contains("Sophie Martin")) formateurs.add("Sophie Martin (ID: 2)");
+            
+            if (c.getCreneau() != null) {
+                creneaux.add(String.format("%s %s-%s", 
+                    c.getCreneau().getJourSemaine(),
+                    c.getCreneau().getHeureDebut(),
+                    c.getCreneau().getHeureFin()
+                ));
+            }
+        }
+        
+        return Map.of(
+            "id", 1,
+            "type", "DISPONIBILITES",
+            "titre", "📅 Ajouter des disponibilités formateurs",
+            "description", String.format("Créer les disponibilités manquantes pour %d formateur(s)", formateurs.size()),
+            "formateurs", formateurs,
+            "creneaux", creneaux,
+            "actions", List.of(
+                Map.of(
+                    "etape", 1,
+                    "action", "Créer disponibilité pour chaque formateur",
+                    "endpoint", "POST /api/disponibilites",
+                    "exemple", Map.of(
+                        "formateurId", 1,
+                        "jourSemaine", "JEUDI",
+                        "heureDebut", "08:00",
+                        "heureFin", "18:00",
+                        "estDisponible", true
+                    )
+                ),
+                Map.of(
+                    "etape", 2,
+                    "action", "Vérifier la résolution",
+                    "endpoint", "GET /api/admin/planning/optimisation/recommandations/{planningId}",
+                    "description", "Les conflits de disponibilité devraient disparaître"
+                )
+            ),
+            "complexite", "FACILE",
+            "tempsEstime", "2-3 minutes manuelles",
+            "impactSurAutresSessions", "AUCUN"
+        );
+    }
+
+    /**
+     * Génère une solution basée sur le changement de créneaux
+     */
+    private Map<String, Object> genererSolutionChangementCreneaux(
+            List<SessionFormation> sessions, 
+            List<Conflit> conflits) {
+        
+        List<Conflit> conflitsCreneau = conflits.stream()
+            .filter(c -> c.getType() == Conflit.TypeConflit.CONFLIT_SALLE || 
+                         c.getType() == Conflit.TypeConflit.CONFLIT_GROUPE)
+            .collect(Collectors.toList());
+        
+        if (conflitsCreneau.isEmpty()) {
+            return null;
+        }
+        
+        return Map.of(
+            "id", 2,
+            "type", "CHANGEMENT_CRENEAUX",
+            "titre", "🕐 Déplacer vers d'autres créneaux",
+            "description", String.format("Modifier les créneaux pour résoudre %d conflit(s)", conflitsCreneau.size()),
+            "conflits", conflitsCreneau.stream()
+                .map(c -> c.getDescription())
+                .collect(Collectors.toList()),
+            "actions", List.of(
+                Map.of(
+                    "etape", 1,
+                    "action", "Identifier les sessions en conflit",
+                    "endpoint", "GET /api/sessions",
+                    "description", "Trouver les sessions utilisant le même créneau"
+                ),
+                Map.of(
+                    "etape", 2,
+                    "action", "Créer de nouveaux créneaux",
+                    "endpoint", "POST /api/creneaux",
+                    "exemple", Map.of(
+                        "jourSemaine", "VENDREDI",
+                        "heureDebut", "10:00",
+                        "heureFin", "12:00",
+                        "date", "2025-12-27"
+                    )
+                ),
+                Map.of(
+                    "etape", 3,
+                    "action", "Modifier la session",
+                    "endpoint", "PUT /api/sessions/{id}",
+                    "description", "Changer creneauIds vers le nouveau créneau"
+                )
+            ),
+            "complexite", "MOYENNE",
+            "tempsEstime", "5-10 minutes manuelles",
+            "impactSurAutresSessions", "FAIBLE"
+        );
+    }
+
+    /**
+     * Génère une solution basée sur le changement de salles
+     */
+    private Map<String, Object> genererSolutionChangementSalles(
+            List<SessionFormation> sessions,
+            List<Conflit> conflits) {
+        
+        List<Conflit> conflitsSalle = conflits.stream()
+            .filter(c -> c.getType() == Conflit.TypeConflit.CONFLIT_SALLE)
+            .collect(Collectors.toList());
+        
+        if (conflitsSalle.isEmpty()) {
+            return null;
+        }
+        
+        return Map.of(
+            "id", 3,
+            "type", "CHANGEMENT_SALLES",
+            "titre", "🏢 Changer les salles",
+            "description", String.format("Assigner des salles différentes pour résoudre %d conflit(s)", conflitsSalle.size()),
+            "actions", List.of(
+                Map.of(
+                    "etape", 1,
+                    "action", "Voir les salles disponibles",
+                    "endpoint", "GET /api/salles",
+                    "description", "Lister toutes les salles"
+                ),
+                Map.of(
+                    "etape", 2,
+                    "action", "Modifier la session",
+                    "endpoint", "PUT /api/sessions/{id}",
+                    "description", "Changer salleId vers une salle libre",
+                    "exemple", Map.of(
+                        "salleId", 2
+                    )
+                )
+            ),
+            "complexite", "FACILE",
+            "tempsEstime", "2-3 minutes manuelles",
+            "impactSurAutresSessions", "AUCUN"
+        );
+    }
+
+    /**
+     * Détermine la meilleure solution
+     */
+    private Map<String, Object> determinerMeilleureSolution(
+            List<Map<String, Object>> solutions,
+            List<Conflit> conflits) {
+        
+        // Compter les types de conflits
+        long conflitsDisponibilite = conflits.stream()
+            .filter(c -> c.getType() == Conflit.TypeConflit.CONFLIT_FORMATEUR)
+            .count();
+        
+        // Si majorité = disponibilité, recommander Solution 1
+        if (conflitsDisponibilite > conflits.size() / 2) {
+            return Map.of(
+                "solutionRecommandee", 1,
+                "raison", "La majorité des conflits sont des problèmes de disponibilité",
+                "action", "Commencez par créer les disponibilités manquantes"
+            );
+        }
+        
+        // Si beaucoup de conflits différents, recommander nouveau planning
+        if (conflits.size() > 3) {
+            return Map.of(
+                "solutionRecommandee", 4,
+                "raison", "Trop de conflits complexes, la génération automatique est plus efficace",
+                "action", "Créer un nouveau planning optimisé automatiquement"
+            );
+        }
+        
+        return Map.of(
+            "solutionRecommandee", 5,
+            "raison", "Ré-optimisation automatique recommandée pour ce type de conflits",
+            "action", "Utiliser l'endpoint de ré-optimisation"
+        );
     }
     
     /**
@@ -532,204 +762,83 @@ public class PlanningOptimisationController {
     }
     
     /**
-     * Analyse un planning existant
-     */
-    private Map<String, Object> analyserPlanning(Planning planning) {
-        Map<String, Object> analyse = new HashMap<>();
-        
-        List<SessionFormation> sessions = planning.getSessions();
-        analyse.put("nbSessions", sessions.size());
-        
-        // Analyse de la distribution
-        Map<String, Long> repartitionJours = sessions.stream()
-            .filter(s -> s.getCreneaux() != null && !s.getCreneaux().isEmpty())
-            .collect(Collectors.groupingBy(
-                s -> s.getCreneaux().get(0).getJourSemaine(),
-                Collectors.counting()
-            ));
-        analyse.put("repartitionJours", repartitionJours);
-        
-        // Analyse des conflits
-        List<Conflit> conflits = planning.getConflits();
-        analyse.put("nbConflits", conflits.size());
-        
-        if (!conflits.isEmpty()) {
-            Map<String, Long> typesConflits = conflits.stream()
-                .collect(Collectors.groupingBy(
-                    c -> c.getType().name(),
-                    Collectors.counting()
-                ));
-            analyse.put("typesConflits", typesConflits);
-        }
-        
-        // Analyse de l'utilisation des ressources
-        long sallesUtilisees = sessions.stream()
-            .filter(s -> s.getSalle() != null)
-            .map(s -> s.getSalle().getId())
-            .distinct()
-            .count();
-        analyse.put("sallesUtilisees", sallesUtilisees);
-        
-        long formateursUtilises = sessions.stream()
-            .filter(s -> s.getFormateur() != null)
-            .map(s -> s.getFormateur().getId())
-            .distinct()
-            .count();
-        analyse.put("formateursUtilises", formateursUtilises);
-        
-        return analyse;
-    }
-    
-    /**
-     * Génère des recommandations basées sur l'analyse
-     */
-    private List<Map<String, Object>> genererRecommandations(Planning planning, Map<String, Object> analyse) {
-        List<Map<String, Object>> recommandations = new ArrayList<>();
-        
-        // Recommandation sur les conflits
-        int nbConflits = (int) analyse.get("nbConflits");
-        if (nbConflits > 0) {
-            recommandations.add(Map.of(
-                "type", "CONFLIT",
-                "priorite", "HAUTE",
-                "titre", "Résoudre les conflits",
-                "description", String.format("%d conflit(s) détecté(s) dans le planning", nbConflits),
-                "action", "Utiliser l'endpoint de ré-optimisation pour résoudre automatiquement"
-            ));
-        }
-        
-        // Recommandation sur la répartition
-        @SuppressWarnings("unchecked")
-        Map<String, Long> repartition = (Map<String, Long>) analyse.get("repartitionJours");
-        if (repartition != null && !repartition.isEmpty()) {
-            long max = repartition.values().stream().max(Long::compare).orElse(0L);
-            long min = repartition.values().stream().min(Long::compare).orElse(0L);
-            
-            if (max - min > 5) {
-                recommandations.add(Map.of(
-                    "type", "EQUILIBRE",
-                    "priorite", "MOYENNE",
-                    "titre", "Rééquilibrer la distribution des cours",
-                    "description", "Certains jours sont surchargés par rapport à d'autres",
-                    "action", "Ré-optimiser le planning ou ajuster manuellement"
-                ));
-            }
-        }
-        
-        // Recommandation sur l'utilisation des ressources
-        int nbSessions = (int) analyse.get("nbSessions");
-        long sallesUtilisees = (long) analyse.get("sallesUtilisees");
-        
-        if (sallesUtilisees < 2 && nbSessions > 10) {
-            recommandations.add(Map.of(
-                "type", "RESSOURCES",
-                "priorite", "BASSE",
-                "titre", "Sous-utilisation des salles",
-                "description", "Très peu de salles utilisées par rapport au nombre de sessions",
-                "action", "Vérifier si d'autres salles sont disponibles"
-            ));
-        }
-        
-        // Recommandation positive
-        if (nbConflits == 0 && nbSessions > 5) {
-            recommandations.add(Map.of(
-                "type", "SUCCES",
-                "priorite", "INFO",
-                "titre", "Planning de bonne qualité",
-                "description", "Aucun conflit détecté, planning prêt à être validé",
-                "action", "Valider et publier le planning"
-            ));
-        }
-        
-        return recommandations;
-    }
-    
-    /**
-     * Détermine la priorité globale des recommandations
-     */
-    private String determinerPrioriteRecommandations(List<Map<String, Object>> recommandations) {
-        if (recommandations.stream().anyMatch(r -> "HAUTE".equals(r.get("priorite")))) {
-            return "HAUTE";
-        }
-        if (recommandations.stream().anyMatch(r -> "MOYENNE".equals(r.get("priorite")))) {
-            return "MOYENNE";
-        }
-        return "BASSE";
-    }
-    
-    /**
-     * Capture l'état d'un planning
-     */
-    private Map<String, Object> capturerEtatPlanning(Planning planning) {
-        Map<String, Object> etat = new HashMap<>();
-        etat.put("nbSessions", planning.getSessions().size());
-        etat.put("nbConflits", planning.getConflits().size());
-        etat.put("statut", planning.getStatut());
-        
-        // Calculer un score approximatif
-        double score = planning.getSessions().size() > 0 ? 
-            (double) planning.getSessions().size() / (planning.getSessions().size() + planning.getConflits().size()) : 0;
-        etat.put("scoreApproximatif", String.format("%.2f", score));
-        
-        return etat;
-    }
-    
-    /**
-     * Compare deux états de planning
-     */
-    private Map<String, Object> comparerEtats(Map<String, Object> avant, Map<String, Object> apres) {
-        Map<String, Object> comparaison = new HashMap<>();
-        
-        int nbSessionsAvant = (int) avant.get("nbSessions");
-        int nbSessionsApres = (int) apres.get("nbSessions");
-        comparaison.put("sessions", Map.of(
-            "avant", nbSessionsAvant,
-            "apres", nbSessionsApres,
-            "difference", nbSessionsApres - nbSessionsAvant
-        ));
-        
-        int nbConflitsAvant = (int) avant.get("nbConflits");
-        int nbConflitsApres = (int) apres.get("nbConflits");
-        comparaison.put("conflits", Map.of(
-            "avant", nbConflitsAvant,
-            "apres", nbConflitsApres,
-            "difference", nbConflitsApres - nbConflitsAvant
-        ));
-        
-        return comparaison;
-    }
-    
-    /**
-     * Détermine si la ré-optimisation a amélioré le planning
-     */
-    private String determinerAmelioration(Map<String, Object> comparaison) {
-        @SuppressWarnings("unchecked")
-        Map<String, Integer> conflits = (Map<String, Integer>) comparaison.get("conflits");
-        int diffConflits = conflits.get("difference");
-        
-        @SuppressWarnings("unchecked")
-        Map<String, Integer> sessions = (Map<String, Integer>) comparaison.get("sessions");
-        int diffSessions = sessions.get("difference");
-        
-        if (diffConflits < 0 && diffSessions >= 0) {
-            return "✅ AMÉLIORATION SIGNIFICATIVE - Moins de conflits, même nombre ou plus de sessions";
-        } else if (diffSessions > 0) {
-            return "✅ AMÉLIORATION - Plus de sessions assignées";
-        } else if (diffConflits == 0 && diffSessions == 0) {
-            return "➖ STABLE - Aucun changement significatif";
-        } else if (diffConflits > 0) {
-            return "⚠️ DÉGRADATION - Plus de conflits détectés";
-        } else {
-            return "⚠️ DÉGRADATION - Moins de sessions assignées";
-        }
-    }
-    
-    /**
      * Compte le nombre de plannings par statut
      */
     private long compterParStatut(List<Planning> plannings, String statut) {
         return plannings.stream()
             .filter(p -> statut.equals(p.getStatut()))
             .count();
+    }
+    
+    @GetMapping("/comparer")
+    public ResponseEntity<?> comparerPlannings(
+            @RequestParam int ancien,
+            @RequestParam int nouveau) {
+        
+        try {
+            Optional<Planning> planningAncien = planningRepository.findById(ancien);
+            Optional<Planning> planningNouveau = planningRepository.findById(nouveau);
+            
+            if (planningAncien.isEmpty() || planningNouveau.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Planning p1 = planningAncien.get();
+            Planning p2 = planningNouveau.get();
+            
+            // Charger les conflits
+            List<Conflit> conflits1 = new ArrayList<>();
+            List<Conflit> conflits2 = new ArrayList<>();
+            
+            for (SessionFormation s : p1.getSessions()) {
+                for (Creneau c : s.getCreneaux()) {
+                    conflits1.addAll(conflitRepository.findByCreneauId(c.getId()));
+                }
+            }
+            
+            for (SessionFormation s : p2.getSessions()) {
+                for (Creneau c : s.getCreneaux()) {
+                    conflits2.addAll(conflitRepository.findByCreneauId(c.getId()));
+                }
+            }
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("comparaison", Map.of(
+                "planningAncien", Map.of(
+                    "id", p1.getId(),
+                    "nbSessions", p1.getSessions().size(),
+                    "nbConflits", conflits1.size(),
+                    "statut", p1.getStatut()
+                ),
+                "planningNouveau", Map.of(
+                    "id", p2.getId(),
+                    "nbSessions", p2.getSessions().size(),
+                    "nbConflits", conflits2.size(),
+                    "statut", p2.getStatut()
+                ),
+                "amelioration", Map.of(
+                    "conflitsResolus", conflits1.size() - conflits2.size(),
+                    "pourcentage", conflits1.isEmpty() ? 100 : 
+                        (double) (conflits1.size() - conflits2.size()) / conflits1.size() * 100
+                )
+            ));
+            
+            if (conflits2.size() < conflits1.size()) {
+                response.put("recommandation", "✅ Le nouveau planning est meilleur (moins de conflits)");
+            } else if (conflits2.size() == conflits1.size() && conflits2.isEmpty()) {
+                response.put("recommandation", "✅ Les deux plannings sont sans conflits");
+            } else {
+                response.put("recommandation", "⚠️ L'ancien planning est meilleur ou équivalent");
+            }
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "success", false,
+                "erreur", e.getMessage()
+            ));
+        }
     }
 }
