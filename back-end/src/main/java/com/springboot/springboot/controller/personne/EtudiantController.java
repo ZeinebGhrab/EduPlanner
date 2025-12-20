@@ -1,13 +1,10 @@
 package com.springboot.springboot.controller.personne;
 
 import com.springboot.springboot.entity.personne.Etudiant;
-import com.springboot.springboot.entity.planning.SessionFormation;
 import com.springboot.springboot.dto.planning.PlanningEtudiantDTO;
 import com.springboot.springboot.dto.planning.SessionAVenirDTO;
 import com.springboot.springboot.entity.common.Groupe;
 import com.springboot.springboot.service.personne.EtudiantService;
-import com.springboot.springboot.service.planning.SessionFormationService;
-
 import jakarta.transaction.Transactional;
 
 import com.springboot.springboot.repository.common.GroupeRepository;
@@ -32,9 +29,6 @@ public class EtudiantController {
     @Autowired
     private GroupeRepository groupeRepository;
     
-    @Autowired
-    private SessionFormationService sessionService;
-
     @GetMapping
     public ResponseEntity<List<Etudiant>> getAll() {
         return ResponseEntity.ok(service.findAll());

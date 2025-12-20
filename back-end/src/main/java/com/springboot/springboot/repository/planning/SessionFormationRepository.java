@@ -3,6 +3,8 @@ package com.springboot.springboot.repository.planning;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -104,4 +106,14 @@ public interface SessionFormationRepository extends JpaRepository<SessionFormati
     
     @Query("SELECT s FROM SessionFormation s WHERE s.dateDebut BETWEEN :dateDebut AND :dateFin")
     List<SessionFormation> findByDateDebutBetween(@Param("dateDebut") LocalDate dateDebut, @Param("dateFin") LocalDate dateFin);
+    
+    @Query("""
+    	    SELECT DISTINCT s FROM SessionFormation s
+    	    JOIN FETCH s.groupe g
+    	    LEFT JOIN FETCH g.etudiants
+    	    LEFT JOIN FETCH s.creneaux
+    	    LEFT JOIN FETCH s.materielRequis
+    	    WHERE s.id = :id
+    	""")
+    	Optional<SessionFormation> findByIdComplet(@Param("id") int id);
 }

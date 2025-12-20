@@ -79,20 +79,6 @@ public class PlanningOptimisationService {
         Salle salle;
         List<Materiel> materiels;
         double score;
-        
-        Affectation copy() {
-            Affectation copie = new Affectation();
-            copie.session = this.session;
-            copie.date = this.date;
-            copie.heureDebut = this.heureDebut;
-            copie.heureFin = this.heureFin;
-            copie.creneau = this.creneau;
-            copie.formateur = this.formateur;
-            copie.salle = this.salle;
-            copie.materiels = new ArrayList<>(this.materiels);
-            copie.score = this.score;
-            return copie;
-        }
     }
 
     /**

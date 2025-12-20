@@ -9,7 +9,8 @@ public class ConflitDTO {
     private String description;
     private Integer severite;
     private LocalDateTime dateDetection;
-    
+    private Integer creneauId; 
+
     // Constructeurs
     public ConflitDTO() {
         super();
@@ -21,12 +22,13 @@ public class ConflitDTO {
         this.description = description;
     }
     
-    public ConflitDTO(int id, String type, String description, Integer severite, LocalDateTime dateDetection) {
+    public ConflitDTO(int id, String type, String description, Integer severite, LocalDateTime dateDetection, Integer creneauId) {
         this.id = id;
         this.type = type;
         this.description = description;
         this.severite = severite;
         this.dateDetection = dateDetection;
+        this.creneauId = creneauId;
     }
     
     // Factory method pour créer un DTO depuis une entité
@@ -36,7 +38,8 @@ public class ConflitDTO {
             conflit.getType() != null ? conflit.getType().name() : null,
             conflit.getDescription(),
             conflit.getSeverite(),
-            conflit.getDateDetection()
+            conflit.getDateDetection(),
+            conflit.getCreneau() != null ? conflit.getCreneau().getId() : null // ⚡ récupération de l'id du créneau
         );
     }
 
@@ -79,5 +82,13 @@ public class ConflitDTO {
 
     public void setDateDetection(LocalDateTime dateDetection) {
         this.dateDetection = dateDetection;
+    }
+
+    public Integer getCreneauId() {
+        return creneauId;
+    }
+
+    public void setCreneauId(Integer creneauId) {
+        this.creneauId = creneauId;
     }
 }

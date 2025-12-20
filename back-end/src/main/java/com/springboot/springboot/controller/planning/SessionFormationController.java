@@ -85,13 +85,16 @@ public class SessionFormationController {
     @GetMapping("/{id}")
     @Transactional
     public ResponseEntity<SessionFormationDTO> getById(@PathVariable int id) {
-        return service.findById(id)
-                .map(this::toDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            SessionFormation session = service.findById(id);
+            return ResponseEntity.ok(toDTO(session));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<?> createSession(@RequestBody SessionFormationRequestDTO dto) {
         SessionFormation session = dtoToEntity(dto);
 
@@ -111,35 +114,43 @@ public class SessionFormationController {
 
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody SessionFormationRequestDTO dto) {
-        return service.findById(id)
-                .map(existing -> {
-                    SessionFormation updated = dtoToEntity(dto);
-                    updated.setId(id);
+        try {
+            // Transformer le DTO en entity et mettre à jour l'ID
+            SessionFormation updated = dtoToEntity(dto);
+            updated.setId(id);
 
-                    List<ConflitDTO> conflits = service.saveAvecConflit(updated);
+            // Sauvegarde avec gestion des conflits
+            List<ConflitDTO> conflits = service.saveAvecConflit(updated);
 
-                    if (!conflits.isEmpty()) {
-                        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
-                                "message", "Conflits détectés lors de la mise à jour de la session",
-                                "conflits", conflits
-                        ));
-                    } else {
-                        return ResponseEntity.ok(toDTO(updated));
-                    }
-                })
-                .orElse(ResponseEntity.notFound().build());
+            if (!conflits.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                        "message", "Conflits détectés lors de la mise à jour de la session",
+                        "conflits", conflits
+                ));
+            } else {
+                return ResponseEntity.ok(toDTO(updated));
+            }
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
-        return service.findById(id)
-                .map(s -> {
-                    service.deleteById(id);
-                    return ResponseEntity.noContent().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            // Supprimer la session
+            service.deleteById(id);
+
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            // La session n'existe pas
+            return ResponseEntity.notFound().build();
+        }
     }
+
     
     // ----- Endpoints de recherche -----
     

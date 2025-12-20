@@ -5,7 +5,6 @@ import com.springboot.springboot.entity.planning.Planning;
 import com.springboot.springboot.entity.planning.SessionFormation;
 import com.springboot.springboot.service.planning.PlanningOptimisationService;
 import com.springboot.springboot.service.planning.PlanningOptimisationService.ResultatOptimisation;
-import com.springboot.springboot.service.planning.PlanningService;
 import com.springboot.springboot.repository.planning.PlanningRepository;
 import com.springboot.springboot.repository.planning.SessionFormationRepository;
 import com.springboot.springboot.repository.planning.ConflitRepository;
@@ -28,7 +27,7 @@ import java.util.stream.Collectors;
  * Accessible uniquement aux administrateurs
  * 
  * Fonctionnalités complètes :
- * - Génération automatique avec optimisation
+ * - Génération automatique avec optimisation (heuristique + backtracking + optimisation locale)
  * - Recommandations d'amélioration
  * - Ré-optimisation d'un planning existant
  * - Statistiques et métriques
@@ -43,9 +42,6 @@ public class PlanningOptimisationController {
     private PlanningOptimisationService optimisationService;
     
     @Autowired
-    private PlanningService planningService;
-    
-    @Autowired
     private PlanningRepository planningRepository;
     
     @Autowired
@@ -56,8 +52,12 @@ public class PlanningOptimisationController {
     
     /**
      * ========================================================================
-     * GÉNÉRATION AUTOMATIQUE DE PLANNING
+     * GÉNÉRATION AUTOMATIQUE DE PLANNING AVEC ALGORITHMES D'OPTIMISATION
      * ========================================================================
+     * Utilise 3 algorithmes successifs :
+     * 1. Heuristique gloutonne avec scoring multi-critères
+     * 2. Backtracking intelligent pour les cas difficiles
+     * 3. Optimisation locale par hill climbing
      */
     @PostMapping("/generer")
     @Transactional
@@ -74,7 +74,7 @@ public class PlanningOptimisationController {
                 ));
             }
             
-            // Lancer l'algorithme d'optimisation
+            // Lancer l'algorithme d'optimisation complet
             ResultatOptimisation resultat = optimisationService.genererPlanningOptimise(semaine);
             
             // Vérification si planning est null
@@ -118,7 +118,7 @@ public class PlanningOptimisationController {
                 );
             }
             
-            // Détails des sessions non assignées
+            // Détails des sessions non assignées avec diagnostic
             if (!resultat.getSessionsNonAssignees().isEmpty()) {
                 response.put("sessionsNonAssignees", resultat.getSessionsNonAssignees().stream()
                     .map(s -> Map.of(
@@ -304,7 +304,7 @@ public class PlanningOptimisationController {
             List<Planning> tousLesPlannings = planningRepository.findAll();
             
             Map<String, Object> stats = new HashMap<>();
-            stats.put("totalPlannings", tousLesP lannings.size());
+            stats.put("totalPlannings", tousLesPlannings.size());
             stats.put("planningsEnCours", compterParStatut(tousLesPlannings, "EN_COURS"));
             stats.put("planningsValides", compterParStatut(tousLesPlannings, "VALIDE"));
             stats.put("planningsPublies", compterParStatut(tousLesPlannings, "PUBLIE"));
@@ -362,16 +362,17 @@ public class PlanningOptimisationController {
         response.put("message", "Service d'optimisation de planning opérationnel");
         response.put("version", "2.0.0");
         response.put("algorithmes", Map.of(
-            "heuristique", "Glouton avec scoring multi-critères",
-            "backtracking", "Backtracking intelligent avec élagage",
-            "optimisationLocale", "Hill climbing avec échanges",
-            "generationCreneaux", "Génération automatique dates et heures"
+            "phase1", "Heuristique gloutonne avec scoring multi-critères (PREFERENCE_WEIGHT: 40%, AVAILABILITY_WEIGHT: 30%, CAPACITY_WEIGHT: 20%, BALANCE_WEIGHT: 10%)",
+            "phase2", "Backtracking intelligent avec élagage (profondeur max: 10, iterations max: 1000)",
+            "phase3", "Optimisation locale par hill climbing avec échanges (iterations max: 50)",
+            "generationCreneaux", "Génération automatique de dates et heures (8h-19h, durées: 60/120/180/240 min)"
         ));
         response.put("endpoints", Map.of(
             "generer", "POST /api/admin/planning/optimisation/generer?semaine={yyyy-MM-dd}",
             "recommandations", "GET /api/admin/planning/optimisation/recommandations/{id}",
             "reoptimiser", "POST /api/admin/planning/optimisation/reoptimiser/{id}",
-            "statistiques", "GET /api/admin/planning/optimisation/statistiques"
+            "statistiques", "GET /api/admin/planning/optimisation/statistiques",
+            "test", "GET /api/admin/planning/optimisation/test"
         ));
         
         return ResponseEntity.ok(response);
@@ -462,7 +463,7 @@ public class PlanningOptimisationController {
             raisons.add("Durée trop longue (> 4h)");
         }
         
-        return raisons.isEmpty() ? "Ressources insuffisantes" : String.join(", ", raisons);
+        return raisons.isEmpty() ? "Ressources insuffisantes ou contraintes impossibles à satisfaire" : String.join(", ", raisons);
     }
     
     /**
@@ -600,7 +601,7 @@ public class PlanningOptimisationController {
         // Recommandation sur la répartition
         @SuppressWarnings("unchecked")
         Map<String, Long> repartition = (Map<String, Long>) analyse.get("repartitionJours");
-        if (repartition != null) {
+        if (repartition != null && !repartition.isEmpty()) {
             long max = repartition.values().stream().max(Long::compare).orElse(0L);
             long min = repartition.values().stream().min(Long::compare).orElse(0L);
             
@@ -711,12 +712,24 @@ public class PlanningOptimisationController {
         int diffSessions = sessions.get("difference");
         
         if (diffConflits < 0 && diffSessions >= 0) {
-            return "✅ AMÉLIORATION SIGNIFICATIVE - Moins de conflits";
+            return "✅ AMÉLIORATION SIGNIFICATIVE - Moins de conflits, même nombre ou plus de sessions";
         } else if (diffSessions > 0) {
             return "✅ AMÉLIORATION - Plus de sessions assignées";
         } else if (diffConflits == 0 && diffSessions == 0) {
-            return "➖ STABLE - Aucun";
+            return "➖ STABLE - Aucun changement significatif";
+        } else if (diffConflits > 0) {
+            return "⚠️ DÉGRADATION - Plus de conflits détectés";
+        } else {
+            return "⚠️ DÉGRADATION - Moins de sessions assignées";
         }
-		return null;
+    }
+    
+    /**
+     * Compte le nombre de plannings par statut
+     */
+    private long compterParStatut(List<Planning> plannings, String statut) {
+        return plannings.stream()
+            .filter(p -> statut.equals(p.getStatut()))
+            .count();
     }
 }
