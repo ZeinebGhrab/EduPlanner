@@ -3,6 +3,7 @@ package com.springboot.springboot.entity.planning;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 import java.time.Duration;
 
 @Entity
@@ -25,19 +26,19 @@ public class Creneau {
     @Column(nullable = false)
     private LocalDate date;
 
-    // Constructeur par défaut
+    private String statut;
+
     public Creneau() {}
-    
-    
 
     public Creneau(int id) {
-		super();
-		this.id = id;
-	}
+        this.id = id;
+    }
+
+    // ======================
+    // MÉTHODES MÉTIER
+    // ======================
 
 
-
-	// Méthodes métier
     public boolean chevauche(Creneau autre) {
         if (autre == null) return false;
         if (!this.jourSemaine.equals(autre.jourSemaine)) return false;
@@ -52,44 +53,22 @@ public class Creneau {
         return heureFin.isAfter(heureDebut); 
     }
 
-    // Getters et Setters
-    public int getId() { 
-        return id; 
-    }
+    // ======================
+    // GETTERS / SETTERS
+    // ======================
 
-    public void setId(int id) { 
-        this.id = id; 
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public String getJourSemaine() { return jourSemaine; }
+    public void setJourSemaine(String jourSemaine) { this.jourSemaine = jourSemaine; }
+    public LocalTime getHeureDebut() { return heureDebut; }
+    public void setHeureDebut(LocalTime heureDebut) { this.heureDebut = heureDebut; }
+    public LocalTime getHeureFin() { return heureFin; }
+    public void setHeureFin(LocalTime heureFin) { this.heureFin = heureFin; }
+    public LocalDate getDate() { return date; }
+    public void setDate(LocalDate date) { this.date = date; }
+    public String getStatut() { return statut; }
+    public void setStatut(String statut) { this.statut = statut; }
 
-    public String getJourSemaine() { 
-        return jourSemaine; 
-    }
 
-    public void setJourSemaine(String jourSemaine) { 
-        this.jourSemaine = jourSemaine; 
-    }
-
-    public LocalTime getHeureDebut() { 
-        return heureDebut; 
-    }
-
-    public void setHeureDebut(LocalTime heureDebut) { 
-        this.heureDebut = heureDebut; 
-    }
-
-    public LocalTime getHeureFin() { 
-        return heureFin; 
-    }
-
-    public void setHeureFin(LocalTime heureFin) { 
-        this.heureFin = heureFin; 
-    }
-
-    public LocalDate getDate() { 
-        return date; 
-    }
-
-    public void setDate(LocalDate date) { 
-        this.date = date; 
-    }
 }

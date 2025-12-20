@@ -16,7 +16,7 @@ import {
     getTodayISO
 } from './shared/ui-helpers.js';
 
-import { updateUserUI } from '../../shared/config.js';
+import { updateUserUI } from '../shared/config.js';
 
 let currentFormateur = null;
 let todaySessions = [];

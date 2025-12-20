@@ -3,18 +3,9 @@ package com.springboot.springboot.service.planning;
 import com.springboot.springboot.dto.conflit.ConflitDTO;
 import com.springboot.springboot.entity.planning.Conflit;
 import com.springboot.springboot.entity.planning.SessionFormation;
-import com.springboot.springboot.entity.ressources.Materiel;
-import com.springboot.springboot.repository.common.GroupeRepository;
-import com.springboot.springboot.repository.personne.FormateurRepository;
 import com.springboot.springboot.repository.planning.ConflitRepository;
-import com.springboot.springboot.repository.planning.CreneauRepository;
-import com.springboot.springboot.repository.planning.PlanningRepository;
 import com.springboot.springboot.repository.planning.SessionFormationRepository;
-import com.springboot.springboot.repository.ressources.MaterielRepository;
-import com.springboot.springboot.repository.ressources.SalleRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -149,4 +140,5 @@ public class SessionFormationService {
     public List<SessionFormation> findByCreneauId(int creneauId) {
         return sessionRepository.findByCreneauId(creneauId);
     }
+
 }

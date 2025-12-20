@@ -10,7 +10,6 @@ import com.springboot.springboot.entity.personne.Etudiant;
 import com.springboot.springboot.entity.planning.Creneau;
 import com.springboot.springboot.repository.common.GroupeRepository;
 import com.springboot.springboot.repository.personne.EtudiantRepository;
-import com.springboot.springboot.repository.planning.SessionFormationRepository;
 
 @Service
 public class GroupeService {
@@ -21,8 +20,7 @@ public class GroupeService {
     @Autowired
     private EtudiantRepository etudiantRepo;
 
-    @Autowired
-    private SessionFormationRepository sessionRepo;
+    
 
     // ---------------------- CRUD ------------------------
 

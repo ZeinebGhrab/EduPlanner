@@ -1,8 +1,15 @@
 package com.springboot.springboot.controller.personne;
 
 import com.springboot.springboot.entity.personne.Etudiant;
+import com.springboot.springboot.entity.planning.SessionFormation;
+import com.springboot.springboot.dto.planning.PlanningEtudiantDTO;
+import com.springboot.springboot.dto.planning.SessionAVenirDTO;
 import com.springboot.springboot.entity.common.Groupe;
 import com.springboot.springboot.service.personne.EtudiantService;
+import com.springboot.springboot.service.planning.SessionFormationService;
+
+import jakarta.transaction.Transactional;
+
 import com.springboot.springboot.repository.common.GroupeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -22,6 +31,9 @@ public class EtudiantController {
 
     @Autowired
     private GroupeRepository groupeRepository;
+    
+    @Autowired
+    private SessionFormationService sessionService;
 
     @GetMapping
     public ResponseEntity<List<Etudiant>> getAll() {
@@ -66,5 +78,78 @@ public class EtudiantController {
                     return ResponseEntity.noContent().<Void>build();
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+    
+    /**
+     * Récupère les sessions d'un étudiant spécifique par son ID
+     */
+    @GetMapping("/{etudiantId}/sessions")
+    public ResponseEntity<List<PlanningEtudiantDTO>> getSessionsByEtudiant(@PathVariable int etudiantId) {
+        Optional<Etudiant> etudiantOpt = service.findById(etudiantId);
+        if (etudiantOpt.isEmpty()) {
+            return ResponseEntity.status(404).build();
+        }
+
+        List<PlanningEtudiantDTO> dtos = service.getPlanningDTOByEtudiantId(etudiantId);
+        return ResponseEntity.ok(dtos);
+    }
+    
+    /**
+     * Récupère les sessions à venir d'un étudiant spécifique par son ID
+     */
+    @GetMapping("/{etudiantId}/sessions/a-venir")
+    public ResponseEntity<List<SessionAVenirDTO>> getSessionsAVenirByEtudiantId(@PathVariable int etudiantId) {
+        Optional<Etudiant> etudiantOpt = service.findById(etudiantId);
+        
+        if (etudiantOpt.isEmpty()) {
+            return ResponseEntity.status(404).build();
+        }
+        
+        List<SessionAVenirDTO> sessions = service.getSessionsAVenir(etudiantId);
+        return ResponseEntity.ok(sessions);
+    }
+
+    
+    /**
+     * Récupère le planning d'un étudiant spécifique par son ID
+     */
+    @GetMapping("/{etudiantId}/planning")
+    public ResponseEntity<List<PlanningEtudiantDTO>> getPlanningByEtudiantId(@PathVariable int etudiantId) {
+        Optional<Etudiant> etudiantOpt = service.findById(etudiantId);
+
+        if (etudiantOpt.isEmpty()) {
+            return ResponseEntity.status(404).build();
+        }
+
+        // Récupérer les DTOs depuis le service
+        List<PlanningEtudiantDTO> dtos = service.getPlanningDTOByEtudiantId(etudiantId);
+        return ResponseEntity.ok(dtos);
+    }
+    
+    /**
+     * Récupère les statistiques des sessions d'un étudiant
+     */
+    @GetMapping("/{etudiantId}/statistiques")
+    public ResponseEntity<?> getStatistiquesByEtudiantId(@PathVariable int etudiantId) {
+        Optional<Etudiant> etudiantOpt = service.findById(etudiantId);
+        
+        if (etudiantOpt.isEmpty()) {
+            return ResponseEntity.status(404).body("Étudiant non trouvé");
+        }
+        
+        Map<String, Object> statistiques = service.getStatistiquesEtudiant(etudiantId);
+        return ResponseEntity.ok(statistiques);
+    }
+    
+    @GetMapping("/{id}/groupes")
+    @Transactional
+    public ResponseEntity<List<Groupe>> getGroupes(@PathVariable int id) {
+        Optional<Etudiant> etudiantOpt = service.findById(id);
+        if (etudiantOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<Groupe> groupes = etudiantOpt.get().getGroupes();
+        return ResponseEntity.ok(groupes);
     }
 }

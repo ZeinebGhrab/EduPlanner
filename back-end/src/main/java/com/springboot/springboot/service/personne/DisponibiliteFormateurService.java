@@ -45,7 +45,7 @@ public class DisponibiliteFormateurService {
         disponibilite.setJourSemaine(dto.getJourSemaine());
         disponibilite.setHeureDebut(dto.getHeureDebut());
         disponibilite.setHeureFin(dto.getHeureFin());
-        disponibilite.setEstDisponible(dto.getEstDisponible() != null ? dto.getEstDisponible() : true);
+        disponibilite.setEstDisponible(dto.getEstDisponible() != null ? (Boolean) dto.getEstDisponible() : true);
 
         return repository.save(disponibilite);
     }

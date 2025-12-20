@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.springboot.dto.conflit.ConflitDTO;
@@ -22,7 +23,6 @@ import com.springboot.springboot.dto.session.SessionFormationDTO;
 import com.springboot.springboot.dto.session.SessionFormationRequestDTO;
 import com.springboot.springboot.entity.common.Groupe;
 import com.springboot.springboot.entity.personne.Formateur;
-import com.springboot.springboot.entity.planning.Conflit;
 import com.springboot.springboot.entity.planning.Creneau;
 import com.springboot.springboot.entity.planning.Planning;
 import com.springboot.springboot.entity.planning.SessionFormation;
@@ -32,6 +32,7 @@ import com.springboot.springboot.repository.common.GroupeRepository;
 import com.springboot.springboot.repository.personne.FormateurRepository;
 import com.springboot.springboot.repository.planning.CreneauRepository;
 import com.springboot.springboot.repository.planning.PlanningRepository;
+import com.springboot.springboot.repository.planning.SessionRepository;
 import com.springboot.springboot.repository.ressources.MaterielRepository;
 import com.springboot.springboot.repository.ressources.SalleRepository;
 import com.springboot.springboot.service.planning.ConflitService;
@@ -46,13 +47,12 @@ public class SessionFormationController {
 
     private final SessionFormationService service;
     private final FormateurRepository formateurRepository;
+    private final SessionRepository sessionRepository;
     private final SalleRepository salleRepository;
     private final GroupeRepository groupeRepository;
     private final CreneauRepository creneauRepository;
     private final MaterielRepository materielRepository;
     private final PlanningRepository planningRepository;
-    private final ConflitService conflitService;
-
     @Autowired
     public SessionFormationController(SessionFormationService service,
                                       FormateurRepository formateurRepository,
@@ -61,6 +61,7 @@ public class SessionFormationController {
                                       CreneauRepository creneauRepository,
                                       MaterielRepository materielRepository,
                                       PlanningRepository planningRepository,
+                                      SessionRepository sessionRepository,
                                       ConflitService conflitService) {
         this.service = service;
         this.formateurRepository = formateurRepository;
@@ -69,7 +70,7 @@ public class SessionFormationController {
         this.creneauRepository = creneauRepository;
         this.materielRepository = materielRepository;
         this.planningRepository = planningRepository;
-        this.conflitService = conflitService;
+        this.sessionRepository = sessionRepository;
     }
 
     @GetMapping
@@ -151,6 +152,59 @@ public class SessionFormationController {
         return ResponseEntity.ok(dtos);
     }
     
+    @GetMapping("/formateur/{formateurId}/filter")
+    @Transactional
+    public ResponseEntity<List<SessionFormationDTO>> getByFormateurWithFilters(
+            @PathVariable int formateurId,
+            @RequestParam(required = false) Integer groupeId,
+            @RequestParam(required = false) Integer salleId,
+            @RequestParam(required = false) String statut,
+            @RequestParam(required = false) String dateDebut,
+            @RequestParam(required = false) String dateFin
+    ) {
+        List<SessionFormation> sessions = service.findByFormateurId(formateurId);
+
+        // Filtrer côté serveur
+        if (groupeId != null) {
+            sessions = sessions.stream()
+                    .filter(s -> s.getGroupe() != null && s.getGroupe().getId() == groupeId)
+                    .collect(Collectors.toList());
+        }
+
+        if (salleId != null) {
+            sessions = sessions.stream()
+                    .filter(s -> s.getSalle() != null && s.getSalle().getId() == salleId)
+                    .collect(Collectors.toList());
+        }
+
+        if (statut != null) {
+            sessions = sessions.stream()
+                    .filter(s -> s.getCreneaux().get(0).getStatut() != null && s.getCreneaux().get(0).getStatut().equalsIgnoreCase(statut))
+                    .collect(Collectors.toList());
+        }
+
+        if (dateDebut != null) {
+            sessions = sessions.stream()
+                    .filter(s -> s.getPlanning() != null && 
+                                 s.getPlanning().getSemaine().isAfter(java.time.LocalDate.parse(dateDebut).minusDays(1)))
+                    .collect(Collectors.toList());
+        }
+
+        if (dateFin != null) {
+            sessions = sessions.stream()
+                    .filter(s -> s.getPlanning() != null &&
+                                 s.getPlanning().getSemaine().isBefore(java.time.LocalDate.parse(dateFin).plusDays(1)))
+                    .collect(Collectors.toList());
+        }
+
+        List<SessionFormationDTO> dtos = sessions.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    
     @GetMapping("/salle/{salleId}")
     @Transactional
     public ResponseEntity<List<SessionFormationDTO>> getBySalle(@PathVariable int salleId) {
@@ -177,6 +231,7 @@ public class SessionFormationController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }
+    
 
     // ----- Méthodes utilitaires -----
     private SessionFormation dtoToEntity(SessionFormationRequestDTO dto) {
@@ -227,17 +282,81 @@ public class SessionFormationController {
 
     private SessionFormationDTO toDTO(SessionFormation session) {
         SessionFormationDTO dto = new SessionFormationDTO();
+        dto.setId(session.getId());
         dto.nomCours = session.getNomCours();
         dto.duree = session.getDuree();
         dto.statut = session.getStatut();
-        dto.formateurId = session.getFormateur() != null ? session.getFormateur().getId() : 0;
-        dto.salleId = session.getSalle() != null ? session.getSalle().getId() : 0;
-        dto.groupeId = session.getGroupe() != null ? session.getGroupe().getId() : 0;
-        dto.creneauId = (session.getCreneaux() != null && !session.getCreneaux().isEmpty()) ? session.getCreneaux().get(0).getId() : 0;
-        dto.planningId = session.getPlanning() != null ? session.getPlanning().getId() : 0;
-        dto.materielRequisIds = session.getMaterielRequis().stream()
-                .map(Materiel::getId)
-                .collect(Collectors.toList());
+
+        // Formateur
+        if (session.getFormateur() != null) {
+            dto.formateurId = session.getFormateur().getId();
+            dto.formateurNom = session.getFormateur().getNom() + " " + session.getFormateur().getPrenom();
+        }
+
+        // Salle
+        if (session.getSalle() != null) {
+            dto.salleId = session.getSalle().getId();
+            dto.salleNom = session.getSalle().getNom();
+        }
+
+        // Groupe
+        if (session.getGroupe() != null) {
+            dto.groupeId = session.getGroupe().getId();
+            dto.groupeNom = session.getGroupe().getNom();
+
+            // Étudiants du groupe
+            dto.etudiants = session.getGroupe().getEtudiants().stream()
+                    .map(e -> e.getNom() + " " + e.getPrenom())
+                    .collect(Collectors.toList());
+        }
+
+        // Créneaux
+        if (session.getCreneaux() != null && !session.getCreneaux().isEmpty()) {
+            dto.creneauId = session.getCreneaux().get(0).getId();
+            dto.statut = session.getCreneaux().get(0).getStatut();
+            dto.date= session.getCreneaux().get(0).getDate();
+            dto.creneauxHoraires = session.getCreneaux().stream()
+                    .map(c -> c.getHeureDebut() + " - " + c.getHeureFin())
+                    .collect(Collectors.toList());
+        }
+
+        // Planning
+        if (session.getPlanning() != null) {
+            dto.planningId = session.getPlanning().getId();
+            dto.planningSemaine = session.getPlanning().getSemaine().toString();
+        }
+
+        // Matériel
+        if (session.getMaterielRequis() != null) {
+            dto.materielRequisIds = session.getMaterielRequis().stream()
+                    .map(Materiel::getId)
+                    .collect(Collectors.toList());
+            dto.materielRequisNoms = session.getMaterielRequis().stream()
+                    .map(Materiel::getNom)
+                    .collect(Collectors.toList());
+        }
+
         return dto;
     }
+    
+    
+ // Prochaines sessions pour un formateur 
+    @GetMapping("/formateur/{formateurId}/upcoming")
+    @Transactional
+    public ResponseEntity<List<SessionFormationDTO>> getUpcomingSessions(
+            @PathVariable Long formateurId,
+            @RequestParam(defaultValue = "3") int limit
+    ) {
+        List<SessionFormationDTO> dtos = sessionRepository
+                .findUpcomingSessionsByFormateurId(formateurId, java.time.LocalDate.now()) // <-- ajouter today
+                .stream()
+                .sorted((s1, s2) -> s1.getPlanning().getSemaine()
+                        .compareTo(s2.getPlanning().getSemaine()))
+                .limit(limit)
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+    
 }

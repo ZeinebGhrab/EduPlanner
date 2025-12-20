@@ -1,17 +1,26 @@
 package com.springboot.springboot.controller.admin;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.springboot.springboot.dto.admin.AdminDTO;
 import com.springboot.springboot.dto.admin.LoginRequest;
 import com.springboot.springboot.dto.admin.LoginResponse;
 import com.springboot.springboot.entity.admin.Admin;
 import com.springboot.springboot.service.admin.AdminService;
 import com.springboot.springboot.service.admin.JwtService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -35,34 +44,37 @@ public class AdminController {
                         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                                 .body("Compte désactivé");
                     }
-                    
-                    if (adminService.verifyPassword(request.getPassword(), admin.getPassword())) {
+
+                    if (adminService.verifyPassword(request.getPassword(), (String) admin.getPassword())) {
                         String token = jwtService.generateToken(admin.getEmail(), admin.getRole());
-                        
-                        AdminDTO adminDTO = AdminDTO.builder()
-                                .id(admin.getId())
-                                .email(admin.getEmail())
-                                .nom(admin.getNom())
-                                .prenom(admin.getPrenom())
-                                .role(admin.getRole())
-                                .actif(admin.getActif())
-                                .build();
-                        
-                        LoginResponse response = LoginResponse.builder()
-                                .token(token)
-                                .type("Bearer")
-                                .admin(adminDTO)
-                                .build();
-                        
+
+                        // Création du DTO via constructeur AllArgsConstructor
+                        AdminDTO adminDTO = new AdminDTO(
+                            admin.getId(),
+                            admin.getEmail(),
+                            admin.getNom(),
+                            admin.getPrenom(),
+                            admin.getRole(),
+                            admin.getActif()
+                        );
+
+                        // Création du LoginResponse via constructeur AllArgsConstructor
+                        LoginResponse response = new LoginResponse(
+                            token,
+                            "Bearer",
+                            adminDTO
+                        );
+
                         return ResponseEntity.ok(response);
                     }
-                    
+
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                             .body("Mot de passe incorrect");
                 })
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("Utilisateur non trouvé"));
     }
+
     
     /**
      * Lister tous les admins

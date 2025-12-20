@@ -1,6 +1,8 @@
 package com.springboot.springboot.dto.disponibilite;
 
 import com.springboot.springboot.entity.personne.DisponibiliteFormateur;
+import com.springboot.springboot.entity.personne.DisponibiliteFormateur.JourEnum;
+
 import lombok.Data;
 
 import java.time.LocalTime;
@@ -13,4 +15,32 @@ public class DisponibiliteFormateurDTO {
     private LocalTime heureDebut;
     private LocalTime heureFin;
     private Boolean estDisponible;
+	public void setId(int id2) {
+		// TODO Auto-generated method stub
+		
+	}
+	public Integer getFormateurId() {
+		// TODO Auto-generated method stub
+		return formateurId;
+	}
+	public int getId() {
+		// TODO Auto-generated method stub
+		return id;
+	}
+	public JourEnum getJourSemaine() {
+		// TODO Auto-generated method stub
+		return jourSemaine;
+	}
+	public LocalTime getHeureDebut() {
+		// TODO Auto-generated method stub
+		return heureDebut;
+	}
+	public Object getEstDisponible() {
+		// TODO Auto-generated method stub
+		return estDisponible;
+	}
+	public LocalTime getHeureFin() {
+		// TODO Auto-generated method stub
+		return heureFin;
+	}
 }

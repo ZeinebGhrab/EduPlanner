@@ -90,7 +90,7 @@ public class SessionFormation {
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
     }
-
+    
     // Getters et Setters
     public int getId() { 
         return id; 

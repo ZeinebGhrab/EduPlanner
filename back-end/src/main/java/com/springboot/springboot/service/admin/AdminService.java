@@ -50,7 +50,7 @@ public class AdminService {
         return adminRepository.findById(id)
                 .map(existing -> {
                     existing.setNom(admin.getNom());
-                    existing.setPrenom(admin.getPrenom());
+                    existing.setPrenom(admin.getNom());
                     existing.setEmail(admin.getEmail());
                     existing.setRole(admin.getRole());
                     existing.setActif(admin.getActif());
@@ -71,13 +71,8 @@ public class AdminService {
     }
     
     private AdminDTO toDTO(Admin admin) {
-        return AdminDTO.builder()
-                .id(admin.getId())
-                .email(admin.getEmail())
-                .nom(admin.getNom())
-                .prenom(admin.getPrenom())
-                .role(admin.getRole())
-                .actif(admin.getActif())
-                .build();
+        AdminDTO dto = new AdminDTO(admin.getId(),admin.getEmail(),admin.getNom(), admin.getPrenom(), admin.getRole(), admin.getActif()); 
+        return dto;
     }
+
 }

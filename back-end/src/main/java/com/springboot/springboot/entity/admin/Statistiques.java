@@ -34,4 +34,39 @@ public class Statistiques {
     
     @Column(length = 255)
     private String description;
+
+	public Object getId() {
+		// TODO Auto-generated method stub
+		return id;
+	}
+
+	public Object getTypeStat() {
+		// TODO Auto-generated method stub
+		return typeStat;
+	}
+
+	public Object getValeurNumerique() {
+		// TODO Auto-generated method stub
+		return valeurNumerique;
+	}
+
+	public Object getValeurDecimal() {
+		// TODO Auto-generated method stub
+		return valeurDecimal;
+	}
+
+	public Object getValeurTexte() {
+		// TODO Auto-generated method stub
+		return valeurTexte;
+	}
+
+	public Object getDateCalcul() {
+		// TODO Auto-generated method stub
+		return dateCalcul;
+	}
+
+	public Object getDescription() {
+		// TODO Auto-generated method stub
+		return description;
+	}
 }

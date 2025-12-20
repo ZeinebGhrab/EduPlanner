@@ -119,7 +119,7 @@ async function refreshDashboard() {
 
 async function refreshSection(sectionName) {
     const config = sectionsConfig[sectionName];
-    if (!config) return console.warn(`⚠️ Section inconnue: ${sectionName}`);
+    if (!config) return console.warn(`Section inconnue: ${sectionName}`);
 
     try {
         const result = await config.fetch();

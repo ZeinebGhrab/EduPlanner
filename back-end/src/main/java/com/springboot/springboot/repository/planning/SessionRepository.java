@@ -1,0 +1,94 @@
+package com.springboot.springboot.repository.planning;
+
+import com.springboot.springboot.entity.planning.SessionFormation;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Repository
+public interface SessionRepository extends JpaRepository<SessionFormation, Long> {
+
+    // =====================================
+    // Sessions d’un formateur pour une date
+    // =====================================
+    @Query("""
+        SELECT DISTINCT s
+        FROM SessionFormation s
+        JOIN s.creneaux c
+        WHERE s.formateur.id = :formateurId
+        AND c.date = :date
+        ORDER BY c.heureDebut
+    """)
+    List<SessionFormation> findByFormateurIdAndDate(
+            @Param("formateurId") Long formateurId,
+            @Param("date") LocalDate date
+    );
+
+    // ======================
+    // Sessions à venir
+    // ======================
+    @Query("""
+        SELECT DISTINCT s
+        FROM SessionFormation s
+        JOIN s.creneaux c
+        WHERE s.formateur.id = :formateurId
+        AND c.date > :today
+        ORDER BY c.date, c.heureDebut
+    """)
+    List<SessionFormation> findUpcomingSessionsByFormateurId(
+            @Param("formateurId") Long formateurId,
+            @Param("today") LocalDate today
+    );
+
+    // ======================
+    // Nombre de sessions à venir
+    // ======================
+    @Query("""
+        SELECT COUNT(DISTINCT s)
+        FROM SessionFormation s
+        JOIN s.creneaux c
+        WHERE s.formateur.id = :formateurId
+        AND c.date > :today
+    """)
+    Long countSessionsAVenirByFormateurId(
+            @Param("formateurId") Long formateurId,
+            @Param("today") LocalDate today
+    );
+
+    // ======================
+    // Nombre de sessions terminées
+    // ======================
+    @Query("""
+        SELECT COUNT(DISTINCT s)
+        FROM SessionFormation s
+        JOIN s.creneaux c
+        WHERE s.formateur.id = :formateurId
+        AND c.date < :today
+    """)
+    Long countSessionsTermineesByFormateurId(
+            @Param("formateurId") Long formateurId,
+            @Param("today") LocalDate today
+    );
+
+    // ======================
+    // Étudiants actifs (distincts)
+    // ======================
+    @Query("""
+        SELECT COUNT(DISTINCT e.id)
+        FROM SessionFormation s
+        JOIN s.creneaux c
+        JOIN s.groupe g
+        JOIN g.etudiants e
+        WHERE s.formateur.id = :formateurId
+        AND c.date >= :dateDebut
+    """)
+    Long countEtudiantsActifsByFormateurId(
+            @Param("formateurId") Long formateurId,
+            @Param("dateDebut") LocalDate dateDebut
+    );
+}
+

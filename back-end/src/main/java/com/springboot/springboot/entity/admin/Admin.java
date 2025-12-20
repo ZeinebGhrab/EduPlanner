@@ -36,4 +36,74 @@ public class Admin {
     
     @Column(nullable = false)
     private Boolean actif = true;
+
+	public void setDateCreation(LocalDateTime now) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public CharSequence getPassword() {
+		// TODO Auto-generated method stub
+		return password;
+	}
+
+	public String getEmail() {
+		// TODO Auto-generated method stub
+		return email;
+	}
+
+	public void setPassword(String encode) {
+		this.password = encode;
+		
+	}
+
+	public void setActif(boolean b) {
+		actif  = b;
+		
+	}
+
+	public void setNom(String nom2) {
+		this.nom = nom2;
+		
+	}
+
+	public String getNom() {
+		// TODO Auto-generated method stub
+		return nom;
+	}
+
+	public String getRole() {
+		// TODO Auto-generated method stub
+		return role;
+	}
+
+	public boolean getActif() {
+		// TODO Auto-generated method stub
+		return actif;
+	}
+
+	public Object getId() {
+		// TODO Auto-generated method stub
+		return id;
+	}
+
+	public Object getPrenom() {
+		// TODO Auto-generated method stub
+		return prenom;
+	}
+
+	public void setPrenom(String nom2) {
+		this.prenom = nom2;
+		
+	}
+
+	public void setEmail(String email2) {
+		this.email = email2;
+		
+	}
+
+	public void setRole(String role2) {
+		this.role = role2;
+		
+	}
 }

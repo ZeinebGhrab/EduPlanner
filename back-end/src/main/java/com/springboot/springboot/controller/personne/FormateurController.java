@@ -1,10 +1,10 @@
 package com.springboot.springboot.controller.personne;
 
-
+import com.springboot.springboot.dto.formateur.FormateurStatistiquesDTO;
 import com.springboot.springboot.entity.personne.Formateur;
 import com.springboot.springboot.service.personne.FormateurService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.springboot.springboot.service.personne.FormateurStatService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +15,19 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class FormateurController {
 
-    @Autowired
-    private FormateurService service;
+    private final FormateurService service;
+    private final FormateurStatService formateurStatService;
+
+    // INJECTION PAR CONSTRUCTEUR
+    public FormateurController(FormateurService service,
+                               FormateurStatService formateurStatService) {
+        this.service = service;
+        this.formateurStatService = formateurStatService;
+    }
+
+    // ======================
+    // CRUD Formateur
+    // ======================
 
     @GetMapping
     public ResponseEntity<List<Formateur>> getAll() {
@@ -30,24 +41,32 @@ public class FormateurController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // ======================
+    // Statistiques Formateur
+    // ======================
+
+    @GetMapping("/{id}/statistiques")
+    public ResponseEntity<FormateurStatistiquesDTO> getStatistiques(@PathVariable Long id) {
+        FormateurStatistiquesDTO stats = formateurStatService.getStatistiques(id);
+        return ResponseEntity.ok(stats);
+    }
+
     @PostMapping
-    public ResponseEntity<Formateur> create(@RequestBody Formateur formateur) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.save(formateur));
+    public ResponseEntity<Formateur> createFormateur(@RequestBody Formateur formateur) {
+        return ResponseEntity.ok(service.save(formateur));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Formateur> update(@PathVariable int id, @RequestBody Formateur formateur) {
         return service.findById(id)
                 .map(existing -> {
-                    // Mettre à jour uniquement les champs modifiables
                     existing.setNom(formateur.getNom());
                     existing.setPrenom(formateur.getPrenom());
                     existing.setEmail(formateur.getEmail());
                     existing.setTelephone(formateur.getTelephone());
                     existing.setSpecialite(formateur.getSpecialite());
                     existing.setMatricule(formateur.getMatricule());
-                    
-                    // Ne pas toucher aux relations (sessions, disponibilités)
+                    existing.setActif(formateur.getActif());
                     return ResponseEntity.ok(service.save(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());

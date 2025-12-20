@@ -6,7 +6,7 @@ import { switchTab } from './ui.js';
 export function redirectToDashboard(role) {
     switch(role.toUpperCase()) { // pour éviter les problèmes de casse
         case 'ADMIN':
-            window.location.href = '../admin-management/admin-dashboard.html';
+            window.location.href = '../admin-management/formateurs.html';
             break;
         case 'FORMATEUR':
             window.location.href = '../instructor-management/instructor-dashbord.html';
@@ -44,6 +44,7 @@ export async function handleLogin(e) {
 
             if (response.ok) {
                 const data = await response.json();
+                console.log(data);
                 const normalizedRole = role.toUpperCase();
                 localStorage.setItem('authToken', data.token); 
                 localStorage.setItem('userRole', normalizedRole);

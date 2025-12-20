@@ -3,7 +3,10 @@ package com.springboot.springboot.service.personne;
 import com.springboot.springboot.entity.personne.Etudiant;
 import com.springboot.springboot.entity.personne.Personne;
 import com.springboot.springboot.entity.personne.Indisponibilite;
+import com.springboot.springboot.dto.planning.PlanningEtudiantDTO;
+import com.springboot.springboot.dto.planning.SessionAVenirDTO;
 import com.springboot.springboot.entity.common.Groupe;
+import com.springboot.springboot.entity.planning.Creneau;
 import com.springboot.springboot.entity.planning.SessionFormation;
 import com.springboot.springboot.repository.personne.EtudiantRepository;
 import com.springboot.springboot.repository.personne.IndisponibiliteRepository;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -92,6 +96,36 @@ public class EtudiantService {
         }
 
         return repository.save(existing);
+    }
+    
+    public List<PlanningEtudiantDTO> getPlanningDTOByEtudiantId(int etudiantId) {
+        List<SessionFormation> sessions = getSessionsByEtudiantId(etudiantId);
+
+        List<PlanningEtudiantDTO> dtos = sessions.stream()
+            .flatMap(session -> session.getCreneaux().stream()
+                .map(creneau -> {
+                    PlanningEtudiantDTO dto = new PlanningEtudiantDTO();
+                    dto.sessionId = session.getId();
+                    dto.titre = session.getNomCours();
+                    dto.date = creneau.getDate();
+                    dto.heureDebut = creneau.getHeureDebut();
+                    dto.heureFin = creneau.getHeureFin();
+                    dto.jourSemaine = creneau.getJourSemaine();
+                    if (session.getFormateur() != null) {
+                        dto.nomFormateur = session.getFormateur().getPrenom() + " " + session.getFormateur().getNom();
+                    }
+                    if (session.getSalle() != null) {
+                        dto.nomSalle = session.getSalle().getNom();
+                    }
+                    if (session.getGroupe() != null) {
+                        dto.nomGroupe = session.getGroupe().getNom();
+                    }
+                    dto.statut = session.getStatut();
+                    return dto;
+                })
+            ).collect(Collectors.toList());
+
+        return dtos;
     }
     
     /**
@@ -177,6 +211,26 @@ public class EtudiantService {
         return sessionRepository.findAll();
     }
     
+    @Transactional(readOnly = true)
+    public List<SessionAVenirDTO> getSessionsAVenir(int etudiantId) {
+        return getSessionsByEtudiantId(etudiantId).stream()
+            .map(session -> {
+                List<Creneau> creneauxAVenir = session.getCreneaux().stream()
+                    .filter(c -> "A_VENIR".equals(c.getStatut()))
+                    .collect(Collectors.toList());
+
+                if(creneauxAVenir.isEmpty()) return null;
+
+                session.setCreneaux(creneauxAVenir);
+                return new SessionAVenirDTO(session);
+            })
+            .filter(dto -> dto != null)
+            .collect(Collectors.toList());
+    }
+
+
+
+    
     /**
      * Déclare une indisponibilité urgente pour un étudiant
      */
@@ -192,5 +246,74 @@ public class EtudiantService {
      */
     public List<Indisponibilite> getIndisponibilites(int etudiantId) {
         return indisponibiliteRepository.findByTypePersonneAndPersonneId("ETUDIANT", etudiantId);
+    }
+    
+  
+    
+    /**
+     * Calcule les statistiques des sessions d'un étudiant
+     */
+    public Map<String, Object> getStatistiquesEtudiant(int etudiantId) {
+        List<SessionFormation> sessions = getSessionsByEtudiantId(etudiantId);
+        LocalDate today = LocalDate.now();
+        
+        // Compter les sessions terminées, à venir
+        long sessionsTerminees = sessions.stream()
+                .filter(s -> s.getDateFin() != null && s.getDateFin().isBefore(today))
+                .count();
+        
+        long sessionsAVenir = sessions.stream()
+                .filter(s -> s.getDateDebut() != null && s.getDateDebut().isAfter(today))
+                .count();
+        
+        long sessionsEnCours = sessions.stream()
+                .filter(s -> s.getDateDebut() != null && s.getDateFin() != null &&
+                            !s.getDateDebut().isAfter(today) && !s.getDateFin().isBefore(today))
+                .count();
+        
+        // Calculer le total d'heures en utilisant les créneaux
+        double totalHeures = sessions.stream()
+                .flatMap(s -> s.getCreneaux() != null ? s.getCreneaux().stream() : java.util.stream.Stream.empty())
+                .mapToDouble(c -> {
+                    if (c.getHeureDebut() != null && c.getHeureFin() != null) {
+                        return java.time.Duration.between(c.getHeureDebut(), c.getHeureFin()).toMinutes() / 60.0;
+                    }
+                    return 0.0;
+                })
+                .sum();
+        
+        // Calculer les heures terminées
+        double heuresTerminees = sessions.stream()
+                .filter(s -> s.getDateFin() != null && s.getDateFin().isBefore(today))
+                .flatMap(s -> s.getCreneaux() != null ? s.getCreneaux().stream() : java.util.stream.Stream.empty())
+                .mapToDouble(c -> {
+                    if (c.getHeureDebut() != null && c.getHeureFin() != null) {
+                        return java.time.Duration.between(c.getHeureDebut(), c.getHeureFin()).toMinutes() / 60.0;
+                    }
+                    return 0.0;
+                })
+                .sum();
+        
+        // Calculer les heures à venir
+        double heuresAVenir = sessions.stream()
+                .filter(s -> s.getDateDebut() != null && s.getDateDebut().isAfter(today))
+                .flatMap(s -> s.getCreneaux() != null ? s.getCreneaux().stream() : java.util.stream.Stream.empty())
+                .mapToDouble(c -> {
+                    if (c.getHeureDebut() != null && c.getHeureFin() != null) {
+                        return java.time.Duration.between(c.getHeureDebut(), c.getHeureFin()).toMinutes() / 60.0;
+                    }
+                    return 0.0;
+                })
+                .sum();
+        
+        return Map.of(
+                "totalSessions", sessions.size(),
+                "sessionsTerminees", sessionsTerminees,
+                "sessionsAVenir", sessionsAVenir,
+                "sessionsEnCours", sessionsEnCours,
+                "totalHeures", Math.round(totalHeures * 100.0) / 100.0,
+                "heuresTerminees", Math.round(heuresTerminees * 100.0) / 100.0,
+                "heuresAVenir", Math.round(heuresAVenir * 100.0) / 100.0
+        );
     }
 }
