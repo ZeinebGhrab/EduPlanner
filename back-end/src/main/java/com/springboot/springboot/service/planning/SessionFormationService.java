@@ -1,3 +1,5 @@
+// back-end/src/main/java/com/springboot/springboot/service/planning/SessionFormationService.java
+
 package com.springboot.springboot.service.planning;
 
 import com.springboot.springboot.dto.conflit.ConflitDTO;
@@ -43,7 +45,6 @@ public class SessionFormationService {
 
     @Transactional(readOnly = true)
     public List<SessionFormation> findAll() {
-        // ✅ PAS de forçage lazy ici
         return sessionRepository.findAll();
     }
 
@@ -53,7 +54,6 @@ public class SessionFormationService {
 
     @Transactional(readOnly = true)
     public SessionFormation findById(int id) {
-        // ✅ Utilise la requête JOIN FETCH
         return sessionRepository.findByIdComplet(id)
             .orElseThrow(() ->
                 new RuntimeException("Session introuvable avec ID : " + id)
@@ -66,15 +66,15 @@ public class SessionFormationService {
 
     private Conflit.TypeConflit determineTypeConflit(String description) {
         String desc = description.toLowerCase();
-        if (desc.contains("formateur")) {
+        if (desc.contains("formateur") || desc.contains("disponibilité")) {
             return Conflit.TypeConflit.CONFLIT_FORMATEUR;
         } else if (desc.contains("salle")) {
             return Conflit.TypeConflit.CONFLIT_SALLE;
-        } else if (desc.contains("materiel")) {
+        } else if (desc.contains("materiel") || desc.contains("matériel")) {
             return Conflit.TypeConflit.CONFLIT_MATERIEL;
         } else if (desc.contains("groupe")) {
             return Conflit.TypeConflit.CONFLIT_GROUPE;
-        } else if (desc.contains("contrainte")) {
+        } else if (desc.contains("contrainte") || desc.contains("date") || desc.contains("semaine")) {
             return Conflit.TypeConflit.CONTRAINTE_NON_RESPECTEE;
         } else {
             return Conflit.TypeConflit.CHEVAUCHEMENT_SESSION;
@@ -110,7 +110,6 @@ public class SessionFormationService {
 
                 LocalDate dateCalculee = calculerDateDepuisJourSemaine(debutSemaine, creneau.getJourSemaine());
                 creneau.setDate(dateCalculee);
-                // Normaliser le jourSemaine
                 creneau.setJourSemaine(obtenirJourSemaine(dateCalculee));
                 creneauRepository.save(creneau);
 
@@ -119,7 +118,8 @@ public class SessionFormationService {
 
                 if (date.isBefore(debutSemaine) || date.isAfter(finSemaine)) {
                     throw new RuntimeException(
-                        "❌ Date du créneau hors semaine du planning : " + date
+                        "❌ Date du créneau hors semaine du planning : " + date + 
+                        " (semaine attendue : " + debutSemaine + " à " + finSemaine + ")"
                     );
                 }
 
@@ -128,7 +128,6 @@ public class SessionFormationService {
                     creneau.setJourSemaine(jourCalcule);
                     creneauRepository.save(creneau);
                 } else {
-                    // Normaliser pour comparaison
                     String jourSession = creneau.getJourSemaine().trim().toUpperCase();
                     if (!jourSession.equals(jourCalcule)) {
                         throw new RuntimeException(
@@ -159,7 +158,6 @@ public class SessionFormationService {
         }
     }
 
-
     private DayOfWeek convertirJourSemaine(String jour) {
         String j = jour.trim().toUpperCase();
         switch (j) {
@@ -170,26 +168,44 @@ public class SessionFormationService {
             case "VENDREDI": return DayOfWeek.FRIDAY;
             case "SAMEDI": return DayOfWeek.SATURDAY;
             case "DIMANCHE": return DayOfWeek.SUNDAY;
-            default: return DayOfWeek.valueOf(j); // fallback si déjà en anglais
+            default: return DayOfWeek.valueOf(j);
         }
     }
 
-
-
     /* =========================================================
-       💾 SAUVEGARDE AVEC GESTION DES CONFLITS
+       💾 SAUVEGARDE AVEC GESTION DES CONFLITS (VERSION CORRIGÉE)
        ========================================================= */
 
     @Transactional
     public List<ConflitDTO> saveAvecConflit(SessionFormation session) {
-
+        
         List<ConflitDTO> conflitsDTO = new ArrayList<>();
+        
+        // ✅ ÉTAPE 1 : Définir le statut initial
+        if (session.getStatut() == null || session.getStatut().isEmpty()) {
+            session.setStatut("EN_CREATION");
+        }
+        session.setADesConflits(false);
+        
+        // ✅ ÉTAPE 2 : SAUVEGARDER LA SESSION D'ABORD (sans validation)
+        sessionRepository.save(session);
+        
+        // ✅ ÉTAPE 3 : Sauvegarder les créneaux
+        if (session.getCreneaux() != null && !session.getCreneaux().isEmpty()) {
+            for (Creneau creneau : session.getCreneaux()) {
+                creneauRepository.save(creneau);
+            }
+        }
 
+        // ✅ ÉTAPE 4 : Valider et corriger les dates des créneaux
         try {
-            // Valider et corriger les dates des créneaux
             validerEtCorrigerDatesCreneaux(session);
         } catch (RuntimeException e) {
-            // Création d'un conflit lié au premier créneau disponible si possible
+            // ✅ La session existe déjà, on peut créer le conflit
+            session.setStatut("EN_CONFLIT");
+            session.setADesConflits(true);
+            sessionRepository.save(session);
+            
             Conflit conflit = new Conflit();
             conflit.setDescription(e.getMessage());
             conflit.setSeverite(5);
@@ -198,46 +214,76 @@ public class SessionFormationService {
             if (session.getCreneaux() != null && !session.getCreneaux().isEmpty()) {
                 conflit.setCreneau(session.getCreneaux().get(0));
             }
+            
+            // ✅ LIER LE CONFLIT À LA SESSION
+            conflit.setSessionsImpliquees(List.of(session));
 
             conflitRepository.save(conflit);
             conflitsDTO.add(ConflitDTO.fromEntity(conflit));
+            
             return conflitsDTO;
         }
 
-        // Détecter les conflits via le service
+        // ✅ ÉTAPE 5 : Détecter les autres conflits
         List<String> conflitsDetectes = conflitService.detecterConflits(session);
 
         if (!conflitsDetectes.isEmpty()) {
+            // ✅ Marquer la session comme EN_CONFLIT
+            session.setStatut("EN_CONFLIT");
+            session.setADesConflits(true);
+            sessionRepository.save(session);
+            
             List<Conflit> conflits = conflitsDetectes.stream().map(desc -> {
                 Conflit c = new Conflit();
                 c.setDescription(desc);
-                c.setSeverite(1);
+                c.setSeverite(calculerSeverite(desc));
                 c.setType(determineTypeConflit(desc));
 
-                // Associer le conflit au créneau correspondant si possible
                 if (session.getCreneaux() != null && !session.getCreneaux().isEmpty()) {
-                    // Ici tu peux affiner pour trouver le créneau exact selon le conflit
                     c.setCreneau(session.getCreneaux().get(0));
                 }
-
+                
+                // ✅ LIER LE CONFLIT À LA SESSION
+                c.setSessionsImpliquees(List.of(session));
+                
                 return c;
             }).collect(Collectors.toList());
 
-            return conflitRepository.saveAll(conflits)
-                    .stream()
+            conflitRepository.saveAll(conflits);
+            
+            conflitsDTO = conflits.stream()
                     .map(ConflitDTO::fromEntity)
                     .collect(Collectors.toList());
+            
+            return conflitsDTO;
         }
 
-        // Pas de conflit : sauvegarde de la session et de ses créneaux
+        // ✅ ÉTAPE 6 : Pas de conflit, session VALIDE
+        session.setStatut("VALIDE");
+        session.setADesConflits(false);
         sessionRepository.save(session);
-        if (session.getCreneaux() != null) {
-            session.getCreneaux().forEach(creneauRepository::save);
-        }
 
         return conflitsDTO;
     }
-
+    
+    /**
+     * Calcule la sévérité d'un conflit selon sa description
+     */
+    private int calculerSeverite(String description) {
+        String desc = description.toLowerCase();
+        
+        if (desc.contains("disponibilité") || desc.contains("indisponibilité")) {
+            return 5; // Critique
+        } else if (desc.contains("capacité dépassée")) {
+            return 4; // Très important
+        } else if (desc.contains("déjà utilisé") || desc.contains("déjà assigné")) {
+            return 3; // Important
+        } else if (desc.contains("avertissement")) {
+            return 2; // Moyen
+        } else {
+            return 1; // Faible
+        }
+    }
 
     /* =========================================================
        🗑️ SUPPRESSION
@@ -248,6 +294,16 @@ public class SessionFormationService {
         if (!sessionRepository.existsById(id)) {
             throw new RuntimeException("Session introuvable avec ID : " + id);
         }
+        
+        // ✅ Supprimer d'abord les conflits liés
+        List<Conflit> conflits = conflitRepository.findAll().stream()
+            .filter(c -> c.getSessionsImpliquees() != null && 
+                        c.getSessionsImpliquees().stream().anyMatch(s -> s.getId() == id))
+            .collect(Collectors.toList());
+        
+        conflitRepository.deleteAll(conflits);
+        
+        // Ensuite supprimer la session
         sessionRepository.deleteById(id);
     }
 
@@ -269,5 +325,33 @@ public class SessionFormationService {
 
     public List<SessionFormation> findByCreneauId(int id) {
         return sessionRepository.findByCreneauId(id);
+    }
+    
+    /* =========================================================
+       ✅ MÉTHODES UTILITAIRES POUR LA GESTION DES CONFLITS
+       ========================================================= */
+    
+    /**
+     * Marque une session comme résolue (tous ses conflits sont résolus)
+     */
+    @Transactional
+    public void marquerSessionResolue(int sessionId) {
+        SessionFormation session = sessionRepository.findById(sessionId)
+            .orElseThrow(() -> new RuntimeException("Session introuvable"));
+        
+        session.setStatut("VALIDE");
+        session.setADesConflits(false);
+        sessionRepository.save(session);
+    }
+    
+    /**
+     * Récupère toutes les sessions en conflit
+     */
+    @Transactional(readOnly = true)
+    public List<SessionFormation> findSessionsEnConflit() {
+        return sessionRepository.findAll().stream()
+            .filter(s -> "EN_CONFLIT".equals(s.getStatut()) || 
+                        Boolean.TRUE.equals(s.getADesConflits()))
+            .collect(Collectors.toList());
     }
 }

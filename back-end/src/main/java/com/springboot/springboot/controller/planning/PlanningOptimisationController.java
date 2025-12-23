@@ -18,19 +18,20 @@ import com.springboot.springboot.repository.ressources.SalleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * ========================================================================
- * CONTRÔLEUR AMÉLIORÉ POUR LA RÉSOLUTION AUTOMATIQUE DE CONFLITS
+ * CONTRÔLEUR OPTIMISÉ POUR LA RÉSOLUTION AUTOMATIQUE DE CONFLITS
  * ========================================================================
- * Version avec résolution en un clic et détails complets
+ * Version améliorée avec résolution intelligente en un clic
  */
 @RestController
 @RequestMapping("/api/admin/planning/resolution")
@@ -60,7 +61,435 @@ public class PlanningOptimisationController {
     
     /**
      * ========================================================================
-     * 1. ANALYSE COMPLÈTE AVEC SOLUTIONS DÉTAILLÉES ET APPLICABLES
+     * 1. RÉSOLUTION AUTOMATIQUE INTELLIGENTE - EN UN CLIC
+     * ========================================================================
+     * Cette méthode résout TOUS les conflits en utilisant les meilleures solutions
+     */
+    @PostMapping("/resoudre-tout/{planningId}")
+    @Transactional
+    public ResponseEntity<?> resoudreTousConflits(@PathVariable int planningId) {
+        try {
+            long startTime = System.currentTimeMillis();
+            
+            Optional<Planning> planningOpt = planningRepository.findById(planningId);
+            if (planningOpt.isEmpty()) {
+                return ResponseEntity.status(404).body(Map.of(
+                    "success", false,
+                    "message", "Planning introuvable",
+                    "planningId", planningId
+                ));
+            }
+            
+            Planning planning = planningOpt.get();
+            List<SessionFormation> sessions = planning.getSessions();
+            List<Conflit> conflits = recupererConflits(sessions);
+            
+            if (conflits.isEmpty()) {
+                return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "✅ Aucun conflit à résoudre",
+                    "planningId", planningId,
+                    "nbConflits", 0,
+                    "nbResolus", 0,
+                    "duree", 0
+                ));
+            }
+            
+            int nbConflitsInitial = conflits.size();
+            int nbResolus = 0;
+            int nbEchecs = 0;
+            List<Map<String, Object>> actionsEffectuees = new ArrayList<>();
+            
+            // Trier les conflits par priorité (severité décroissante)
+            conflits.sort((c1, c2) -> Integer.compare(
+                c2.getSeverite() != null ? c2.getSeverite() : 0, 
+                c1.getSeverite() != null ? c1.getSeverite() : 0
+            ));
+            
+            // Résoudre chaque conflit avec la meilleure solution disponible
+            for (Conflit conflit : conflits) {
+                Map<String, Object> resultat = resoudreConflitIntelligent(conflit);
+                
+                if ((Boolean) resultat.get("success")) {
+                    nbResolus++;
+                    actionsEffectuees.add(Map.of(
+                        "conflitId", conflit.getId(),
+                        "type", conflit.getType().toString(),
+                        "description", conflit.getDescription(),
+                        "solution", resultat.get("solution"),
+                        "statut", "✅ Résolu"
+                    ));
+                    
+                    // ✅ Supprimer le conflit résolu
+                    conflitRepository.delete(conflit);
+                    
+                    // ✅ AJOUT : Vérifier si la session n'a plus de conflits
+                    if (conflit.getSessionsImpliquees() != null && !conflit.getSessionsImpliquees().isEmpty()) {
+                        for (SessionFormation session : conflit.getSessionsImpliquees()) {
+                            // Compter les conflits restants pour cette session
+                            long nbConflitsRestants = conflits.stream()
+                                .filter(c -> c.getId() != conflit.getId() && 
+                                            c.getSessionsImpliquees() != null &&
+                                            c.getSessionsImpliquees().stream()
+                                                .anyMatch(s -> s.getId() == session.getId()))
+                                .count();
+                            
+                            // Si plus de conflits, marquer la session comme VALIDE
+                            if (nbConflitsRestants == 0) {
+                                session.setStatut("VALIDE");
+                                session.setADesConflits(false);
+                                sessionRepository.save(session);
+                            }
+                        }
+                    }
+                 // Supprimer le conflit résolu
+                  conflitRepository.delete(conflit);
+                } else { 
+                    nbEchecs++;
+                    actionsEffectuees.add(Map.of(
+                        "conflitId", conflit.getId(),
+                        "type", conflit.getType().toString(),
+                        "description", conflit.getDescription(),
+                        "erreur", resultat.get("message"),
+                        "statut", "❌ Non résolu"
+                    ));
+                }
+            }
+            
+            long endTime = System.currentTimeMillis();
+            double tauxReussite = nbConflitsInitial > 0 ? 
+                (double) nbResolus / nbConflitsInitial * 100 : 0;
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", String.format(
+                    "✅ Résolution terminée : %d/%d conflits résolus (%.1f%%)",
+                    nbResolus, nbConflitsInitial, tauxReussite
+                ),
+                "planningId", planningId,
+                "nbConflitsInitial", nbConflitsInitial,
+                "nbResolus", nbResolus,
+                "nbEchecs", nbEchecs,
+                "tauxReussite", String.format("%.1f%%", tauxReussite),
+                "duree", endTime - startTime,
+                "actions", actionsEffectuees
+            ));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of(
+                "success", false,
+                "message", "Erreur lors de la résolution automatique",
+                "erreur", e.getMessage()
+            ));
+        }
+    }
+    
+    /**
+     * ========================================================================
+     * 2. RÉSOLUTION INTELLIGENTE D'UN CONFLIT INDIVIDUEL
+     * ========================================================================
+     * Choisit automatiquement la meilleure solution parmi celles disponibles
+     */
+    private Map<String, Object> resoudreConflitIntelligent(Conflit conflit) {
+        // Générer les solutions possibles
+        List<Map<String, Object>> solutions = genererSolutionsDetaillees(conflit);
+        
+        if (solutions.isEmpty()) {
+            return Map.of(
+                "success", false,
+                "message", "Aucune solution disponible"
+            );
+        }
+        
+        // Trier les solutions par priorité
+        solutions.sort((s1, s2) -> {
+            int priorite1 = getPrioriteSolution((String) s1.get("type"));
+            int priorite2 = getPrioriteSolution((String) s2.get("type"));
+            return Integer.compare(priorite1, priorite2);
+        });
+        
+        // Essayer chaque solution jusqu'à en trouver une qui fonctionne
+        for (Map<String, Object> solution : solutions) {
+            try {
+                boolean success = appliquerSolutionInterne(solution);
+                if (success) {
+                    return Map.of(
+                        "success", true,
+                        "solution", solution.get("label"),
+                        "type", solution.get("type")
+                    );
+                }
+            } catch (Exception e) {
+                // Continuer avec la solution suivante
+                continue;
+            }
+        }
+        
+        return Map.of(
+            "success", false,
+            "message", "Toutes les solutions ont échoué"
+        );
+    }
+    
+    /**
+     * Définit la priorité des types de solutions
+     * Plus le nombre est petit, plus la priorité est haute
+     */
+    private int getPrioriteSolution(String type) {
+        switch (type) {
+            case "CORRIGER_DATE_CRENEAU": return 0;  // Priorité MAXIMALE (erreur de config)
+            case "CREER_DISPONIBILITE": return 1;    // Priorité très haute
+            case "CHANGER_SALLE": return 2;
+            case "CHANGER_CRENEAU": return 3;
+            case "CHANGER_FORMATEUR": return 4;      // Priorité la plus basse
+            default: return 99;
+        }
+    }
+    
+    /**
+     * ========================================================================
+     * 3. APPLICATION INTERNE D'UNE SOLUTION
+     * ========================================================================
+     */
+    private boolean appliquerSolutionInterne(Map<String, Object> solution) {
+        String typeSolution = (String) solution.get("type");
+        Map<String, Object> data = (Map<String, Object>) solution.get("data");
+        
+        try {
+            switch (typeSolution) {
+                case "CHANGER_FORMATEUR":
+                    return changerFormateurInterne(data);
+                case "CHANGER_SALLE":
+                    return changerSalleInterne(data);
+                case "CHANGER_CRENEAU":
+                    return changerCreneauInterne(data);
+                case "CREER_DISPONIBILITE":
+                    return creerDisponibiliteInterne(data);
+                case "CORRIGER_DATE_CRENEAU":
+                    return corrigerDateCreneauInterne(data);
+                default:
+                    return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    /**
+     * ========================================================================
+     * 4. MÉTHODES DE RÉSOLUTION SPÉCIFIQUES
+     * ========================================================================
+     */
+    
+    private boolean changerFormateurInterne(Map<String, Object> data) {
+        try {
+            int sessionId = (Integer) data.get("sessionId");
+            
+            // Trouver le premier formateur disponible dans les options
+            List<Map<String, Object>> options = (List<Map<String, Object>>) data.get("options");
+            if (options == null || options.isEmpty()) {
+                return false;
+            }
+            
+            int nouveauFormateurId = (Integer) options.get(0).get("id");
+            
+            SessionFormation session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session introuvable"));
+            
+            Formateur nouveauFormateur = formateurRepository.findById(nouveauFormateurId)
+                .orElseThrow(() -> new RuntimeException("Formateur introuvable"));
+            
+            session.setFormateur(nouveauFormateur);
+            sessionRepository.save(session);
+            
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    private boolean changerSalleInterne(Map<String, Object> data) {
+        try {
+            int sessionId = (Integer) data.get("sessionId");
+            
+            // Trouver la première salle disponible dans les options
+            List<Map<String, Object>> options = (List<Map<String, Object>>) data.get("options");
+            if (options == null || options.isEmpty()) {
+                return false;
+            }
+            
+            int nouvelleSalleId = (Integer) options.get(0).get("id");
+            
+            SessionFormation session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session introuvable"));
+            
+            Salle nouvelleSalle = salleRepository.findById(nouvelleSalleId)
+                .orElseThrow(() -> new RuntimeException("Salle introuvable"));
+            
+            session.setSalle(nouvelleSalle);
+            sessionRepository.save(session);
+            
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    private boolean changerCreneauInterne(Map<String, Object> data) {
+        try {
+            int sessionId = (Integer) data.get("sessionId");
+            
+            // Trouver le premier créneau disponible dans les options
+            List<Map<String, Object>> options = (List<Map<String, Object>>) data.get("options");
+            if (options == null || options.isEmpty()) {
+                return false;
+            }
+            
+            int nouveauCreneauId = (Integer) options.get(0).get("id");
+            
+            SessionFormation session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session introuvable"));
+            
+            Creneau nouveauCreneau = creneauRepository.findById(nouveauCreneauId)
+                .orElseThrow(() -> new RuntimeException("Créneau introuvable"));
+            
+            session.setCreneaux(List.of(nouveauCreneau));
+            sessionRepository.save(session);
+            
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    private boolean creerDisponibiliteInterne(Map<String, Object> data) {
+        try {
+            int formateurId = (Integer) data.get("formateurId");
+            String jourSemaine = (String) data.get("jourSemaine");
+            String heureDebut = (String) data.get("heureDebut");
+            String heureFin = (String) data.get("heureFin");
+            
+            Formateur formateur = formateurRepository.findById(formateurId)
+                .orElseThrow(() -> new RuntimeException("Formateur introuvable"));
+            
+            DisponibiliteFormateur dispo = new DisponibiliteFormateur();
+            dispo.setFormateur(formateur);
+            dispo.setJourSemaine(DisponibiliteFormateur.JourEnum.valueOf(jourSemaine.toUpperCase()));
+            dispo.setHeureDebut(LocalTime.parse(heureDebut));
+            dispo.setHeureFin(LocalTime.parse(heureFin));
+            dispo.setEstDisponible(true);
+            
+            disponibiliteRepository.save(dispo);
+            
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Corrige la date d'un créneau pour qu'elle soit dans la semaine du planning
+     */
+    private boolean corrigerDateCreneauInterne(Map<String, Object> data) {
+        try {
+            int creneauId = (Integer) data.get("creneauId");
+            String planningSemaine = (String) data.get("planningSemaine");
+            String jourSemaine = (String) data.get("jourSemaine");
+            
+            Creneau creneau = creneauRepository.findById(creneauId)
+                .orElseThrow(() -> new RuntimeException("Créneau introuvable"));
+            
+            // Calculer la nouvelle date dans la semaine du planning
+            LocalDate debutSemaine = LocalDate.parse(planningSemaine);
+            
+            // S'assurer que debutSemaine est bien un lundi
+            while (debutSemaine.getDayOfWeek() != DayOfWeek.MONDAY) {
+                debutSemaine = debutSemaine.minusDays(1);
+            }
+            
+            // Calculer la date en fonction du jour de la semaine
+            LocalDate nouvelleDate = calculerDateDepuisJour(debutSemaine, jourSemaine);
+            
+            // Mettre à jour le créneau
+            creneau.setDate(nouvelleDate);
+            creneau.setJourSemaine(jourSemaine);
+            creneauRepository.save(creneau);
+            
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * Calcule la date à partir du début de semaine et du jour
+     */
+    private LocalDate calculerDateDepuisJour(LocalDate debutSemaine, String jourSemaine) {
+        Map<String, Integer> joursOffset = Map.of(
+            "LUNDI", 0,
+            "MARDI", 1,
+            "MERCREDI", 2,
+            "JEUDI", 3,
+            "VENDREDI", 4,
+            "SAMEDI", 5,
+            "DIMANCHE", 6
+        );
+        
+        int offset = joursOffset.getOrDefault(jourSemaine.toUpperCase(), 0);
+        return debutSemaine.plusDays(offset);
+    }
+    
+    /**
+     * ========================================================================
+     * 5. ANALYSE RAPIDE DES CONFLITS (POUR LE FRONTEND)
+     * ========================================================================
+     */
+    @GetMapping("/resume/{planningId}")
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getResumeConflits(@PathVariable int planningId) {
+        try {
+            Optional<Planning> planningOpt = planningRepository.findById(planningId);
+            if (planningOpt.isEmpty()) {
+                return ResponseEntity.status(404).body(Map.of(
+                    "success", false,
+                    "message", "Planning introuvable"
+                ));
+            }
+            
+            Planning planning = planningOpt.get();
+            List<SessionFormation> sessions = planning.getSessions();
+            List<Conflit> conflits = recupererConflits(sessions);
+            
+            Map<Conflit.TypeConflit, Long> comptesParType = conflits.stream()
+                .collect(Collectors.groupingBy(Conflit::getType, Collectors.counting()));
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "planningId", planningId,
+                "nbConflitsTotal", conflits.size(),
+                "resolvable", conflits.size() > 0,
+                "details", Map.of(
+                    "conflitsFormateur", comptesParType.getOrDefault(Conflit.TypeConflit.CONFLIT_FORMATEUR, 0L),
+                    "conflitsSalle", comptesParType.getOrDefault(Conflit.TypeConflit.CONFLIT_SALLE, 0L),
+                    "conflitsGroupe", comptesParType.getOrDefault(Conflit.TypeConflit.CONFLIT_GROUPE, 0L),
+                    "conflitsMateriel", comptesParType.getOrDefault(Conflit.TypeConflit.CONFLIT_MATERIEL, 0L)
+                )
+            ));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                "success", false,
+                "message", "Erreur lors de l'analyse",
+                "erreur", e.getMessage()
+            ));
+        }
+    }
+    
+    /**
+     * ========================================================================
+     * 6. ANALYSE COMPLÈTE (MÉTHODE EXISTANTE CONSERVÉE)
      * ========================================================================
      */
     @GetMapping("/analyse/{planningId}")
@@ -169,132 +598,28 @@ public class PlanningOptimisationController {
         }
     }
     
-    /**
-     * ========================================================================
-     * 2. APPLIQUER UNE SOLUTION EN UN CLIC
-     * ========================================================================
-     */
-    @PostMapping("/appliquer-solution")
-    @Transactional
-    public ResponseEntity<?> appliquerSolution(@RequestBody Map<String, Object> request) {
-        try {
-            String typeSolution = (String) request.get("type");
-            Map<String, Object> data = (Map<String, Object>) request.get("data");
-            
-            switch (typeSolution) {
-                case "CHANGER_FORMATEUR":
-                    return changerFormateurAuto(data);
-                case "CHANGER_SALLE":
-                    return changerSalleAuto(data);
-                case "CHANGER_CRENEAU":
-                    return changerCreneauAuto(data);
-                case "CREER_DISPONIBILITE":
-                    return creerDisponibiliteAuto(data);
-                default:
-                    return ResponseEntity.badRequest().body(Map.of(
-                        "success", false,
-                        "message", "Type de solution inconnu: " + typeSolution
-                    ));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of(
-                "success", false,
-                "message", "Erreur lors de l'application de la solution",
-                "erreur", e.getMessage()
-            ));
-        }
-    }
-    
-    /**
-     * ========================================================================
-     * 3. RÉSOLUTION AUTOMATIQUE INTELLIGENTE
-     * ========================================================================
-     */
-    @PostMapping("/auto/{planningId}")
-    @Transactional
-    public ResponseEntity<?> resolutionAutomatique(@PathVariable int planningId) {
-        try {
-            Planning planning = planningRepository.findById(planningId)
-                .orElseThrow(() -> new RuntimeException("Planning introuvable"));
-            
-            List<SessionFormation> sessions = planning.getSessions();
-            List<Conflit> conflits = recupererConflits(sessions);
-            
-            if (conflits.isEmpty()) {
-                return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "Aucun conflit à résoudre",
-                    "nbConflitsResolus", 0
-                ));
-            }
-            
-            int nbResolus = 0;
-            List<Map<String, String>> actionsEffectuees = new ArrayList<>();
-            
-            for (Conflit conflit : conflits) {
-                boolean resolu = false;
-                String action = "";
-                
-                switch (conflit.getType()) {
-                    case CONFLIT_FORMATEUR:
-                        resolu = resoudreConflitFormateurAuto(conflit);
-                        action = resolu ? "Formateur changé automatiquement" : "Échec changement formateur";
-                        break;
-                    case CONFLIT_SALLE:
-                        resolu = resoudreConflitSalleAuto(conflit);
-                        action = resolu ? "Salle changée automatiquement" : "Échec changement salle";
-                        break;
-                    case CONFLIT_GROUPE:
-                        resolu = resoudreConflitGroupeAuto(conflit);
-                        action = resolu ? "Créneau changé automatiquement" : "Échec changement créneau";
-                        break;
-                }
-                
-                if (resolu) {
-                    nbResolus++;
-                    actionsEffectuees.add(Map.of(
-                        "conflit", conflit.getDescription(),
-                        "action", action,
-                        "statut", "✅ Résolu"
-                    ));
-                    conflitRepository.delete(conflit);
-                } else {
-                    actionsEffectuees.add(Map.of(
-                        "conflit", conflit.getDescription(),
-                        "action", action,
-                        "statut", "❌ Non résolu"
-                    ));
-                }
-            }
-            
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", String.format("%d conflit(s) résolu(s) sur %d", nbResolus, conflits.size()),
-                "nbConflitsInitial", conflits.size(),
-                "nbConflitsResolus", nbResolus,
-                "tauxReussite", String.format("%.1f%%", (double) nbResolus / conflits.size() * 100),
-                "actions", actionsEffectuees
-            ));
-            
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of(
-                "success", false,
-                "message", "Erreur lors de la résolution automatique",
-                "erreur", e.getMessage()
-            ));
-        }
-    }
-    
     // ========================================================================
     // MÉTHODES PRIVÉES - GÉNÉRATION DE SOLUTIONS DÉTAILLÉES
     // ========================================================================
     
-    /**
-     * Génère des solutions détaillées et directement applicables
-     */
     private List<Map<String, Object>> genererSolutionsDetaillees(Conflit conflit) {
         List<Map<String, Object>> solutions = new ArrayList<>();
         
+        // Cas spécial : CONTRAINTE_NON_RESPECTEE peut ne pas avoir de sessions associées
+        if (conflit.getType() == Conflit.TypeConflit.CONTRAINTE_NON_RESPECTEE) {
+            if (conflit.getCreneau() == null) {
+                return solutions;
+            }
+            
+            // Récupérer la session via le créneau
+            Creneau creneau = conflit.getCreneau();
+            SessionFormation session = recupererSessionParCreneau(creneau);
+            
+            solutions.addAll(genererSolutionsContrainteDetaillees(session, creneau, conflit));
+            return solutions;
+        }
+        
+        // Pour les autres types de conflits, vérifier les sessions implicquées
         if (conflit.getCreneau() == null || conflit.getSessionsImpliquees() == null || 
             conflit.getSessionsImpliquees().isEmpty()) {
             return solutions;
@@ -318,9 +643,6 @@ public class PlanningOptimisationController {
         return solutions;
     }
     
-    /**
-     * Solutions détaillées pour conflit de formateur
-     */
     private List<Map<String, Object>> genererSolutionsFormateurDetaillees(
             SessionFormation session, Creneau creneau, int conflitId) {
         List<Map<String, Object>> solutions = new ArrayList<>();
@@ -352,16 +674,15 @@ public class PlanningOptimisationController {
             .collect(Collectors.toList());
         
         if (!formateursDisponibles.isEmpty()) {
-        	List<Map<String, Object>> options = formateursDisponibles.stream()
-        		    .map(f -> {
-        		        Map<String, Object> map = new HashMap<>();
-        		        map.put("id", f.getId());
-        		        map.put("nom", f.getNom() + " " + f.getPrenom());
-        		        map.put("specialite", f.getSpecialite() != null ? f.getSpecialite() : "N/A");
-        		        return map;
-        		    })
-        		    .collect(Collectors.toList());
-
+            List<Map<String, Object>> options = formateursDisponibles.stream()
+                .map(f -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", f.getId());
+                    map.put("nom", f.getNom() + " " + f.getPrenom());
+                    map.put("specialite", f.getSpecialite() != null ? f.getSpecialite() : "N/A");
+                    return map;
+                })
+                .collect(Collectors.toList());
             
             solutions.add(Map.of(
                 "id", "sol_chg_form_" + conflitId,
@@ -379,20 +700,15 @@ public class PlanningOptimisationController {
         return solutions;
     }
     
-    /**
-     * Solutions détaillées pour conflit de salle
-     */
     private List<Map<String, Object>> genererSolutionsSalleDetaillees(
             SessionFormation session, Creneau creneau, int conflitId) {
         List<Map<String, Object>> solutions = new ArrayList<>();
         
         List<Salle> sallesDisponibles = salleRepository.findAll().stream()
             .filter(s -> {
-                // Vérifier capacité
                 if (session.getGroupe() != null && s.getCapacite() < session.getGroupe().getEffectif()) {
                     return false;
                 }
-                // Vérifier disponibilité
                 List<SessionFormation> sessionsUtilisant = sessionRepository
                     .findSalleConflicts(s.getId(), creneau.getDate(), creneau.getHeureDebut(), creneau.getHeureFin());
                 return sessionsUtilisant.isEmpty();
@@ -402,24 +718,23 @@ public class PlanningOptimisationController {
             .collect(Collectors.toList());
         
         if (!sallesDisponibles.isEmpty()) {
-        	List<Map<String, Object>> options = sallesDisponibles.stream()
-        		    .map(s -> {
-        		        Map<String, Object> map = new HashMap<>();
-        		        map.put("id", s.getId());
-        		        map.put("nom", s.getNom());
-        		        map.put("capacite", s.getCapacite());
-        		        map.put("batiment", s.getBatiment() != null ? s.getBatiment() : "N/A");
-        		        map.put("adequation", calculerAdequationSalle(s, session));
-        		        return map;
-        		    })
-        		    .sorted((a, b) ->
-        		        Double.compare(
-        		            (Double) b.get("adequation"),
-        		            (Double) a.get("adequation")
-        		        )
-        		    )
-        		    .collect(Collectors.toList());
-
+            List<Map<String, Object>> options = sallesDisponibles.stream()
+                .map(s -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", s.getId());
+                    map.put("nom", s.getNom());
+                    map.put("capacite", s.getCapacite());
+                    map.put("batiment", s.getBatiment() != null ? s.getBatiment() : "N/A");
+                    map.put("adequation", calculerAdequationSalle(s, session));
+                    return map;
+                })
+                .sorted((a, b) ->
+                    Double.compare(
+                        (Double) b.get("adequation"),
+                        (Double) a.get("adequation")
+                    )
+                )
+                .collect(Collectors.toList());
             
             solutions.add(Map.of(
                 "id", "sol_chg_salle_" + conflitId,
@@ -438,8 +753,67 @@ public class PlanningOptimisationController {
     }
     
     /**
-     * Solutions détaillées pour conflit de créneau
+     * Récupère la session associée à un créneau
      */
+    private SessionFormation recupererSessionParCreneau(Creneau creneau) {
+        List<SessionFormation> sessions = sessionRepository.findByCreneauId(creneau.getId());
+        return sessions.isEmpty() ? null : sessions.get(0);
+    }
+    
+    /**
+     * Solutions pour les contraintes non respectées (ex: date hors semaine)
+     */
+    private List<Map<String, Object>> genererSolutionsContrainteDetaillees(
+            SessionFormation session, Creneau creneau, Conflit conflit) {
+        List<Map<String, Object>> solutions = new ArrayList<>();
+        
+        // Vérifier si c'est un problème de date hors semaine
+        if (conflit.getDescription() != null && 
+            conflit.getDescription().contains("Date du créneau hors semaine du planning")) {
+            
+            // Si la session est null, essayer de la récupérer
+            if (session == null) {
+                session = recupererSessionParCreneau(creneau);
+            }
+            
+            // Solution : Corriger la date du créneau pour qu'elle soit dans la semaine du planning
+            if (session != null && session.getPlanning() != null && session.getPlanning().getSemaine() != null) {
+                solutions.add(Map.of(
+                    "id", "sol_corriger_date_" + conflit.getId(),
+                    "type", "CORRIGER_DATE_CRENEAU",
+                    "label", "📅 Corriger la date du créneau",
+                    "description", "Replacer le créneau dans la semaine du planning (" + 
+                        session.getPlanning().getSemaine() + ")",
+                    "applicable", true,
+                    "data", Map.of(
+                        "creneauId", creneau.getId(),
+                        "sessionId", session.getId(),
+                        "planningSemaine", session.getPlanning().getSemaine().toString(),
+                        "jourSemaine", creneau.getJourSemaine() != null ? creneau.getJourSemaine() : "JEUDI",
+                        "heureDebut", creneau.getHeureDebut().toString(),
+                        "heureFin", creneau.getHeureFin().toString()
+                    )
+                ));
+            } else {
+                // Si on ne peut pas trouver la session/planning, proposer une solution manuelle
+                solutions.add(Map.of(
+                    "id", "sol_manuel_" + conflit.getId(),
+                    "type", "CORRECTION_MANUELLE",
+                    "label", "✏️ Correction manuelle requise",
+                    "description", "Impossible de corriger automatiquement - vérifier la configuration du créneau et du planning",
+                    "applicable", false,
+                    "data", Map.of(
+                        "creneauId", creneau.getId(),
+                        "probleme", "Session ou planning introuvable"
+                    )
+                ));
+            }
+        }
+        
+        // Ajouter d'autres solutions pour différentes contraintes si nécessaire
+        return solutions;
+    }
+    
     private List<Map<String, Object>> genererSolutionsCreneauDetaillees(
             SessionFormation session, Creneau creneau, int conflitId) {
         List<Map<String, Object>> solutions = new ArrayList<>();
@@ -448,12 +822,10 @@ public class PlanningOptimisationController {
             .filter(c -> c.getId() != creneau.getId())
             .filter(c -> c.getDate() != null && c.getDate().equals(creneau.getDate()))
             .filter(c -> {
-                // Vérifier disponibilité formateur
                 if (session.getFormateur() != null && 
                     !verifierDisponibiliteFormateur(session.getFormateur(), c)) {
                     return false;
                 }
-                // Vérifier disponibilité groupe
                 if (session.getGroupe() != null) {
                     List<SessionFormation> conflitsGroupe = sessionRepository
                         .findGroupeConflicts(session.getGroupe().getId(), c.getDate(), 
@@ -466,18 +838,17 @@ public class PlanningOptimisationController {
             .collect(Collectors.toList());
         
         if (!creneauxDisponibles.isEmpty()) {
-        	List<Map<String, Object>> options = creneauxDisponibles.stream()
-        		    .map(c -> {
-        		        Map<String, Object> map = new HashMap<>();
-        		        map.put("id", c.getId());
-        		        map.put("jour", c.getJourSemaine());
-        		        map.put("heureDebut", c.getHeureDebut().toString());
-        		        map.put("heureFin", c.getHeureFin().toString());
-        		        map.put("date", c.getDate() != null ? c.getDate().toString() : "N/A");
-        		        return map;
-        		    })
-        		    .collect(Collectors.toList());
-
+            List<Map<String, Object>> options = creneauxDisponibles.stream()
+                .map(c -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", c.getId());
+                    map.put("jour", c.getJourSemaine());
+                    map.put("heureDebut", c.getHeureDebut().toString());
+                    map.put("heureFin", c.getHeureFin().toString());
+                    map.put("date", c.getDate() != null ? c.getDate().toString() : "N/A");
+                    return map;
+                })
+                .collect(Collectors.toList());
             
             solutions.add(Map.of(
                 "id", "sol_chg_creneau_" + conflitId,
@@ -493,151 +864,6 @@ public class PlanningOptimisationController {
         }
         
         return solutions;
-    }
-    
-    // ========================================================================
-    // MÉTHODES PRIVÉES - APPLICATION AUTOMATIQUE DES SOLUTIONS
-    // ========================================================================
-    
-    private ResponseEntity<?> changerFormateurAuto(Map<String, Object> data) {
-        try {
-            int sessionId = (Integer) data.get("sessionId");
-            int nouveauFormateurId = (Integer) data.get("nouveauFormateurId");
-            
-            SessionFormation session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session introuvable"));
-            
-            Formateur nouveauFormateur = formateurRepository.findById(nouveauFormateurId)
-                .orElseThrow(() -> new RuntimeException("Formateur introuvable"));
-            
-            String ancienFormateur = session.getFormateur() != null ? 
-                session.getFormateur().getNom() + " " + session.getFormateur().getPrenom() : "N/A";
-            
-            session.setFormateur(nouveauFormateur);
-            sessionRepository.save(session);
-            
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "✅ Formateur changé avec succès",
-                "details", Map.of(
-                    "sessionId", sessionId,
-                    "ancienFormateur", ancienFormateur,
-                    "nouveauFormateur", nouveauFormateur.getNom() + " " + nouveauFormateur.getPrenom()
-                )
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of(
-                "success", false,
-                "message", "Erreur: " + e.getMessage()
-            ));
-        }
-    }
-    
-    private ResponseEntity<?> changerSalleAuto(Map<String, Object> data) {
-        try {
-            int sessionId = (Integer) data.get("sessionId");
-            int nouvelleSalleId = (Integer) data.get("nouvelleSalleId");
-            
-            SessionFormation session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session introuvable"));
-            
-            Salle nouvelleSalle = salleRepository.findById(nouvelleSalleId)
-                .orElseThrow(() -> new RuntimeException("Salle introuvable"));
-            
-            String ancienneSalle = session.getSalle() != null ? session.getSalle().getNom() : "N/A";
-            
-            session.setSalle(nouvelleSalle);
-            sessionRepository.save(session);
-            
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "✅ Salle changée avec succès",
-                "details", Map.of(
-                    "sessionId", sessionId,
-                    "ancienneSalle", ancienneSalle,
-                    "nouvelleSalle", nouvelleSalle.getNom()
-                )
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of(
-                "success", false,
-                "message", "Erreur: " + e.getMessage()
-            ));
-        }
-    }
-    
-    private ResponseEntity<?> changerCreneauAuto(Map<String, Object> data) {
-        try {
-            int sessionId = (Integer) data.get("sessionId");
-            int nouveauCreneauId = (Integer) data.get("nouveauCreneauId");
-            
-            SessionFormation session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session introuvable"));
-            
-            Creneau nouveauCreneau = creneauRepository.findById(nouveauCreneauId)
-                .orElseThrow(() -> new RuntimeException("Créneau introuvable"));
-            
-            String ancienCreneau = "N/A";
-            if (session.getCreneaux() != null && !session.getCreneaux().isEmpty()) {
-                Creneau c = session.getCreneaux().get(0);
-                ancienCreneau = c.getJourSemaine() + " " + c.getHeureDebut() + "-" + c.getHeureFin();
-            }
-            
-            session.setCreneaux(List.of(nouveauCreneau));
-            sessionRepository.save(session);
-            
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "✅ Créneau changé avec succès",
-                "details", Map.of(
-                    "sessionId", sessionId,
-                    "ancienCreneau", ancienCreneau,
-                    "nouveauCreneau", nouveauCreneau.getJourSemaine() + " " + 
-                        nouveauCreneau.getHeureDebut() + "-" + nouveauCreneau.getHeureFin()
-                )
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of(
-                "success", false,
-                "message", "Erreur: " + e.getMessage()
-            ));
-        }
-    }
-    
-    private ResponseEntity<?> creerDisponibiliteAuto(Map<String, Object> data) {
-        try {
-            int formateurId = (Integer) data.get("formateurId");
-            String jourSemaine = (String) data.get("jourSemaine");
-            String heureDebut = (String) data.get("heureDebut");
-            String heureFin = (String) data.get("heureFin");
-            
-            Formateur formateur = formateurRepository.findById(formateurId)
-                .orElseThrow(() -> new RuntimeException("Formateur introuvable"));
-            
-            DisponibiliteFormateur dispo = new DisponibiliteFormateur();
-            dispo.setFormateur(formateur);
-            dispo.setJourSemaine(DisponibiliteFormateur.JourEnum.valueOf(jourSemaine.toUpperCase()));
-            dispo.setHeureDebut(LocalTime.parse(heureDebut));
-            dispo.setHeureFin(LocalTime.parse(heureFin));
-            dispo.setEstDisponible(true);
-            
-            disponibiliteRepository.save(dispo);
-            
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "✅ Disponibilité créée avec succès",
-                "details", Map.of(
-                    "formateur", formateur.getNom() + " " + formateur.getPrenom(),
-                    "jour", jourSemaine,
-                    "horaires", heureDebut + " - " + heureFin
-                )
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of(
-                "success", false,
-                "message", "Erreur: " + e.getMessage()
-            ));
-        }
     }
     
     // ========================================================================
@@ -713,85 +939,6 @@ public class PlanningOptimisationController {
         if (taux >= 0.7 && taux <= 1.0) return 1.0;
         if (taux >= 0.5) return 0.8;
         return 0.5;
-    }
-    
-    private boolean resoudreConflitFormateurAuto(Conflit conflit) {
-        if (conflit.getSessionsImpliquees() == null || conflit.getSessionsImpliquees().isEmpty()) {
-            return false;
-        }
-        
-        SessionFormation session = conflit.getSessionsImpliquees().get(0);
-        Creneau creneau = conflit.getCreneau();
-        
-        if (creneau == null) return false;
-        
-        List<Formateur> formateursDisponibles = formateurRepository.findAll().stream()
-            .filter(f -> verifierDisponibiliteFormateur(f, creneau))
-            .collect(Collectors.toList());
-        
-        if (!formateursDisponibles.isEmpty()) {
-            session.setFormateur(formateursDisponibles.get(0));
-            sessionRepository.save(session);
-            return true;
-        }
-        
-        return false;
-    }
-    
-    private boolean resoudreConflitSalleAuto(Conflit conflit) {
-        if (conflit.getSessionsImpliquees() == null || conflit.getSessionsImpliquees().isEmpty()) {
-            return false;
-        }
-        
-        SessionFormation session = conflit.getSessionsImpliquees().get(0);
-        Creneau creneau = conflit.getCreneau();
-        
-        if (creneau == null) return false;
-        
-        List<Salle> sallesDisponibles = salleRepository.findAll().stream()
-            .filter(s -> {
-                if (session.getGroupe() != null && s.getCapacite() < session.getGroupe().getEffectif()) {
-                    return false;
-                }
-                List<SessionFormation> conflits = sessionRepository
-                    .findSalleConflicts(s.getId(), creneau.getDate(), creneau.getHeureDebut(), creneau.getHeureFin());
-                return conflits.isEmpty();
-            })
-            .collect(Collectors.toList());
-        
-        if (!sallesDisponibles.isEmpty()) {
-            session.setSalle(sallesDisponibles.get(0));
-            sessionRepository.save(session);
-            return true;
-        }
-        
-        return false;
-    }
-    
-    private boolean resoudreConflitGroupeAuto(Conflit conflit) {
-        if (conflit.getSessionsImpliquees() == null || conflit.getSessionsImpliquees().isEmpty()) {
-            return false;
-        }
-        
-        SessionFormation session = conflit.getSessionsImpliquees().get(0);
-        
-        List<Creneau> creneauxDisponibles = creneauRepository.findAll().stream()
-            .filter(c -> {
-                if (session.getFormateur() != null && !verifierDisponibiliteFormateur(session.getFormateur(), c)) {
-                    return false;
-                }
-                return true;
-            })
-            .limit(1)
-            .collect(Collectors.toList());
-        
-        if (!creneauxDisponibles.isEmpty()) {
-            session.setCreneaux(List.of(creneauxDisponibles.get(0)));
-            sessionRepository.save(session);
-            return true;
-        }
-        
-        return false;
     }
     
     /**

@@ -98,18 +98,29 @@ public class SessionFormationController {
     public ResponseEntity<?> createSession(@RequestBody SessionFormationRequestDTO dto) {
         SessionFormation session = dtoToEntity(dto);
 
+        // ✅ Sauvegarder avec gestion des conflits
         List<ConflitDTO> conflits = service.saveAvecConflit(session);
 
-        // S'il y a des conflits, retourner HTTP 409
+        // ✅ La session est TOUJOURS créée maintenant
         if (!conflits.isEmpty()) {
+            // ✅ Retourner HTTP 409 AVEC l'ID de la session et les conflits
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
-                    "message", "Conflits détectés lors de la création de la session",
+                    "sessionId", session.getId(),  // ✅ ID de la session créée
+                    "statut", session.getStatut(),  // ✅ "EN_CONFLIT"
+                    "aDesConflits", session.getADesConflits(),  // ✅ true
+                    "message", "Session créée avec " + conflits.size() + " conflit(s) détecté(s)",
                     "conflits", conflits
             ));
         }
 
-        // Pas de conflit, retourner la session créée
-        return ResponseEntity.status(HttpStatus.CREATED).body(toDTO(session));
+        // ✅ Pas de conflit, session VALIDE
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                "sessionId", session.getId(),
+                "statut", session.getStatut(),  // ✅ "VALIDE"
+                "aDesConflits", false,
+                "message", "Session créée avec succès",
+                "session", toDTO(session)
+        ));
     }
 
 

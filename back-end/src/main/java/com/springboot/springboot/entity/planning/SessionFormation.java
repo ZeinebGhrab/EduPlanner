@@ -1,3 +1,5 @@
+// back-end/src/main/java/com/springboot/springboot/entity/planning/SessionFormation.java
+
 package com.springboot.springboot.entity.planning;
 
 import jakarta.persistence.*;
@@ -30,8 +32,13 @@ public class SessionFormation {
     @Column(nullable = false)
     private Integer duree;
 
-    @Column(length = 50)
-    private String statut;
+    // ✅ AJOUT : Statut de la session
+    @Column(length = 50, nullable = false)
+    private String statut = "EN_CREATION"; // EN_CREATION, EN_CONFLIT, VALIDE, PLANIFIEE, EN_COURS, TERMINE
+
+    // ✅ AJOUT : Flag pour indiquer si la session a des conflits
+    @Column(name = "a_des_conflits", nullable = false)
+    private Boolean aDesConflits = false;
 
     @Column(name = "date_debut")
     private LocalDate dateDebut;
@@ -91,6 +98,17 @@ public class SessionFormation {
         this.dateFin = dateFin;
     }
     
+    // ✅ AJOUT : Enum pour les statuts
+    public enum StatutSession {
+        EN_CREATION,    // Session en cours de création
+        EN_CONFLIT,     // Session créée mais avec des conflits
+        VALIDE,         // Session validée sans conflits
+        PLANIFIEE,      // Session planifiée dans un planning
+        EN_COURS,       // Session en cours d'exécution
+        TERMINEE,       // Session terminée
+        ANNULEE         // Session annulée
+    }
+    
     // Getters et Setters
     public int getId() { 
         return id; 
@@ -130,6 +148,15 @@ public class SessionFormation {
     
     public void setStatut(String statut) { 
         this.statut = statut; 
+    }
+    
+    // ✅ AJOUT : Getters/Setters pour aDesConflits
+    public Boolean getADesConflits() {
+        return aDesConflits;
+    }
+    
+    public void setADesConflits(Boolean aDesConflits) {
+        this.aDesConflits = aDesConflits;
     }
     
     public Formateur getFormateur() { 
