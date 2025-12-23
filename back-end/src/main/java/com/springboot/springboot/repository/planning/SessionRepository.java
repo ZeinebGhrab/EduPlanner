@@ -15,18 +15,17 @@ public interface SessionRepository extends JpaRepository<SessionFormation, Long>
     // =====================================
     // Sessions d’un formateur pour une date
     // =====================================
-    @Query("""
-        SELECT DISTINCT s
-        FROM SessionFormation s
-        JOIN s.creneaux c
-        WHERE s.formateur.id = :formateurId
-        AND c.date = :date
-        ORDER BY c.heureDebut
-    """)
-    List<SessionFormation> findByFormateurIdAndDate(
-            @Param("formateurId") Long formateurId,
-            @Param("date") LocalDate date
-    );
+	@Query("""
+		    SELECT DISTINCT s
+		    FROM SessionFormation s
+		    JOIN FETCH s.creneaux c
+		    WHERE s.formateur.id = :formateurId
+		    AND c.date = :date
+		    ORDER BY c.heureDebut
+		""")
+		List<SessionFormation> findByFormateurIdAndDate(@Param("formateurId") Long formateurId,
+		                                                @Param("date") LocalDate date);
+
 
     // ======================
     // Sessions à venir
