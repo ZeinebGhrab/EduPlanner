@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Conflits - CentreFormation Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../style/admin-management/conflict.css">
+    <link rel="stylesheet" href="../../style/shared.css">
+    <script type="module" src="../../js/admin/conflict-management/state.js"></script>
+    <script type="module" src="../../js/admin/conflict-management/config.js"></script>
+    <script type="module" src="../../js/admin/conflict-management/api.js"></script>
+    <script type="module" src="../../js/admin/conflict-management/ui.js"></script>
+    <script type="module" src="../../js/admin/conflict-management/modal.js"></script>
+    <script type="module" src="../../js/admin/conflict-management/resolution.js"></script>
+    <script type="module" src="../../js/admin/conflict-management/main.js"></script>
+</head>
+
+<body>
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    
+    <header>
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="my">Centre</span><span class="scol">EduPlanner</span>
+        </div>
+        <nav>
+            <a href="../../interface/accueil/index.html">Accueil</a>
+            <a href="../../interface/admin-management/formateurs.html">Formateurs</a>
+            <a href="../../interface/admin-management/etudiants.html">Étudiants</a>
+            <a href="../../interface/admin-management/salles.html">Salles</a>
+            <a href="../../interface/admin-management/equipement.html">Equipements</a>
+            <a href="../../interface/admin-management/planning.html">Planning</a>
+            <a href="../../interface/admin-management/conflits.html" class="active">Conflits</a>
+        </nav>
+        <div class="nav-icons">
+            <i class="fas fa-user"></i>
+        </div>
+    </header>
+    
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <div class="page-title-section">
+                    <h1 class="page-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Gestion des Conflits
+                    </h1>
+                    <p class="page-subtitle">Détectez et résolvez les conflits de planning, salles et ressources</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-success" onclick="resoudreTousConflits()" id="resolveTousBtn">
+                        <i class="fas fa-magic"></i>
+                        Résoudre tout automatiquement
+                    </button>
+                    <button class="btn btn-primary" onclick="refreshConflits()">
+                        <i class="fas fa-sync-alt"></i>
+                        Actualiser
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteAllConflits()">
+                        <i class="fas fa-trash-alt"></i>
+                        Vider les conflits
+                    </button>
+                </div>
+            </div>
+            
+            <!-- STATISTICS CARDS -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon red">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div>
+                            <h3 class="stat-number" id="totalConflits">0</h3>
+                        </div>
+                    </div>
+                    <p class="stat-label">Conflits Totaux</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-door-closed"></i>
+                        </div>
+                        <div>
+                            <h3 class="stat-number" id="conflitsSalles">0</h3>
+                        </div>
+                    </div>
+                    <p class="stat-label">Conflits de Salles</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon yellow">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div>
+                            <h3 class="stat-number" id="conflitsFormateurs">0</h3>
+                        </div>
+                    </div>
+                    <p class="stat-label">Conflits Formateurs</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon green">
+                            <i class="fas fa-toolbox"></i>
+                        </div>
+                        <div>
+                            <h3 class="stat-number" id="conflitsMateriel">0</h3>
+                        </div>
+                    </div>
+                    <p class="stat-label">Conflits Matériel</p>
+                </div>
+            </div>
+
+            <!-- FILTERS & SEARCH -->
+            <div class="filters-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Rechercher un conflit...">
+                </div>
+
+                <div class="filter-controls">
+                    <select class="sort-select" id="filterType">
+                        <option value="">Tous les types</option>
+                        <option value="CONFLIT_SALLE">Conflit de salle</option>
+                        <option value="CONFLIT_FORMATEUR">Conflit de formateur</option>
+                        <option value="CONFLIT_MATERIEL">Conflit d'équipement</option>
+                        <option value="CONFLIT_GROUPE">Conflit de groupe</option>
+                        <option value="CHEVAUCHEMENT_SESSION">Chevauchement de sessions</option>
+                        <option value="CONTRAINTE_NON_RESPECTEE">Contrainte non respectée</option>
+                    </select>
+
+                    <select class="sort-select" id="filterSeverite">
+                        <option value="">Toutes les sévérités</option>
+                        <option value="1">Critique</option>
+                        <option value="2">Majeur</option>
+                        <option value="3">Mineur</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- TABLEAU DES CONFLITS -->
+            <div class="table-container">
+                <table class="conflits-table" id="conflitsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Sévérité</th>
+                            <th>Créneau</th>
+                            <th>Date de détection</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="conflitsTableBody">
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <div class="empty-content">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <h3>Chargement des conflits...</h3>
+                                    <p>Connexion à la base de données en cours</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="table-footer">
+                    <div class="table-info">
+                        <span id="tableCount">Chargement...</span>
+                    </div>
+                    <div class="table-pagination" id="tablePagination">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL DÉTAILS CONFLIT -->
+    <div class="modal" id="conflitModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-file-alt"></i>
+                    <span id="modalConflitTitle">Détails du Conflit</span>
+                </h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="conflit-details">
+                    <div class="conflit-header">
+                        <div class="badges-container">
+                            <span class="conflit-type-badge" id="modalConflitType"></span>
+                            <span class="conflit-severite-badge" id="modalConflitSeverite"></span>
+                        </div>
+                        <div class="conflit-meta">
+                            <span class="meta-item">
+                                <i class="fas fa-hashtag"></i>
+                                ID: <span id="modalConflitId"></span>
+                            </span>
+                            <span class="meta-item">
+                                <i class="fas fa-calendar"></i>
+                                Date: <span id="modalConflitDate"></span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="conflit-card">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle"></i>
+                            <h3>Description du Conflit</h3>
+                        </div>
+                        <div class="card-body">
+                            <p id="modalConflitDescription" class="conflit-description-text"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-grid-section">
+                        <div class="conflit-card">
+                            <div class="card-header">
+                                <i class="fas fa-calendar-alt"></i>
+                                <h3>Informations Temporelles</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            <i class="fas fa-clock"></i>
+                                            Créneau
+                                        </div>
+                                        <div class="info-value" id="modalConflitCreneau"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="conflit-card">
+                            <div class="card-header">
+                                <i class="fas fa-list-alt"></i>
+                                <h3>Sessions Concernées</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="sessions-grid" id="modalSessionsConflit">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelBtn">
+                    <i class="fas fa-times"></i>
+                    Fermer
+                </button>
+                <button type="button" class="btn btn-info" id="openSolutionsBtn">
+                    <i class="fas fa-lightbulb"></i>
+                    Voir les Solutions
+                </button>
+                <button type="button" class="btn btn-danger" onclick="openDeleteModal(window.currentConflitId, 'ce conflit')">
+                    <i class="fas fa-trash"></i>
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SOLUTIONS -->
+    <div class="modal" id="solutionsModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-lightbulb"></i>
+                    <span id="solutionsModalTitle">Solutions Recommandées</span>
+                </h2>
+                <button class="modal-close" id="closeSolutionsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="solutions-container">
+                    <div class="solutions-banner">
+                        <div class="banner-content">
+                            <i class="fas fa-info-circle"></i>
+                            <div>
+                                <h3>Solutions disponibles pour ce conflit</h3>
+                                <p>Cliquez sur "Appliquer" pour résoudre le conflit avec la solution choisie</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="solutions-grid" id="solutionsGrid">
+                        <!-- Les solutions seront injectées ici -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelSolutionsBtn">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour aux détails
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMATION SUPPRESSION -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Confirmer la suppression
+                </h2>
+                <button class="modal-close" id="closeDeleteModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer ce conflit ? Cette action est irréversible.</p>
+                <p class="conflit-name" id="deleteConflitName"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelDelete">
+                    Annuler
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">
+                    <i class="fas fa-trash"></i>
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SUPPRESSION TOUS -->
+    <div class="modal" id="deleteAllModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Confirmer la suppression de tous les conflits
+                </h2>
+                <button class="modal-close" id="closeDeleteAllModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer <strong>TOUS</strong> les conflits ?</p>
+                <p>Cette action supprimera <strong id="conflitsCount">0</strong> conflit(s) de la base de données et est irréversible.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelDeleteAll">
+                    Annuler
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteAll">
+                    <i class="fas fa-trash-alt"></i>
+                    Supprimer tous
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL RÉSOLUTION AUTOMATIQUE -->
+    <div class="modal" id="resolutionModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-magic"></i>
+                    Résolution Automatique des Conflits
+                </h2>
+                <button class="modal-close" id="closeResolutionModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="resolutionContent">
+                    <!-- Le contenu sera injecté dynamiquement -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="closeResolutionModalBtn">
+                    <i class="fas fa-check"></i>
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <div id="globalLoading" class="loading-indicator" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p id="loadingMessage">Chargement...</p>
+        </div>
+    </div>
+</body>
+</html>

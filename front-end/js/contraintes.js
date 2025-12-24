@@ -1,3 +1,5 @@
+
+
 // ==========================================
 // VARIABLES GLOBALES
 // ==========================================
@@ -10,30 +12,6 @@ let filteredContraintes = [];
 let currentFilter = 'all';
 let currentSort = 'type';
 
-// Données de démonstration pour les éléments
-let formateurs = [
-    { id: 1, nom: "Dr. Martin Dubois" },
-    { id: 2, nom: "Prof. Sophie Laurent" },
-    { id: 3, nom: "Dr. Ahmed Ben Salem" }
-];
-
-let etudiants = [
-    { id: 1, nom: "Groupe Débutants" },
-    { id: 2, nom: "Groupe Avancés" },
-    { id: 3, nom: "Groupe Spécialisé" }
-];
-
-let salles = [
-    { id: 1, nom: "Salle A101" },
-    { id: 2, nom: "Salle B205" },
-    { id: 3, nom: "Amphithéâtre" }
-];
-
-let creneaux = [
-    { id: 1, nom: "Lundi matin" },
-    { id: 2, nom: "Mercredi après-midi" },
-    { id: 3, nom: "Vendredi toute la journée" }
-];
 
 // ==========================================
 // INITIALISATION
@@ -607,7 +585,7 @@ function updatePagination() {
     pageNumbers.innerHTML = pagesHTML || '<button class="page-number active">1</button>';
 }
 
-function changePage(direction) {
+export function changePage(direction) {
     const totalPages = Math.ceil(filteredContraintes.length / itemsPerPage);
     const newPage = currentPage + direction;
 
