@@ -57,7 +57,8 @@ public class ConflitController {
         Conflit savedConflit = conflitService.save(conflit);
         return ResponseEntity.ok(ConflitDTO.fromEntity(savedConflit));
     }
-
+    
+    
     /**
      * Supprime un conflit par ID
      */

@@ -1076,6 +1076,97 @@ public class PlanningOptimisationController {
         if (taux >= 0.5) return 0.8;
         return 0.5;
     }
+    /**
+     * Récupère les solutions possibles pour tous les conflits d'un planning
+     */
+    @GetMapping("/solutions/{planningId}")
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getSolutionsPourConflits(@PathVariable int planningId) {
+        try {
+            Optional<Planning> planningOpt = planningRepository.findById(planningId);
+            if (planningOpt.isEmpty()) {
+                return ResponseEntity.status(404).body(Map.of(
+                    "success", false,
+                    "message", "Planning introuvable"
+                ));
+            }
+            
+            Planning planning = planningOpt.get();
+            List<SessionFormation> sessions = planning.getSessions();
+            List<Conflit> conflits = recupererConflits(sessions);
+            
+            // Générer les solutions pour chaque conflit
+            List<Map<String, Object>> conflitsAvecSolutions = new ArrayList<>();
+            
+            for (Conflit conflit : conflits) {
+                Map<String, Object> conflitData = new HashMap<>();
+                conflitData.put("id", conflit.getId());
+                conflitData.put("type", conflit.getType().toString());
+                conflitData.put("description", conflit.getDescription());
+                
+                // Générer solutions détaillées
+                List<Map<String, Object>> solutions = genererSolutionsDetaillees(conflit);
+                conflitData.put("solutions", solutions);
+                
+                conflitsAvecSolutions.add(conflitData);
+            }
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "conflits", conflitsAvecSolutions
+            ));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of(
+                "success", false,
+                "message", "Erreur lors de la récupération des solutions",
+                "erreur", e.getMessage()
+            ));
+        }
+    }
+
+    /**
+     * Applique une solution spécifique à un conflit
+     */
+    @PostMapping("/appliquer-solution")
+    @Transactional
+    public ResponseEntity<?> appliquerSolution(@RequestBody Map<String, Object> request) {
+        try {
+            int conflitId = (Integer) request.get("conflitId");
+            String solutionType = (String) request.get("solutionType");
+            Map<String, Object> solutionData = (Map<String, Object>) request.get("solutionData");
+            
+            // Appliquer la solution
+            boolean success = appliquerSolutionInterne(Map.of(
+                "type", solutionType,
+                "data", solutionData
+            ));
+            
+            if (success) {
+                // Supprimer le conflit résolu
+                conflitRepository.deleteById(conflitId);
+                
+                return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Solution appliquée avec succès"
+                ));
+            } else {
+                return ResponseEntity.status(400).body(Map.of(
+                    "success", false,
+                    "message", "Impossible d'appliquer la solution"
+                ));
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of(
+                "success", false,
+                "message", "Erreur lors de l'application de la solution",
+                "erreur", e.getMessage()
+            ));
+        }
+    }
     
     /**
      * Suppression d'un conflit
