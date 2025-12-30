@@ -1169,6 +1169,115 @@ public class PlanningOptimisationController {
     }
     
     /**
+     * Résout automatiquement tous les conflits d'une session spécifique
+     */
+    @PostMapping("/resoudre-session/{sessionId}")
+    @Transactional
+    public ResponseEntity<?> resoudreTousConflitsSession(@PathVariable int sessionId) {
+        try {
+            long startTime = System.currentTimeMillis();
+            
+            // Récupérer la session
+            SessionFormation session = sessionRepository.findById(sessionId).orElse(null);
+            if (session == null) {
+                return ResponseEntity.status(404).body(Map.of(
+                    "success", false,
+                    "message", "Session introuvable",
+                    "sessionId", sessionId
+                ));
+            }
+            
+            // Récupérer tous les conflits de cette session
+            List<Conflit> conflits = conflitRepository.findAll().stream()
+                .filter(c -> c.getSessionsImpliquees() != null &&
+                            c.getSessionsImpliquees().stream()
+                                .anyMatch(s -> s.getId() == sessionId))
+                .collect(Collectors.toList());
+            
+            if (conflits.isEmpty()) {
+                return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "✅ Aucun conflit à résoudre pour cette session",
+                    "sessionId", sessionId,
+                    "nbConflits", 0
+                ));
+            }
+            
+            int nbConflitsInitial = conflits.size();
+            int nbResolus = 0;
+            List<Map<String, Object>> actionsEffectuees = new ArrayList<>();
+            List<Integer> conflitsASupprimer = new ArrayList<>();
+            
+            // Trier par sévérité
+            conflits.sort((c1, c2) -> Integer.compare(
+                c2.getSeverite() != null ? c2.getSeverite() : 0,
+                c1.getSeverite() != null ? c1.getSeverite() : 0
+            ));
+            
+            // Résoudre chaque conflit
+            for (Conflit conflit : conflits) {
+                Map<String, Object> resultat = resoudreConflitIntelligent(conflit);
+                
+                if ((Boolean) resultat.get("success")) {
+                    nbResolus++;
+                    actionsEffectuees.add(Map.of(
+                        "conflitId", conflit.getId(),
+                        "type", conflit.getType().toString(),
+                        "solution", resultat.get("solution"),
+                        "statut", "✅ Résolu"
+                    ));
+                    conflitsASupprimer.add(conflit.getId());
+                } else {
+                    actionsEffectuees.add(Map.of(
+                        "conflitId", conflit.getId(),
+                        "type", conflit.getType().toString(),
+                        "erreur", resultat.get("message"),
+                        "statut", "❌ Non résolu"
+                    ));
+                }
+            }
+            
+            // Supprimer les conflits résolus
+            if (!conflitsASupprimer.isEmpty()) {
+                conflitRepository.deleteAllById(conflitsASupprimer);
+            }
+            
+            // Si tous les conflits sont résolus, marquer la session comme VALIDE
+            if (nbResolus == nbConflitsInitial) {
+                session.setStatut("VALIDE");
+                session.setADesConflits(false);
+                sessionRepository.save(session);
+            }
+            
+            long endTime = System.currentTimeMillis();
+            double tauxReussite = nbConflitsInitial > 0 ? 
+                (double) nbResolus / nbConflitsInitial * 100 : 0;
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", String.format(
+                    "✅ Résolution terminée : %d/%d conflits résolus (%.1f%%)",
+                    nbResolus, nbConflitsInitial, tauxReussite
+                ),
+                "sessionId", sessionId,
+                "nbConflitsInitial", nbConflitsInitial,
+                "nbResolus", nbResolus,
+                "tauxReussite", String.format("%.1f%%", tauxReussite),
+                "duree", endTime - startTime,
+                "actions", actionsEffectuees
+            ));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of(
+                "success", false,
+                "message", "Erreur lors de la résolution",
+                "erreur", e.getMessage()
+            ));
+        }
+    }
+    
+    /**
      * Suppression d'un conflit
      */
     @DeleteMapping("/conflit/{conflitId}")
