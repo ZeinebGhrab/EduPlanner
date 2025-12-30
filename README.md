@@ -704,10 +704,6 @@ Pour contribuer au projet:
 
 Ce projet est sous licence [MIT](LICENSE).
 
-## 👨‍💻 Auteurs
-
-- **Équipe EduPlanner** - Développement initial
-
 ## 🙏 Remerciements
 
 - Font Awesome pour les icônes
@@ -718,7 +714,7 @@ Ce projet est sous licence [MIT](LICENSE).
 ## 📞 Support
 
 Pour toute question ou problème:
-- 📧 Email: contact@eduplanner.com
+- 📧 Email: zeineb.ghrab@enetcom.u-sfax.tn
 - 🐛 Issues: [GitHub Issues](https://github.com/ZeinebGhrab/EduPlanner.git)
 
 ---
