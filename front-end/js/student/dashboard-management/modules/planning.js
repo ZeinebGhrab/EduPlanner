@@ -12,7 +12,6 @@ export function displayUpcomingSessions(planning) {
         return;
     }
 
-    // Filtrer et trier les sessions futures
     const now = new Date();
     const today = now.toISOString().split('T')[0];
     
@@ -38,9 +37,6 @@ export function displayUpcomingSessions(planning) {
     });
 }
 
-// --------------------------
-// Création d'une carte de planning
-// --------------------------
 function createPlanningCard(item) {
     if (!item.heureDebut || !item.heureFin) {
         console.warn('Session sans heures:', item);

@@ -48,9 +48,6 @@ body {
     position: relative;
 }
 
-/* ==========================================
-   BACKGROUND SHAPES & FLOATING ICONS
-   ========================================== */
 
 .bg-shapes {
     position: fixed;
@@ -106,7 +103,7 @@ body {
     animation-delay: 10s;
 }
 
-/* FLOATING ICONS */
+
 .floating-element {
     position: absolute;
     font-size: 1.5rem;
@@ -164,9 +161,6 @@ body {
     animation-delay: 5s;
 }
 
-/* ==========================================
-   AUTH CONTAINER
-   ========================================== */
 
 .auth-container {
     position: relative;
@@ -187,9 +181,6 @@ body {
     }
 }
 
-/* ==========================================
-   LOGO
-   ========================================== */
 
 .logo {
     display: flex;
@@ -231,9 +222,7 @@ body {
     color: var(--primary-blue);
 }
 
-/* ==========================================
-   AUTH CARD
-   ========================================== */
+
 
 .auth-card {
     background: white;

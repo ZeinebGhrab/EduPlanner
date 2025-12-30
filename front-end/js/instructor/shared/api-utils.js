@@ -6,26 +6,22 @@ export function logout() {
     window.location.href = '../authentification/auth.html';
 }
 
-// FORMATEUR
 export async function fetchFormateurProfile() {
     const res = await fetch(`${API_BASE_URL}/formateur/me`, { headers: getAuthHeaders() });
     if (!res.ok) throw new Error('Non authentifié');
     return res.json();
 }
 
-// GROUPES
 export async function fetchGroupes() {
     const res = await fetch(`${API_BASE_URL}/groupes`, { headers: getAuthHeaders() });
     return res.ok ? res.json() : [];
 }
 
-// SALLES
 export async function fetchSalles() {
     const res = await fetch(`${API_BASE_URL}/salles`, { headers: getAuthHeaders() });
     return res.ok ? res.json() : [];
 }
 
-// SESSIONS
 export async function fetchSessions(formateurId) {
     const res = await fetch(`${API_BASE_URL}/sessions/formateur/${formateurId}`, { headers: getAuthHeaders() });
     if (!res.ok) throw new Error('Erreur chargement sessions');
@@ -66,7 +62,6 @@ export async function updateSession(sessionId, sessionData) {
     return res.json();
 }
 
-// DISPONIBILITÉS
 export async function fetchDisponibilites(formateurId) {
     const res = await fetch(`${API_BASE_URL}/disponibilites/formateur/${formateurId}`, { headers: getAuthHeaders() });
     if (!res.ok) throw new Error('Erreur récupération disponibilités');
@@ -102,21 +97,18 @@ export async function deleteDisponibilite(disponibiliteId) {
     return res.ok;
 }
 
-// MATÉRIELS
 export async function fetchMateriels() {
     const res = await fetch(`${API_BASE_URL}/materiels`, { headers: getAuthHeaders() });
     if (!res.ok) throw new Error('Erreur récupération matériel');
     return res.json();
 }
 
-// PLANNINGS
 export async function fetchPlannings() {
     const res = await fetch(`${API_BASE_URL}/plannings`, { headers: getAuthHeaders() });
     if (!res.ok) throw new Error('Erreur chargement plannings');
     return res.json();
 }
 
-// STATISTIQUES
 export async function fetchStatistiques(formateurId) {
     const res = await fetch(`${API_BASE_URL}/formateurs/${formateurId}/statistiques`, { headers: getAuthHeaders() });
     if (!res.ok) throw new Error('Erreur statistiques');

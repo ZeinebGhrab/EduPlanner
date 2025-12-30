@@ -14,9 +14,7 @@ import {
     initModalCloseEvents
 } from '../shared/ui-helpers.js';
 
-// ========================================
-// STATE
-// ========================================
+
 let disponibilites = [];
 let currentFormateurId = null;
 let selectedDisponibiliteIds = new Set();
@@ -31,9 +29,7 @@ const JOURS_LABELS = {
     'DIMANCHE': 'Dimanche'
 };
 
-// ========================================
-// RENDER DISPONIBILITÉS
-// ========================================
+
 export async function loadDisponibilites(formateurId) {
     try {
         currentFormateurId = formateurId;
@@ -127,9 +123,7 @@ function updateActionButtons() {
     }
 }
 
-// ========================================
-// MODAL - AJOUTER/MODIFIER DISPONIBILITÉ
-// ========================================
+
 function openAddDisponibiliteModal() {
     const modal = createDisponibiliteModal();
     document.body.appendChild(modal);
@@ -262,8 +256,7 @@ async function handleEditDisponibilite(e, modal, disponibiliteId) {
     
     const heureDebut = formData.get('heureDebut');
     const heureFin = formData.get('heureFin');
-    
-    // Validation
+
     const validation = validateTimeSlot(heureDebut, heureFin);
     if (!validation.valid) {
         showNotification(validation.error, 'error');
@@ -289,9 +282,7 @@ async function handleEditDisponibilite(e, modal, disponibiliteId) {
     }
 }
 
-// ========================================
-// SUPPRIMER DISPONIBILITÉS
-// ========================================
+
 async function handleDeleteSelection() {
     if (selectedDisponibiliteIds.size === 0) return;
 
@@ -318,9 +309,7 @@ async function handleDeleteSelection() {
     }
 }
 
-// ========================================
-// INIT
-// ========================================
+
 export function initAvailabilityManagement(formateurId) {
     loadDisponibilites(formateurId);
     

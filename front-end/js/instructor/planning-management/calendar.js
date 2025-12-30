@@ -20,9 +20,7 @@ import {
 
 import { updateUserUI } from '../../shared/config.js';
 
-// -------------------------------
-// GLOBAL STATE
-// -------------------------------
+
 let disponibilites = [];
 let formateurId = null;
 let plannings = [];
@@ -30,9 +28,7 @@ let sessions = [];
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
 
-// -------------------------------
-// INIT
-// -------------------------------
+
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const formateur = await fetchFormateurProfile();
@@ -54,9 +50,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// -------------------------------
-// CALENDAR NAVIGATION
-// -------------------------------
 function initCalendarNavigation() {
     const prevBtn = document.getElementById('prevMonth');
     const nextBtn = document.getElementById('nextMonth');
@@ -96,9 +89,6 @@ function updateCalendarDisplay() {
     }
 }
 
-// -------------------------------
-// RENDER AVAILABILITÉ
-// -------------------------------
 function renderAvailabilityCalendar() {
     const container = document.querySelector('.week-view');
     if (!container) return;
@@ -141,9 +131,7 @@ function renderAvailabilityCalendar() {
     container.appendChild(weekSlots);
 }
 
-// -------------------------------
-// RENDER SESSIONS CALENDAR
-// -------------------------------
+
 function renderCalendarSessions() {
     const calendarDays = document.querySelector('.calendar-days');
     if (!calendarDays) {
@@ -161,14 +149,13 @@ function renderCalendarSessions() {
     const daysInMonth = getDaysInMonth(currentYear, currentMonth);
     const startOffset = getFirstDayOffset(currentYear, currentMonth);
     
-    // Cellules vides pour l'alignement
     for (let i = 0; i < startOffset; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.className = 'calendar-day empty other-month';
         calendarDays.appendChild(emptyCell);
     }
 
-    // Cellules des jours du mois
+
     for (let day = 1; day <= daysInMonth; day++) {
         const currentDate = new Date(currentYear, currentMonth, day);
         
@@ -181,7 +168,7 @@ function renderCalendarSessions() {
         
         dayCell.innerHTML = `<span class="day-number">${day}</span>`;
 
-        // Filtrer les sessions du jour
+
         const daySessions = sessions.filter(s => {
             if (!s.planningSemaine) return false;
 
@@ -196,7 +183,6 @@ function renderCalendarSessions() {
             }
         });
 
-        // Ajouter les événements du jour
         daySessions.forEach(s => {
             if (!s.creneauxHoraires || !Array.isArray(s.creneauxHoraires)) return;
             

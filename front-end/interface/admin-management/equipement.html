@@ -1,36 +1,32 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Équipements - CentreFormation Pro</title>
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Styles CSS -->
-    <link rel="stylesheet" href="../../style/equipement.css">
-    <!-- Script JavaScript -->
-    <script src="../../js/equipement.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../style/admin-management/equipement.css">
+    <link rel="stylesheet" href="../../style/admin-management/shared.css">
+    <script src="../../js/admin/equipement/equipements-api.js"></script>
+    <script src="../../js/admin/equipement/equipements-modals.js"></script>
+    <script src="../../js/admin/equipement/equipements-ui.js"></script>
+    <script src="../../js/admin/equipement/equipements-main.js"></script>
 </head>
-<body>
 
-    <!-- BACKGROUND SHAPES -->
+<body>
     <div class="bg-shapes">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
         <div class="shape shape-3"></div>
     </div>
-
-    <!-- HEADER -->
     <header>
         <div class="logo">
             <i class="fas fa-graduation-cap"></i>
-            <span class="my">Centre</span><span class="scol">Formation Pro</span>
+            <span class="my">Centre</span><span class="scol">EduPlanner</span>
         </div>
-        
         <nav>
             <a href="../../interface/accueil/index.html">Accueil</a>
             <a href="../../interface/admin-management/formateurs.html">Formateurs</a>
@@ -38,8 +34,7 @@
             <a href="../../interface/admin-management/salles.html">Salles</a>
             <a href="../../interface/admin-management/equipement.html" class="active">Equipements</a>
             <a href="../../interface/admin-management/planning.html">Planning</a>
-            <a href="../../interface/admin-management/statistique.html">Statistiques</a>
-            <a href="../../interface/admin-management/contraintes.html" >Contraintes</a>
+            <a href="../../interface/admin-management/admin-conflicts.html">Conflits</a>
         </nav>
 
         <div class="nav-icons">
@@ -50,12 +45,8 @@
             </button>
         </div>
     </header>
-
-    <!-- MAIN CONTENT -->
     <main class="main-content">
         <div class="container">
-            
-            <!-- PAGE HEADER -->
             <div class="page-header">
                 <div class="page-title-section">
                     <h1 class="page-title">
@@ -69,130 +60,120 @@
                     <span>Ajouter un équipement</span>
                 </button>
             </div>
-
-            <!-- STATISTICS CARDS -->
-            <div class="stats-cards">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon purple">
-                            <i class="fas fa-laptop"></i>
+            <div id="loadingState" class="loading-state">
+                <div class="spinner">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <p>Chargement des équipements...</p>
+                </div>
+            </div>
+            <div id="mainContent" style="display: none;">
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon purple">
+                                <i class="fas fa-laptop"></i>
+                            </div>
+                            <div>
+                                <h3 class="stat-number" id="totalEquipements">0</h3>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="stat-number">0</h3>
-                        </div>
+                        <p class="stat-label">Total Équipements</p>
                     </div>
-                    <p class="stat-label">Total Équipements</p>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon blue">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <h3 class="stat-number" id="equipementsDisponibles">0</h3>
+                            </div>
+                        </div>
+                        <p class="stat-label">Équipements Disponibles</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <div>
+                                <h3 class="stat-number" id="typesEquipements">0</h3>
+                            </div>
+                        </div>
+                        <p class="stat-label">Types d'Équipements</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon orange">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div>
+                                <h3 class="stat-number" id="aReparer">0</h3>
+                            </div>
+                        </div>
+                        <p class="stat-label">À Réparer</p>
+                    </div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon blue">
+                <!-- FILTERS & SEARCH -->
+                <div class="filters-section">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Rechercher un équipement...">
+                    </div>
+
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">
+                            <i class="fas fa-list"></i>
+                            Tous
+                        </button>
+                        <button class="filter-btn" data-filter="disponible">
                             <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <h3 class="stat-number">0</h3>
-                        </div>
-                    </div>
-                    <p class="stat-label">Équipements Disponibles</p>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon green">
+                            Disponibles
+                        </button>
+                        <button class="filter-btn" data-filter="a-reparer">
                             <i class="fas fa-tools"></i>
-                        </div>
-                        <div>
-                            <h3 class="stat-number">0</h3>
-                        </div>
+                            À Réparer
+                        </button>
                     </div>
-                    <p class="stat-label">Types d'Équipements</p>
+
+                    <select class="sort-select" id="sortSelect">
+                        <option value="nom">Trier par nom</option>
+                        <option value="type">Trier par type</option>
+                        <option value="quantite">Trier par quantité</option>
+                        <option value="etat">Trier par état</option>
+                    </select>
+                </div>
+                <div class="table-container">
+                    <table class="equipements-table">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Quantité</th>
+                                <th>État</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="equipementsTableBody">
+
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon orange">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div>
-                            <h3 class="stat-number">0</h3>
-                        </div>
+                <div class="pagination">
+                    <button class="page-btn" id="prevPage">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="page-numbers" id="pageNumbers">
+                        <button class="page-number active">1</button>
                     </div>
-                    <p class="stat-label">À Réparer</p>
-                </div>
-            </div>
-
-            <!-- FILTERS & SEARCH -->
-            <div class="filters-section">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Rechercher un équipement...">
-                </div>
-
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-filter="all">
-                        <i class="fas fa-list"></i>
-                        Tous
-                    </button>
-                    <button class="filter-btn" data-filter="disponible">
-                        <i class="fas fa-check-circle"></i>
-                        Disponibles
-                    </button>
-                    <button class="filter-btn" data-filter="a-reparer">
-                        <i class="fas fa-tools"></i>
-                        À Réparer
+                    <button class="page-btn" id="nextPage">
+                        <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
-
-                <select class="sort-select" id="sortSelect">
-                    <option value="nom">Trier par nom</option>
-                    <option value="type">Trier par type</option>
-                    <option value="quantite">Trier par quantité</option>
-                    <option value="etat">Trier par état</option>
-                </select>
-            </div>
-
-            <!-- EQUIPEMENTS TABLE -->
-            <div class="table-container">
-                <table class="equipements-table">
-                    <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Type</th>
-                            <th>Quantité</th>
-                            <th>État</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="equipementsTableBody">
-                        <!-- Les équipements seront ajoutés ici dynamiquement -->
-                        <tr class="empty-state">
-                            <td colspan="5">
-                                <div class="empty-content">
-                                    <i class="fas fa-laptop"></i>
-                                    <h3>Aucun équipement enregistré</h3>
-                                    <p>Commencez par ajouter votre premier équipement</p>
-                                    <button class="btn btn-primary" onclick="document.getElementById('addEquipement').click()">
-                                        <i class="fas fa-plus"></i>
-                                        Ajouter un équipement
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- PAGINATION -->
-            <div class="pagination">
-                <button class="page-btn" id="prevPage">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <div class="page-numbers" id="pageNumbers">
-                    <button class="page-number active">1</button>
-                </div>
-                <button class="page-btn" id="nextPage">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
             </div>
 
         </div>
@@ -213,13 +194,12 @@
             </div>
 
             <form id="equipementForm" class="modal-body">
-                <!-- INFORMATIONS DE BASE -->
                 <div class="form-section">
                     <h3 class="form-section-title">
                         <i class="fas fa-info-circle"></i>
                         Informations de base
                     </h3>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="nom">Nom de l'équipement *</label>
@@ -231,14 +211,12 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- TYPE D'ÉQUIPEMENT -->
                 <div class="form-section">
                     <h3 class="form-section-title">
                         <i class="fas fa-tag"></i>
                         Type d'équipement
                     </h3>
-                    
+
                     <div class="form-group">
                         <label for="type">Sélectionnez le type *</label>
                         <div class="types-grid" id="typesGrid">
@@ -294,14 +272,12 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- ÉTAT DU MATÉRIEL -->
                 <div class="form-section">
                     <h3 class="form-section-title">
                         <i class="fas fa-clipboard-check"></i>
                         État du matériel
                     </h3>
-                    
+
                     <div class="form-group">
                         <label for="etat">Sélectionnez l'état *</label>
                         <div class="etats-grid" id="etatsGrid">
@@ -336,8 +312,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- MODAL FOOTER -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="cancelBtn">
                         <i class="fas fa-times"></i>
@@ -380,5 +354,7 @@
             </div>
         </div>
     </div>
+
 </body>
+
 </html>

@@ -1,24 +1,16 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Conflits - CentreFormation Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../style/admin-management/conflict.css">
-    <link rel="stylesheet" href="../../style/shared.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../style/admin-management/conflit.css">
+    <link rel="stylesheet" href="../../style/admin-management/shared.css">
     <script type="module" src="../../js/admin/conflict-management/app.js"></script>
-    <!--
-    
-    <script type="module" src="../../js/admin/conflict-management/state.js"></script>
-    <script type="module" src="../../js/admin/conflict-management/config.js"></script>
-    <script type="module" src="../../js/admin/conflict-management/api.js"></script>
-    <script type="module" src="../../js/admin/conflict-management/ui.js"></script>
-    <script type="module" src="../../js/admin/conflict-management/modal.js"></script>
-    <script type="module" src="../../js/admin/conflict-management/resolution.js"></script>
-    <script type="module" src="../../js/admin/conflict-management/main.js"></script>
-    -->
 </head>
 
 <body>
@@ -27,7 +19,7 @@
         <div class="shape shape-2"></div>
         <div class="shape shape-3"></div>
     </div>
-    
+
     <header>
         <div class="logo">
             <i class="fas fa-graduation-cap"></i>
@@ -40,13 +32,13 @@
             <a href="../../interface/admin-management/salles.html">Salles</a>
             <a href="../../interface/admin-management/equipement.html">Equipements</a>
             <a href="../../interface/admin-management/planning.html">Planning</a>
-            <a href="../../interface/admin-management/conflits.html" class="active">Conflits</a>
+            <a href="../../interface/admin-management/admin-conflicts.html" class="active">Conflits</a>
         </nav>
         <div class="nav-icons">
             <i class="fas fa-user"></i>
         </div>
     </header>
-    
+
     <main class="main-content">
         <div class="container">
             <div class="page-header">
@@ -72,7 +64,7 @@
                     </button>
                 </div>
             </div>
-            
+
             <!-- STATISTICS CARDS -->
             <div class="stats-cards">
                 <div class="stat-card">
@@ -221,7 +213,7 @@
                             </span>
                         </div>
                     </div>
-                    
+
                     <div class="conflit-card">
                         <div class="card-header">
                             <i class="fas fa-info-circle"></i>
@@ -231,7 +223,7 @@
                             <p id="modalConflitDescription" class="conflit-description-text"></p>
                         </div>
                     </div>
-                    
+
                     <div class="info-grid-section">
                         <div class="conflit-card">
                             <div class="card-header">
@@ -250,7 +242,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="conflit-card">
                             <div class="card-header">
                                 <i class="fas fa-list-alt"></i>
@@ -264,7 +256,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="cancelBtn">
                     <i class="fas fa-times"></i>
@@ -274,7 +266,8 @@
                     <i class="fas fa-lightbulb"></i>
                     Voir les Solutions
                 </button>
-                <button type="button" class="btn btn-danger" onclick="openDeleteModal(window.currentConflitId, 'ce conflit')">
+                <button type="button" class="btn btn-danger"
+                    onclick="openDeleteModal(window.currentConflitId, 'ce conflit')">
                     <i class="fas fa-trash"></i>
                     Supprimer
                 </button>
@@ -284,67 +277,70 @@
 
     <!-- MODAL SOLUTIONS -->
     <div class="modal" id="solutionsModal">
-    <div class="modal-overlay"></div>
-    <div class="modal-content modal-wide">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                <i class="fas fa-lightbulb"></i>
-                <span id="solutionsModalTitle">Solutions Recommandées</span>
-            </h2>
-            <button class="modal-close" id="closeSolutionsModal">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-lightbulb"></i>
+                    <span id="solutionsModalTitle">Solutions Recommandées</span>
+                </h2>
+                <button class="modal-close" id="closeSolutionsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
 
-        <div class="modal-body">
-            <div class="solutions-container">
-                <!-- Bannière d'information -->
-                <div class="solutions-banner">
-                    <div class="banner-content">
-                        <i class="fas fa-info-circle"></i>
-                        <div>
-                            <h3>Solutions disponibles pour ce conflit</h3>
-                            <p>Sélectionnez une ou plusieurs solutions et appliquez-les en groupe</p>
+            <div class="modal-body">
+                <div class="solutions-container">
+                    <div class="solutions-banner">
+                        <div class="banner-content">
+                            <i class="fas fa-info-circle"></i>
+                            <div>
+                                <h3>Solutions disponibles pour ce conflit</h3>
+                                <p>Sélectionnez une ou plusieurs solutions et appliquez-les en groupe</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- ✅ BARRE D'ACTIONS AVEC SÉLECTION MULTIPLE -->
-                <div class="solutions-actions-bar">
-                    <div class="selection-info">
-                        <span id="selectedCount">0 solution(s) sélectionnée(s)</span>
+                    <div class="solutions-actions-bar">
+                        <div class="selection-info">
+                            <span id="selectedCount">0 solution(s) sélectionnée(s)</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-secondary" onclick="selectAllSolutions()" id="selectAllBtn">
+                                <i class="fas fa-check-double"></i>
+                                Tout sélectionner
+                            </button>
+                            <button class="btn btn-sm btn-secondary" onclick="deselectAllSolutions()"
+                                id="deselectAllBtn" style="display: none;">
+                                <i class="fas fa-times"></i>
+                                Tout désélectionner
+                            </button>
+                            <button class="btn btn-sm btn-success" onclick="applySelectedSolutions()"
+                                id="applySelectedBtn" disabled>
+                                <i class="fas fa-check-circle"></i>
+                                Appliquer la sélection
+                            </button>
+                        </div>
                     </div>
-                    <div class="action-buttons">
-                        <button class="btn btn-sm btn-secondary" onclick="selectAllSolutions()" id="selectAllBtn">
-                            <i class="fas fa-check-double"></i>
-                            Tout sélectionner
-                        </button>
-                        <button class="btn btn-sm btn-secondary" onclick="deselectAllSolutions()" id="deselectAllBtn" style="display: none;">
-                            <i class="fas fa-times"></i>
-                            Tout désélectionner
-                        </button>
-                        <button class="btn btn-sm btn-success" onclick="applySelectedSolutions()" id="applySelectedBtn" disabled>
-                            <i class="fas fa-check-circle"></i>
-                            Appliquer la sélection
-                        </button>
-                    </div>
-                </div>
 
-                <!-- Grille des solutions -->
-                <div class="solutions-grid" id="solutionsGrid">
-                    <!-- Les solutions seront injectées ici dynamiquement -->
+                    <div class="solutions-grid" id="solutionsGrid">
+                        <!-- Les solutions seront injectées ici dynamiquement -->
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" id="cancelSolutionsBtn">
-                <i class="fas fa-arrow-left"></i>
-                Retour aux détails
-            </button>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelSolutionsBtn">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour aux détails
+                </button>
+                <button class="btn btn-sm btn-warning" onclick="appliquerToutesSolutions()" id="applyAllBtn">
+                    <i class="fas fa-bolt"></i>
+                        Appliquer toutes les solutions
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
     <!-- MODAL CONFIRMATION SUPPRESSION -->
     <div class="modal" id="deleteModal">
@@ -390,7 +386,8 @@
             </div>
             <div class="modal-body">
                 <p>Êtes-vous sûr de vouloir supprimer <strong>TOUS</strong> les conflits ?</p>
-                <p>Cette action supprimera <strong id="conflitsCount">0</strong> conflit(s) de la base de données et est irréversible.</p>
+                <p>Cette action supprimera <strong id="conflitsCount">0</strong> conflit(s) de la base de données et est
+                    irréversible.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="cancelDeleteAll">
@@ -404,7 +401,7 @@
         </div>
     </div>
 
-    <!-- MODAL RÉSOLUTION AUTOMATIQUE -->
+    
     <div class="modal" id="resolutionModal">
         <div class="modal-overlay"></div>
         <div class="modal-content modal-wide">
@@ -439,4 +436,5 @@
         </div>
     </div>
 </body>
+
 </html>

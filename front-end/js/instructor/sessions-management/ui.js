@@ -19,9 +19,7 @@ import { updateUserUI } from '../../shared/config.js';
 
 let sessions = [];
 
-// -------------------------------
-// FILTRES
-// -------------------------------
+
 export async function loadFilters() {
     try {
         const [groupes, salles] = await Promise.all([fetchGroupes(), fetchSalles()]);
@@ -60,9 +58,7 @@ export function initFilterEvents() {
         .forEach(el => el.addEventListener('change', () => fetchSessions()));
 }
 
-// -------------------------------
-// SESSIONS
-// -------------------------------
+
 export async function fetchSessions() {
     try {
         const formateur = await fetchFormateurProfile();
@@ -162,9 +158,7 @@ function renderSessions() {
     initModalButtons();
 }
 
-// -------------------------------
-// MODAL
-// -------------------------------
+
 async function loadMaterialsForModal() {
     const materiels = await fetchMateriels();
     const materialSelect = document.querySelector('select[name="materialType"]');
@@ -236,9 +230,7 @@ async function handleMaterialSubmit(e) {
     }
 }
 
-// -------------------------------
-// INITIALISATION
-// -------------------------------
+
 document.addEventListener('DOMContentLoaded', async () => {
     await loadFilters();
     initFilterEvents();

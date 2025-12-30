@@ -1,10 +1,9 @@
 import { getAuthHeaders, API_BASE_URL, updateUserUI } from '../../shared/config.js'
 import { fetchEtudiantProfile } from '../shared/api-utils.js';
 
-// Fonction pour récupérer les formations d'un étudiant
 async function fetchFormations() {
     try {
-        // Récupérer l'ID de l'étudiant depuis son profil
+
         const etudiant = await fetchEtudiantProfile();
         updateUserUI(etudiant);
         const etudiantId = etudiant.id;
@@ -25,9 +24,6 @@ async function fetchFormations() {
     }
 }
 
-// --------------------------------
-// UTILS
-// --------------------------------
 function formatDate(dateString) {
     if (!dateString) return 'Non défini';
     const date = new Date(dateString);
@@ -78,9 +74,6 @@ function createFormationCard(formation) {
     `;
 }
 
-// --------------------------------
-// AFFICHAGE
-// --------------------------------
 let allFormations = [];
 
 function initializeFilters() {
@@ -89,13 +82,11 @@ function initializeFilters() {
     filterTabs.forEach(tab => {
         tab.addEventListener('click', function () {
 
-            // Onglet actif
             filterTabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
 
             const filter = this.dataset.filter;
 
-            // récupérer les cartes AU MOMENT du clic
             const formationCards = document.querySelectorAll('.formation-card');
 
             formationCards.forEach(card => {
@@ -116,7 +107,6 @@ function initializeFilters() {
                 card.style.display = shouldShow ? 'flex' : 'none';
             });
 
-            // Mettre à jour les badges après le filtrage
             updateFilterCounts(allFormations);
         });
     });
@@ -159,7 +149,7 @@ async function displayFormations() {
     updateFilterCounts(allFormations);
     initializeFilters();
 
-    // Lancer les animations
+
     setTimeout(() => {
         document.querySelectorAll('.formation-card').forEach(card => {
             card.style.animationPlayState = 'running';
@@ -167,7 +157,4 @@ async function displayFormations() {
     }, 100);
 }
 
-// --------------------------------
-// INIT
-// --------------------------------
 document.addEventListener('DOMContentLoaded', displayFormations);

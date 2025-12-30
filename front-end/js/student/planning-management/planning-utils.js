@@ -1,12 +1,10 @@
-// Retourne le lundi de la semaine d'une date donnée
+
 export function getMondayOfCurrentWeek(date) {
     const currentDate = new Date(date);
     const day = currentDate.getDay();
-    const diff = currentDate.getDate() - day + (day === 0 ? -6 : 1); // ajustement dimanche
+    const diff = currentDate.getDate() - day + (day === 0 ? -6 : 1); 
     return new Date(currentDate.setDate(diff));
 }
-
-// Formate une date en texte lisible
 export function formatDate(date) {
     return date.toLocaleDateString('fr-FR', {
         day: 'numeric',
@@ -15,7 +13,6 @@ export function formatDate(date) {
     });
 }
 
-// Retourne le jour en français
 export function getFrenchDay(day) {
     const days = {
         'MONDAY': 'LUNDI',
@@ -29,13 +26,11 @@ export function getFrenchDay(day) {
     return days[day] || day;
 }
 
-// Formate une heure "HH:MM:SS" en "HH:MM"
 export function formatTime(timeString) {
     if (!timeString) return '';
     return timeString.substring(0, 5);
 }
 
-// Crée un élément événement pour le calendrier
 export function createCalendarEvent(session) {
     const timeStart = formatTime(session.heureDebut);
     const timeEnd = formatTime(session.heureFin);
@@ -44,7 +39,6 @@ export function createCalendarEvent(session) {
     eventDiv.className = 'calendar-event';
     eventDiv.dataset.time = `${timeStart}-${timeEnd}`;
 
-    // Calcul position
     const startHour = parseInt(timeStart.split(':')[0]);
     const startMinutes = parseInt(timeStart.split(':')[1]) || 0;
     const endHour = parseInt(timeEnd.split(':')[0]);
@@ -57,7 +51,6 @@ export function createCalendarEvent(session) {
     const topPercent = (startInMinutes / (11 * 60)) * 100;
     const heightPercent = (durationInMinutes / (11 * 60)) * 100;
 
-    // Styles
     eventDiv.style.position = 'absolute';
     eventDiv.style.top = `${topPercent}%`;
     eventDiv.style.height = `${heightPercent}%`;

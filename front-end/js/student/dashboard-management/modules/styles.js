@@ -1,6 +1,4 @@
-// --------------------------
-// Styles additionnels
-// --------------------------
+
 const style = document.createElement('style');
 style.textContent = `
     .no-sessions, .no-data {

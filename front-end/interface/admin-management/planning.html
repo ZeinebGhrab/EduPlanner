@@ -1,36 +1,48 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planning - CentreFormation Pro</title>
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Styles CSS -->
+    <title>Planning des Sessions</title>
     <link rel="stylesheet" href="../../style/planning.css">
-    <!-- Script JavaScript -->
-    <script src="../../js/planning.js"></script>
-</head>
-<body>
+    <link rel="stylesheet" href="../../style/admin-management/shared.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="../../js/admin/config.js" defer></script>
+    <script src="../../js/admin/planning-create.js" defer></script>
+    <script src="../../js/admin/planning.js" defer></script>
+    <script src="../../js/admin/creneau.js" defer></script>
 
-    <!-- BACKGROUND SHAPES -->
+</head>
+
+<body>
+    <!-- Background Shapes -->
     <div class="bg-shapes">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
         <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="deco-diamond"></div>
+        <div class="deco-circle"></div>
+        <div class="deco-circle-2"></div>
+        <div class="deco-circle-3"></div>
+        <div class="deco-plus"></div>
+        <div class="deco-plus-2"></div>
+        <div class="deco-plus-3"></div>
     </div>
 
-    <!-- HEADER -->
+    <!-- Header -->
     <header>
         <div class="logo">
             <i class="fas fa-graduation-cap"></i>
-            <span class="my">Centre</span><span class="scol">Formation Pro</span>
+            <span class="my">Centre</span><span class="scol">EduPlanner</span>
         </div>
-        
         <nav>
             <a href="../../interface/accueil/index.html">Accueil</a>
             <a href="../../interface/admin-management/formateurs.html">Formateurs</a>
@@ -38,796 +50,474 @@
             <a href="../../interface/admin-management/salles.html">Salles</a>
             <a href="../../interface/admin-management/equipement.html">Equipements</a>
             <a href="../../interface/admin-management/planning.html" class="active">Planning</a>
-            <a href="../../interface/admin-management/statistique.html">Statistiques</a>
-            <a href="../../interface/admin-management/contraintes.html" >Contraintes</a>
+            <a href="../../interface/admin-management/admin-conflicts.html">Conflits</a>
         </nav>
-
         <div class="nav-icons">
             <i class="fas fa-bell"></i>
-            <i class="fas fa-user"></i>
-            <button class="menu-btn">
-                <i class="fas fa-th"></i>
-            </button>
+            <i class="fas fa-user-circle"></i>
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
+    <!-- Main Content -->
+    <div class="main-content">
         <div class="container">
-            
-            <!-- PAGE HEADER -->
             <div class="page-header">
                 <div class="page-title-section">
                     <h1 class="page-title">
-                        <i class="fas fa-calendar-alt"></i>
-                        Agenda & Planning
+                        <i class="fas fa-calendar-week"></i>
+                        Planning des Sessions
                     </h1>
-                    <p class="page-subtitle">Visualisez et gérez l'emploi du temps de votre centre de formation</p>
+                    <p class="page-subtitle">Gérez et visualisez toutes vos sessions de formation</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn btn-primary" id="generatePlanning">
-                        <i class="fas fa-sync-alt"></i>
-                        <span>Générer Planning</span>
+                    <button type="button" class="btn btn-link" onclick="openNewCreneauModal()">
+                        + Créer un créneau
                     </button>
-                    <button class="btn btn-secondary" id="printPlanning">
-                        <i class="fas fa-print"></i>
-                        <span>Exporter</span>
-                    </button>
-                    <button class="btn btn-secondary" id="filterPlanning">
-                        <i class="fas fa-filter"></i>
-                        <span>Filtrer</span>
+
+
+                    <button class="btn-add" onclick="openPlanningModal()">+ Nouveau Planning</button>
+
+                    <button class="btn btn-primary" onclick="openAddSessionModal()">
+                        <i class="fas fa-plus"></i>
+                        Nouvelle Session
                     </button>
                 </div>
             </div>
 
-            <!-- CALENDAR NAVIGATION -->
-            <div class="calendar-nav">
-                <button class="nav-btn" id="prevWeek">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                
-                <div class="date-display">
-                    <i class="fas fa-calendar"></i>
-                    <span id="currentWeek">Semaine du 21 Février 2024</span>
+            <!-- Statistics Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number"></div>
+                    <div class="stat-label">Sessions cette semaine</div>
                 </div>
-                
-                <button class="nav-btn" id="nextWeek">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon green">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number"></div>
+                    <div class="stat-label">Salles disponibles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number"></div>
+                    <div class="stat-label">Conflits à résoudre</div>
+                    <a href="./admin-conflicts.html" class="conflict-link">
+                        <i class="fas fa-arrow-right"></i> Gérer
+                    </a>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number"></div>
+                    <div class="stat-label">Participants inscrits</div>
+                </div>
+            </div>
 
-                <div class="view-options">
-                    <button class="view-option active" data-view="week">
+            <!-- Filters & Controls -->
+            <div class="planning-controls">
+                <div class="view-switcher">
+                    <button class="view-btn active" data-view="week">
                         <i class="fas fa-calendar-week"></i>
                         Semaine
                     </button>
-                    <button class="view-option" data-view="day">
+                    <button class="view-btn" data-view="day">
                         <i class="fas fa-calendar-day"></i>
                         Jour
                     </button>
-                    <button class="view-option" data-view="month">
+                    <button class="view-btn" data-view="month">
                         <i class="fas fa-calendar"></i>
                         Mois
                     </button>
                 </div>
-            </div>
 
-            <!-- QUICK STATS -->
-            <div class="quick-stats">
-                <div class="stat-item">
-                    <div class="stat-icon">
-                        <i class="fas fa-book"></i>
+                <div class="date-navigation">
+                    <button class="nav-btn" onclick="previousPeriod()">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="current-period">
+                        <span class="period-text" id="currentPeriod"></span>
                     </div>
-                    <div class="stat-content">
-                        <div class="stat-number">15</div>
-                        <div class="stat-label">Cours cette semaine</div>
-                    </div>
+                    <button class="nav-btn" onclick="nextPeriod()">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button class="btn-today" onclick="goToToday()">
+                        Aujourd'hui
+                    </button>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-icon">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">8</div>
-                        <div class="stat-label">Formateurs actifs</div>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon">
-                        <i class="fas fa-door-open"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">92%</div>
-                        <div class="stat-label">Taux d'occupation</div>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">45h</div>
-                        <div class="stat-label">Heures planifiées</div>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">124</div>
-                        <div class="stat-label">Étudiants inscrits</div>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">87%</div>
-                        <div class="stat-label">Taux de présence</div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- PLANNING GRID -->
-            <div class="planning-container">
-                <div class="planning-grid">
-                    
-                    <!-- Time Column -->
-                    <div class="time-column">
-                        <div class="day-header">Heures</div>
-                        <div class="time-slot">08:00</div>
-                        <div class="time-slot">09:00</div>
-                        <div class="time-slot">10:00</div>
-                        <div class="time-slot">11:00</div>
-                        <div class="time-slot">12:00</div>
-                        <div class="time-slot">13:00</div>
-                        <div class="time-slot">14:00</div>
-                        <div class="time-slot">15:00</div>
-                        <div class="time-slot">16:00</div>
-                        <div class="time-slot">17:00</div>
-                    </div>
+                <div class="planning-filters">
+                    <select class="filter-select" id="filterSalle">
+                        <option value="all">Toutes les salles</option>
+                    </select>
 
-                    <!-- Lundi -->
-                    <div class="day-column lundi">
-                        <div class="day-header">
-                            Lundi
-                            <span class="day-date">21/02</span>
-                        </div>
-                        
-                        <div class="course-card" data-course="ml">
-                            <div class="course-time">08:45 - 09:45</div>
-                            <div class="course-title">Machine Learning</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>M. Tounsi</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Salle 12</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>PC Portable, Projecteur</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="course-card" data-course="communication">
-                            <div class="course-time">09:45 - 10:45</div>
-                            <div class="course-title">Communication</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>Mme Mhiri</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Salle 12</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>Tableau Blanc, Vidéoprojecteur</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="empty-slot" data-time="10:45-11:00" data-day="lundi"></div>
-
-                        <div class="course-card" data-course="ia">
-                            <div class="course-time">11:00 - 12:00</div>
-                            <div class="course-title">Intelligence Artificielle</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>M. Ghorbel</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Salle 13</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>PC Gaming, Serveurs GPU</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="empty-slot" data-time="12:00-13:00" data-day="lundi"></div>
-                        <div class="empty-slot" data-time="13:00-14:00" data-day="lundi"></div>
-                        <div class="empty-slot" data-time="14:00-15:00" data-day="lundi"></div>
-                        <div class="empty-slot" data-time="15:00-16:00" data-day="lundi"></div>
-                        <div class="empty-slot" data-time="16:00-17:00" data-day="lundi"></div>
-                    </div>
-
-                    <!-- Mardi -->
-                    <div class="day-column mardi">
-                        <div class="day-header">
-                            Mardi
-                            <span class="day-date">22/02</span>
-                        </div>
-                        
-                        <div class="course-card" data-course="cyber">
-                            <div class="course-time">08:45 - 09:45</div>
-                            <div class="course-title">Introduction Cybersécurité</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>M. Feki</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Salle 13</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>Lab Sécurité, Firewalls</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="course-card" data-course="anglais">
-                            <div class="course-time">09:45 - 10:45</div>
-                            <div class="course-title">Listening Comprehension</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>Mme Kallel</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Salle 13</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>Audio Lab, Casques</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="course-card" data-course="statistique">
-                            <div class="course-time">10:45 - 11:45</div>
-                            <div class="course-title">Statistiques Avancées</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>M. Tounsi</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Salle 12</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>R, Python, Tableaux</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="empty-slot" data-time="11:45-13:00" data-day="mardi"></div>
-                        <div class="empty-slot" data-time="13:00-14:00" data-day="mardi"></div>
-                        <div class="empty-slot" data-time="14:00-15:00" data-day="mardi"></div>
-                        <div class="empty-slot" data-time="15:00-16:00" data-day="mardi"></div>
-                        <div class="empty-slot" data-time="16:00-17:00" data-day="mardi"></div>
-                    </div>
-
-                    <!-- Mercredi -->
-                    <div class="day-column mercredi">
-                        <div class="day-header">
-                            Mercredi
-                            <span class="day-date">23/02</span>
-                        </div>
-                        
-                        <div class="course-card" data-course="image">
-                            <div class="course-time">08:45 - 09:45</div>
-                            <div class="course-title">Traitement d'Image</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>M. Ghorbel</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Salle 12</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>Caméras, OpenCV, GPU</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="course-card" data-course="presentation">
-                            <div class="course-time">09:45 - 10:45</div>
-                            <div class="course-title">Présentation de Projets</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>Mme Mhiri</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Salle 12</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>Micro, Projecteur, Slides</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="empty-slot" data-time="10:45-11:30" data-day="mercredi"></div>
-
-                        <div class="course-card" data-course="data">
-                            <div class="course-time">11:30 - 12:30</div>
-                            <div class="course-title">Nettoyage de Données</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>M. Tounsi</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Salle 12</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>Pandas, SQL, Datasets</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="empty-slot" data-time="12:30-13:00" data-day="mercredi"></div>
-                        <div class="empty-slot" data-time="13:00-14:00" data-day="mercredi"></div>
-                        <div class="empty-slot" data-time="14:00-15:00" data-day="mercredi"></div>
-                        <div class="empty-slot" data-time="15:00-16:00" data-day="mercredi"></div>
-                        <div class="empty-slot" data-time="16:00-17:00" data-day="mercredi"></div>
-                    </div>
-
-                    <!-- Jeudi -->
-                    <div class="day-column jeudi">
-                        <div class="day-header">
-                            Jeudi
-                            <span class="day-date">24/02</span>
-                        </div>
-                        
-                        <div class="course-card" data-course="python">
-                            <div class="course-time">08:45 - 09:45</div>
-                            <div class="course-title">Algorithmes Python</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>M. Ghorbel</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Lab Info 1</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>PC Programmation, Python IDE</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="course-card" data-course="nosql">
-                            <div class="course-time">09:45 - 10:45</div>
-                            <div class="course-title">Bases NoSQL</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>M. Feki</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Salle 12</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>MongoDB, Serveurs Cloud</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="empty-slot" data-time="10:45-11:00" data-day="jeudi"></div>
-                        <div class="empty-slot" data-time="11:00-12:00" data-day="jeudi"></div>
-                        <div class="empty-slot" data-time="12:00-13:00" data-day="jeudi"></div>
-                        <div class="empty-slot" data-time="13:00-14:00" data-day="jeudi"></div>
-                        <div class="empty-slot" data-time="14:00-15:00" data-day="jeudi"></div>
-                        <div class="empty-slot" data-time="15:00-16:00" data-day="jeudi"></div>
-                        <div class="empty-slot" data-time="16:00-17:00" data-day="jeudi"></div>
-                    </div>
-
-                    <!-- Vendredi -->
-                    <div class="day-column vendredi">
-                        <div class="day-header">
-                            Vendredi
-                            <span class="day-date">25/02</span>
-                        </div>
-                        
-                        <div class="course-card" data-course="scrum">
-                            <div class="course-time">08:45 - 09:45</div>
-                            <div class="course-title">Workshop Scrum</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>Mme Kallel</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Salle 13</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>Tableaux Agile, Post-its</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="empty-slot" data-time="09:45-10:00" data-day="vendredi"></div>
-
-                        <div class="course-card" data-course="frontend">
-                            <div class="course-time">10:00 - 11:00</div>
-                            <div class="course-title">Développement Front-End</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>M. Tounsi</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Lab Info 2</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>HTML/CSS/JS, Éditeurs</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="course-card" data-course="backend">
-                            <div class="course-time">11:00 - 12:00</div>
-                            <div class="course-title">API Backend</div>
-                            <div class="course-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>M. Tounsi</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-door-open"></i>
-                                    <span>Lab Info 2</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-laptop"></i>
-                                    <span>Node.js, Express, MongoDB</span>
-                                </div>
-                            </div>
-                            <div class="course-actions">
-                                <button class="course-action-btn" data-action="edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="course-action-btn" data-action="delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="empty-slot" data-time="12:00-13:00" data-day="vendredi"></div>
-                        <div class="empty-slot" data-time="13:00-14:00" data-day="vendredi"></div>
-                        <div class="empty-slot" data-time="14:00-15:00" data-day="vendredi"></div>
-                        <div class="empty-slot" data-time="15:00-16:00" data-day="vendredi"></div>
-                        <div class="empty-slot" data-time="16:00-17:00" data-day="vendredi"></div>
-                    </div>
+                    <select class="filter-select" id="filterStatut">
+                        <option value="all">Tous les statuts</option>
+                        <option value="PLANIFIE">Planifiée</option>
+                        <option value="TERMINE">Terminée</option>
+                        <option value="ANNULEE">Annulée</option>
+                    </select>
 
                 </div>
             </div>
 
+            <!-- Planning Grid -->
+            <div class="planning-grid-container">
+                <div class="planning-legend">
+                    <div class="legend-item">
+                        <span class="legend-badge status-confirmee"></span>
+                        <span>Session planifiée</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-badge status-attente"></span>
+                        <span>Session terminée</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-badge status-annulee"></span>
+                        <span>Session annulée</span>
+                    </div>
+                    <div class="legend-item">
+                        <i class="fas fa-exclamation-triangle conflict-icon"></i>
+                        <span>Conflit détecté</span>
+                    </div>
+                </div>
+
+
+                <!-- Planning Table -->
+                <div class="planning-grid" id="planningGrid">
+                    <div class="planning-header">
+                        <div class="time-column header-cell">Horaires</div>
+                        <div class="day-column header-cell">
+                            <div class="day-name">Lundi</div>
+                            <div class="day-date"></div>
+                        </div>
+                        <div class="day-column header-cell">
+                            <div class="day-name">Mardi</div>
+                            <div class="day-date"></div>
+                        </div>
+                        <div class="day-column header-cell">
+                            <div class="day-name">Mercredi</div>
+                            <div class="day-date"></div>
+                        </div>
+                        <div class="day-column header-cell">
+                            <div class="day-name">Jeudi</div>
+                            <div class="day-date"></div>
+                        </div>
+                        <div class="day-column header-cell">
+                            <div class="day-name">Vendredi</div>
+                            <div class="day-date"></div>
+                        </div>
+                    </div>
+
+                    <!-- Salles Rows Template  -->
+                    <div class="salle-row template" id="salleRowTemplate">
+                        <div class="salle-header">
+                            <div class="salle-name"></div>
+                            <div class="salle-capacity"></div>
+                        </div>
+
+                        <div class="time-grid">
+                            <!-- Lundi -->
+                            <div class="time-slot" data-jour="LUNDI" data-heure="08:00"></div>
+                            <div class="time-slot" data-jour="LUNDI" data-heure="09:00"></div>
+                            <div class="time-slot" data-jour="LUNDI" data-heure="10:00"></div>
+                            <div class="time-slot" data-jour="LUNDI" data-heure="11:00"></div>
+                            <div class="time-slot" data-jour="LUNDI" data-heure="12:00"></div>
+                            <div class="time-slot" data-jour="LUNDI" data-heure="13:00"></div>
+                            <div class="time-slot" data-jour="LUNDI" data-heure="14:00"></div>
+                            <div class="time-slot" data-jour="LUNDI" data-heure="15:00"></div>
+                            <div class="time-slot" data-jour="LUNDI" data-heure="16:00"></div>
+                            
+                            <!-- Mardi -->
+                            <div class="time-slot" data-jour="MARDI" data-heure="08:00"></div>
+                            <div class="time-slot" data-jour="MARDI" data-heure="09:00"></div>
+                            <div class="time-slot" data-jour="MARDI" data-heure="10:00"></div>
+                            <div class="time-slot" data-jour="MARDI" data-heure="11:00"></div>
+                            <div class="time-slot" data-jour="MARDI" data-heure="12:00"></div>
+                            <div class="time-slot" data-jour="MARDI" data-heure="13:00"></div>
+                            <div class="time-slot" data-jour="MARDI" data-heure="14:00"></div>
+                            <div class="time-slot" data-jour="MARDI" data-heure="15:00"></div>
+                            <div class="time-slot" data-jour="MARDI" data-heure="16:00"></div>
+                            
+                            <!-- Mercredi -->
+                            <div class="time-slot" data-jour="MERCREDI" data-heure="08:00"></div>
+                            <div class="time-slot" data-jour="MERCREDI" data-heure="09:00"></div>
+                            <div class="time-slot" data-jour="MERCREDI" data-heure="10:00"></div>
+                            <div class="time-slot" data-jour="MERCREDI" data-heure="11:00"></div>
+                            <div class="time-slot" data-jour="MERCREDI" data-heure="12:00"></div>
+                            <div class="time-slot" data-jour="MERCREDI" data-heure="13:00"></div>
+                            <div class="time-slot" data-jour="MERCREDI" data-heure="14:00"></div>
+                            <div class="time-slot" data-jour="MERCREDI" data-heure="15:00"></div>
+                            <div class="time-slot" data-jour="MERCREDI" data-heure="16:00"></div>
+                            
+                            <!-- Jeudi -->
+                            <div class="time-slot" data-jour="JEUDI" data-heure="08:00"></div>
+                            <div class="time-slot" data-jour="JEUDI" data-heure="09:00"></div>
+                            <div class="time-slot" data-jour="JEUDI" data-heure="10:00"></div>
+                            <div class="time-slot" data-jour="JEUDI" data-heure="11:00"></div>
+                            <div class="time-slot" data-jour="JEUDI" data-heure="12:00"></div>
+                            <div class="time-slot" data-jour="JEUDI" data-heure="13:00"></div>
+                            <div class="time-slot" data-jour="JEUDI" data-heure="14:00"></div>
+                            <div class="time-slot" data-jour="JEUDI" data-heure="15:00"></div>
+                            <div class="time-slot" data-jour="JEUDI" data-heure="16:00"></div>
+                            
+                            <!-- Vendredi -->
+                            <div class="time-slot" data-jour="VENDREDI" data-heure="08:00"></div>
+                            <div class="time-slot" data-jour="VENDREDI" data-heure="09:00"></div>
+                            <div class="time-slot" data-jour="VENDREDI" data-heure="10:00"></div>
+                            <div class="time-slot" data-jour="VENDREDI" data-heure="11:00"></div>
+                            <div class="time-slot" data-jour="VENDREDI" data-heure="12:00"></div>
+                            <div class="time-slot" data-jour="VENDREDI" data-heure="13:00"></div>
+                            <div class="time-slot" data-jour="VENDREDI" data-heure="14:00"></div>
+                            <div class="time-slot" data-jour="VENDREDI" data-heure="15:00"></div>
+                            <div class="time-slot" data-jour="VENDREDI" data-heure="16:00"></div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
 
-    <!-- MODAL AJOUT/ÉDITION DE COURS -->
-    <div class="modal" id="courseModal">
-        <div class="modal-overlay"></div>
+    <!-- Modal: Add/Edit Session -->
+    <div class="modal" id="sessionModal">
+        <div class="modal-overlay" onclick="closeModal()"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">
-                    <i class="fas fa-plus"></i>
-                    <span id="modalCourseTitle">Ajouter un cours</span>
+                <h2>
+                    <i class="fas fa-plus-circle"></i>
+                    Nouvelle Session
                 </h2>
-                <button class="modal-close" id="closeCourseModal">
+                <button class="modal-close" onclick="closeModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
-            <form id="courseForm" class="modal-body">
-                <div class="form-section">
-                    <h3 class="form-section-title">
-                        <i class="fas fa-info-circle"></i>
-                        Informations du cours
-                    </h3>
-                    
+            <!-- FORMULAIRE COMPLET INCLUANT LE FOOTER -->
+            <form id="sessionForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="titre">
+                            <i class="fas fa-heading"></i>
+                            Titre de la session *
+                        </label>
+                        <input type="text" id="nomCours" name="nomCours" required
+                            placeholder="Ex: Formation JavaScript Avancé">
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description">
+                            <i class="fas fa-align-left"></i>
+                            Description
+                        </label>
+                        <textarea id="description" name="description" rows="3"
+                            placeholder="Description de la session..."></textarea>
+                    </div>
+
+                    <!-- Date & Time -->
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="courseName">Nom du cours *</label>
-                            <input type="text" id="courseName" name="courseName" required placeholder="Ex: Machine Learning">
-                        </div>
-                        <div class="form-group">
-                            <label for="courseCategory">Catégorie *</label>
-                            <select id="courseCategory" name="courseCategory" required>
-                                <option value="">Sélectionnez une catégorie</option>
-                                <option value="ia">IA/ML</option>
-                                <option value="web">Développement Web</option>
-                                <option value="data">Data Science</option>
-                                <option value="securite">Cybersécurité</option>
-                                <option value="communication">Communication</option>
-                                <option value="anglais">Anglais</option>
-                                <option value="maths">Mathématiques</option>
-                                <option value="methodologie">Méthodologie</option>
-                                <option value="design">Design</option>
-                                <option value="reseaux">Réseaux</option>
-                            </select>
+                            <label for="duree">
+                                <i class="fas fa-clock"></i>
+                                Durée (heures) *
+                            </label>
+                            <input type="number" id="duree" name="duree" min="1" max="8" required placeholder="2">
                         </div>
                     </div>
 
+
+
+                    <!-- Salle -->
+                    <div class="form-group">
+                        <label for="salle_id">
+                            <i class="fas fa-door-open"></i>
+                            Salle *
+                        </label>
+                        <select id="salle_id" name="salle_id" required>
+                            <option value="">Sélectionnez une salle</option>
+                        </select>
+                        <div class="availability-indicator" id="salleAvailability">
+                            <i class="fas fa-spinner fa-spin"></i> Vérification...
+                        </div>
+                    </div>
+
+                    <!-- Formateur & Groupe -->
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="courseFormateur">Formateur *</label>
-                            <select id="courseFormateur" name="courseFormateur" required>
+                            <label for="formateur_id">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                Formateur *
+                            </label>
+                            <select id="formateur_id" name="formateur_id" required>
                                 <option value="">Sélectionnez un formateur</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="courseSalle">Salle *</label>
-                            <select id="courseSalle" name="courseSalle" required>
-                                <option value="">Sélectionnez une salle</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="courseMateriel">Matériel nécessaire *</label>
-                            <select id="courseMateriel" name="courseMateriel" required>
-                                <option value="">Sélectionnez le matériel</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="courseGroupe">Groupe d'étudiants *</label>
-                            <select id="courseGroupe" name="courseGroupe" required>
+                            <label for="groupe_id">
+                                <i class="fas fa-users"></i>
+                                Groupe
+                            </label>
+                            <select id="groupe_id" name="groupe_id">
                                 <option value="">Sélectionnez un groupe</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="courseMatiere">Matière *</label>
-                            <select id="courseMatiere" name="courseMatiere" required>
-                                <option value="">Sélectionnez une matière</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="courseType">Type de cours *</label>
-                            <select id="courseType" name="courseType" required>
-                                <option value="">Sélectionnez le type</option>
-                                <option value="cours">Cours théorique</option>
-                                <option value="tp">Travaux pratiques</option>
-                                <option value="td">Travaux dirigés</option>
-                                <option value="projet">Projet</option>
-                                <option value="examen">Examen</option>
-                                <option value="workshop">Workshop</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3 class="form-section-title">
-                        <i class="fas fa-clock"></i>
-                        Horaires
-                    </h3>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="courseDate">Date *</label>
-                            <input type="date" id="courseDate" name="courseDate" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="courseDay">Jour *</label>
-                            <select id="courseDay" name="courseDay" required>
-                                <option value="lundi">Lundi</option>
-                                <option value="mardi">Mardi</option>
-                                <option value="mercredi">Mercredi</option>
-                                <option value="jeudi">Jeudi</option>
-                                <option value="vendredi">Vendredi</option>
-                                <option value="samedi">Samedi</option>
-                            </select>
-                        </div>
+                    <!-- Pour les créneaux-->
+                    <div class="form-group">
+                        <label for="creneau_ids">
+                            <i class="fas fa-clock"></i>
+                            Créneaux *
+                        </label>
+                        <select id="creneau_ids" name="creneau_ids" required>
+                            <!-- Chargé dynamiquement -->
+                        </select>
+                        <small>Sélectionnez un ou plusieurs créneaux (Ctrl+clic pour multi)</small>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="courseStart">Heure de début *</label>
-                            <input type="time" id="courseStart" name="courseStart" required value="08:45">
-                        </div>
-                        <div class="form-group">
-                            <label for="courseEnd">Heure de fin *</label>
-                            <input type="time" id="courseEnd" name="courseEnd" required value="09:45">
+                    <!-- Pour le matériel -->
+                    <div class="form-group">
+                        <label for="materiel_requis_ids">
+                            <i class="fas fa-laptop"></i>
+                            Matériel requis
+                        </label>
+                        <select id="materiel_requis_ids" name="materiel_requis_ids" multiple>
+                            <!-- Chargé dynamiquement -->
+                        </select>
+                    </div>
+
+                    <!-- Statut -->
+                    <div class="form-group">
+                        <label for="statut">
+                            <i class="fas fa-info-circle"></i>
+                            Statut
+                        </label>
+                        <select id="statut" name="statut" required>
+                            
+                        </select>
+                    </div>
+
+                    <!-- Conflict Warning -->
+                    <div class="conflict-warning" id="conflictWarning" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div class="conflict-message">
+                            <strong>Conflit détecté !</strong>
                         </div>
                     </div>
-                </div>
+                </div> 
+
+                <!-- MODAL FOOTER À L'INTÉRIEUR DU FORMULAIRE -->
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="cancelCourse">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
                         <i class="fas fa-times"></i>
                         Annuler
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="submitSessionBtn">
                         <i class="fas fa-save"></i>
-                        <span id="submitCourseText">Enregistrer le cours</span>
+                        Enregistrer
+                    </button>
+                </div>
+            </form> 
+        </div>
+    </div>
+    <!--MODAL : CRÉER UN CRÉNEAU-->
+    <div class="modal" id="creneauModal">
+        <div class="modal-overlay" onclick="closeCreneauModal()"></div>
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>
+                    <i class="fas fa-clock"></i>
+                    Nouveau Créneau
+                </h2>
+                <button class="modal-close" onclick="closeCreneauModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="creneauForm">
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label>Jour *</label>
+                        <select id="creneauJour" required>
+                            <option value="">Sélectionner</option>
+                            <option value="LUNDI">Lundi</option>
+                            <option value="MARDI">Mardi</option>
+                            <option value="MERCREDI">Mercredi</option>
+                            <option value="JEUDI">Jeudi</option>
+                            <option value="VENDREDI">Vendredi</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" id="creneauDate" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Heure début *</label>
+                            <input type="time" id="creneauDebut" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Heure fin *</label>
+                            <input type="time" id="creneauFin" required>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreneauModal()">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Enregistrer
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL CONFIRMATION SUPPRESSION -->
-    <div class="modal" id="deleteCourseModal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content modal-small">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Confirmer la suppression
-                </h2>
-                <button class="modal-close" id="closeDeleteCourseModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Êtes-vous sûr de vouloir supprimer ce cours ? Cette action est irréversible.</p>
-                <p class="course-name" id="deleteCourseName"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelDeleteCourse">
-                    Annuler
-                </button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteCourse">
-                    <i class="fas fa-trash"></i>
-                    Supprimer
-                </button>
-            </div>
+    <!-- MODAL : Nouveau Planning -->
+    <div id="planningModal" class="modal">
+        <div class="modal-content">
+            <h2>Nouveau Planning</h2>
+
+            <form id="planningForm">
+                <div class="form-group">
+                    <label for="planningSemaine">Semaine *</label>
+                    <input type="date" id="planningSemaine" required placeholder="Début de semaine" />
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">Créer</button>
+                    <button type="button" class="btn-secondary" onclick="closePlanningModal()">
+                        Annuler
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- FLOATING ACTION BUTTON -->
-    <button class="fab" id="addCourseFab" title="Ajouter un cours">
-        <i class="fas fa-plus"></i>
-    </button>
 
 </body>
+
 </html>

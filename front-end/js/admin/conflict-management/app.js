@@ -1,15 +1,10 @@
 // ========================================================================
-// APP.JS - FICHIER JAVASCRIPT CORRIGÉ POUR LA GESTION DES CONFLITS
-// ========================================================================
-
-// ========================================================================
 // 1. CONFIGURATION
 // ========================================================================
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
-// ✅ DÉFINIR LA VALEUR PAR DÉFAUT DU PLANNING ID
-let DEFAULT_PLANNING_ID = 1; // Valeur par défaut, sera mise à jour automatiquement
+let DEFAULT_PLANNING_ID = 1; 
 let currentPlanningId = DEFAULT_PLANNING_ID;
 
 const API_ENDPOINTS = {
@@ -28,7 +23,7 @@ function setCurrentPlanningId(id) {
     console.log('Planning ID mis à jour:', currentPlanningId);
 }
 
-// Fonction pour récupérer le planning ID depuis les conflits
+// récupérer le planning ID depuis les conflits
 function detectPlanningId() {
     if (conflits.length > 0) {
         for (const conflit of conflits) {
@@ -156,7 +151,6 @@ function updateStats() {
     document.getElementById('conflitsFormateurs').textContent = conflitsFormateurs;
     document.getElementById('conflitsMateriel').textContent = conflitsMateriel;
 }
-
 function renderConflitsTable() {
     const tbody = document.getElementById('conflitsTableBody');
     const tableCount = document.getElementById('tableCount');
@@ -390,7 +384,7 @@ async function loadConflitsFromAPI() {
 
         const conflitsData = await response.json();
         console.log(`${conflitsData.length} conflits reçus de l'API`);
-        
+
         const transformedConflits = conflitsData.map(conflit => transformConflitFromAPI(conflit));
         setConflits(transformedConflits);
 
@@ -472,28 +466,28 @@ function transformConflitFromAPI(apiConflit) {
     const severiteLabel = getSeveriteLabel(severiteNum);
 
     return {
-    id: apiConflit.id,
+        id: apiConflit.id,
 
-    // ✅ FIX CRITIQUE
-    planningId: apiConflit.planningId ?? null,
+    
+        planningId: apiConflit.planningId ?? null,
 
-    typeApi: apiConflit.type,
-    typeDisplay: getTypeDisplay(apiConflit.type),
+        typeApi: apiConflit.type,
+        typeDisplay: getTypeDisplay(apiConflit.type),
 
-    severiteNum: severiteNum,
-    severiteLabel: severiteLabel,
-    severiteDisplay: getSeveriteDisplay(severiteNum),
+        severiteNum: severiteNum,
+        severiteLabel: severiteLabel,
+        severiteDisplay: getSeveriteDisplay(severiteNum),
 
-    description: apiConflit.description || 'Conflit détecté',
-    dateDetection: apiConflit.dateDetection,
-    dateFormatted: formatDate(apiConflit.dateDetection),
+        description: apiConflit.description || 'Conflit détecté',
+        dateDetection: apiConflit.dateDetection,
+        dateFormatted: formatDate(apiConflit.dateDetection),
 
-    creneau: apiConflit.creneau,
-    creneauDisplay: creneauDisplay,
+        creneau: apiConflit.creneau,
+        creneauDisplay: creneauDisplay,
 
-    sessions: sessionsList,
-    sessionsFull: apiConflit.sessionsImpliquees || []
-};
+        sessions: sessionsList,
+        sessionsFull: apiConflit.sessionsImpliquees || []
+    };
 
 }
 
@@ -578,7 +572,7 @@ function viewConflitDetails(conflitId) {
 
     setCurrentConflitId(conflitId);
     document.getElementById('modalConflitTitle').textContent = `Détails du Conflit #${conflit.id}`;
-    
+
     const typeBadge = document.getElementById('modalConflitType');
     const severiteBadge = document.getElementById('modalConflitSeverite');
 
@@ -617,12 +611,11 @@ function viewConflitDetails(conflitId) {
     document.getElementById('conflitModal').classList.add('active');
 }
 
-// ✅ FONCTION CORRIGÉE POUR RÉCUPÉRER LES SOLUTIONS
 // ======================================================================
-// ✅ FONCTION showSolutions – VERSION DÉFINITIVE CORRIGÉE
+// FONCTION showSolutions 
 // ======================================================================
 async function showSolutions(conflitId) {
-    console.log('🔍 Ouverture des solutions pour le conflit:', conflitId);
+    console.log('Ouverture des solutions pour le conflit:', conflitId);
 
     const conflit = getConflitById(conflitId);
     if (!conflit) {
@@ -633,16 +626,16 @@ async function showSolutions(conflitId) {
     setCurrentConflitId(conflitId);
 
     // ==================================================================
-    // 🔥 1. RÉCUPÉRATION FIABLE DU PLANNING ID
+    //1. RÉCUPÉRATION FIABLE DU PLANNING ID
     // ==================================================================
     let planningId =
-    conflit.planningId ??
-    conflit.sessionsFull?.[0]?.planningId ??
-    currentPlanningId ??
-    DEFAULT_PLANNING_ID;
+        conflit.planningId ??
+        conflit.sessionsFull?.[0]?.planningId ??
+        currentPlanningId ??
+        DEFAULT_PLANNING_ID;
 
     if (!planningId) {
-        console.error('❌ Impossible de déterminer le planningId:', conflit);
+        console.error(' Impossible de déterminer le planningId:', conflit);
         showToast(
             'error',
             'Erreur de données',
@@ -654,7 +647,7 @@ async function showSolutions(conflitId) {
     // Mettre à jour le planning global
     setCurrentPlanningId(planningId);
 
-    console.log('✅ Planning ID utilisé:', planningId);
+    console.log('Planning ID utilisé:', planningId);
 
     // ==================================================================
     // 2. PRÉPARATION DU MODAL
@@ -666,7 +659,7 @@ async function showSolutions(conflitId) {
 
     const solutionsGrid = document.getElementById('solutionsGrid');
     if (!solutionsGrid) {
-        console.error('❌ Élément solutionsGrid introuvable');
+        console.error('Élément solutionsGrid introuvable');
         return;
     }
 
@@ -684,7 +677,7 @@ async function showSolutions(conflitId) {
         showLoading('Analyse des solutions disponibles...');
 
         const url = API_ENDPOINTS.analyseResolution(planningId);
-        console.log('🌐 Appel API:', url);
+        console.log(' Appel API:', url);
 
         const response = await fetch(url, {
             method: 'GET',
@@ -699,15 +692,15 @@ async function showSolutions(conflitId) {
         }
 
         const result = await response.json();
-        console.log('📦 Résultat analyse complète:', result);
+        console.log(' Résultat analyse complète:', result);
 
         // ==================================================================
         // 4. EXTRACTION DU CONFLIT DANS LA RÉPONSE
         // ==================================================================
         const conflitData = result.conflits?.find(c => c.id === conflitId);
 
-        console.log('🔎 Conflit trouvé dans la réponse:', conflitData);
-        console.log('📋 Solutions reçues:', conflitData?.solutions);
+        console.log('Conflit trouvé dans la réponse:', conflitData);
+        console.log('Solutions reçues:', conflitData?.solutions);
 
         if (!conflitData) {
             solutionsGrid.innerHTML = `
@@ -737,11 +730,11 @@ async function showSolutions(conflitId) {
         // ==================================================================
         // 5. AFFICHAGE DES SOLUTIONS
         // ==================================================================
-        console.log(`✅ Affichage de ${conflitData.solutions.length} solution(s)`);
+        console.log(` Affichage de ${conflitData.solutions.length} solution(s)`);
         afficherSolutionsDetaillees(conflitData.solutions, conflitId);
 
     } catch (error) {
-        console.error('❌ Erreur chargement solutions:', error);
+        console.error(' Erreur chargement solutions:', error);
 
         solutionsGrid.innerHTML = `
             <div class="no-solutions error">
@@ -761,12 +754,12 @@ async function showSolutions(conflitId) {
 }
 
 
-// ✅ FONCTION CORRIGÉE POUR AFFICHER LES SOLUTIONS
+// FONCTION CORRIGÉE POUR AFFICHER LES SOLUTIONS
 function afficherSolutionsDetaillees(solutions, conflitId) {
     const solutionsGrid = document.getElementById('solutionsGrid');
-    
+
     solutionsGrid.innerHTML = '';
-    
+
     solutions.forEach((solution, index) => {
         const solutionCard = document.createElement('div');
         solutionCard.className = 'solution-card-enhanced';
@@ -774,16 +767,16 @@ function afficherSolutionsDetaillees(solutions, conflitId) {
         solutionCard.dataset.conflitId = conflitId;
         solutionCard.dataset.solutionType = solution.type;
         solutionCard.dataset.solutionData = JSON.stringify(solution.data || {});
-        
+
         let impactClass = 'impact-faible';
         if (solution.impact && typeof solution.impact === 'string') {
             const impact = solution.impact.toLowerCase();
             if (impact.includes('élevé')) impactClass = 'impact-eleve';
             else if (impact.includes('moyen')) impactClass = 'impact-moyen';
         }
-        
+
         const isApplicable = solution.applicable !== false;
-        
+
         solutionCard.innerHTML = `
             <div class="solution-selection">
                 <input type="checkbox" 
@@ -834,27 +827,27 @@ function afficherSolutionsDetaillees(solutions, conflitId) {
                 </button>
             </div>
         `;
-        
+
         solutionsGrid.appendChild(solutionCard);
     });
-    
+
     document.querySelectorAll('.solution-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
+        checkbox.addEventListener('change', function () {
             toggleSolutionCard(this);
         });
     });
-    
+
     updateSelectionCount();
 }
 
 function renderSolutionOptions(options, type) {
     if (!options || options.length === 0) return '';
-    
+
     const limitedOptions = options.slice(0, 5);
-    
+
     return limitedOptions.map(option => {
         let optionText = '';
-        
+
         switch (type) {
             case 'CHANGER_FORMATEUR':
                 optionText = `${option.nom || 'Formateur'} - ${option.specialite || 'N/A'}`;
@@ -869,7 +862,7 @@ function renderSolutionOptions(options, type) {
             default:
                 optionText = option.nom || option.label || JSON.stringify(option);
         }
-        
+
         return `<li><i class="fas fa-check-circle"></i> ${optionText}</li>`;
     }).join('') + (options.length > 5 ? `<li><i>... et ${options.length - 5} autre(s)</i></li>` : '');
 }
@@ -887,20 +880,20 @@ function toggleSolutionCard(checkbox) {
 function updateSelectionCount() {
     const checkboxes = document.querySelectorAll('.solution-checkbox:not(:disabled)');
     const checkedCount = document.querySelectorAll('.solution-checkbox:checked').length;
-    
+
     const countElement = document.getElementById('selectedCount');
     const applyBtn = document.getElementById('applySelectedBtn');
     const selectAllBtn = document.getElementById('selectAllBtn');
     const deselectAllBtn = document.getElementById('deselectAllBtn');
-    
+
     if (countElement) {
         countElement.textContent = `${checkedCount} solution(s) sélectionnée(s)`;
     }
-    
+
     if (applyBtn) {
         applyBtn.disabled = checkedCount === 0;
     }
-    
+
     if (selectAllBtn && deselectAllBtn) {
         if (checkedCount === checkboxes.length && checkboxes.length > 0) {
             selectAllBtn.style.display = 'none';
@@ -928,7 +921,7 @@ function deselectAllSolutions() {
     });
 }
 
-// ✅ FONCTION CORRIGÉE POUR APPLIQUER PLUSIEURS SOLUTIONS
+// FONCTION CORRIGÉE POUR APPLIQUER PLUSIEURS SOLUTIONS
 async function applySelectedSolutions() {
     const selectedCheckboxes = document.querySelectorAll('.solution-checkbox:checked');
 
@@ -945,38 +938,32 @@ async function applySelectedSolutions() {
     try {
         showLoading('Application des solutions...');
 
-        let success = 0;
-        let failed = 0;
-
         for (const checkbox of selectedCheckboxes) {
             const card = checkbox.closest('.solution-card-enhanced');
             const solutionData = JSON.parse(card.dataset.solutionData || '{}');
+            const solutionType = card.dataset.solutionType;
+            const conflitId = parseInt(card.dataset.conflitId);
 
-            try {
-                const response = await fetch(API_ENDPOINTS.appliquerSolution, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(solutionData) // ✅ CORRIGÉ
-                });
+            //CONSTRUIRE LE BON FORMAT
+            const payload = {
+                conflitId: conflitId,
+                solutionType: solutionType,
+                solutionData: solutionData
+            };
 
-                response.ok ? success++ : failed++;
-            } catch {
-                failed++;
-            }
+            await fetch(API_ENDPOINTS.appliquerSolution, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
         }
 
-        showToast(
-            success ? 'success' : 'error',
-            'Résultat',
-            `${success} succès / ${failed} échecs`
-        );
-
+        showToast('success', 'Succès', 'Solutions appliquées avec succès');
         document.getElementById('solutionsModal').classList.remove('active');
-        await loadConflitsFromAPI();
-        updateUI();
+        await refreshConflits();
 
     } catch (error) {
         console.error(error);
@@ -986,50 +973,431 @@ async function applySelectedSolutions() {
     }
 }
 
-// ✅ FONCTION CORRIGÉE POUR APPLIQUER UNE SOLUTION UNIQUE
+
 async function appliquerSolutionUnique(conflitId, solutionType, solutionIndex) {
     try {
         const card = document.querySelector(
             `[data-solution-id="solution-${conflitId}-${solutionIndex}"]`
         );
 
-        const rawData = JSON.parse(card.dataset.solutionData || '{}');
-        const option = rawData.options?.[0];
-
-        if (!option || !option.id) {
-            throw new Error('ID du créneau introuvable');
+        if (!card) {
+            throw new Error('Carte solution introuvable');
         }
 
-        // ✅ PAYLOAD SIMPLE ET SÛR
-        const payload = {
-            sessionId: rawData.sessionId,
-            nouveauCreneauId: option.id
+        // 1. Récupérer les données de la solution
+        const rawData = JSON.parse(card.dataset.solutionData || '{}');
+        console.log(" Données brutes de la solution:", rawData);
+
+
+        // 3. Construire le payload EXACTEMENT comme le backend l'attend
+        let solutionData = {
         };
 
-        console.log('📤 Payload FINAL CORRIGÉ:', payload);
-
-        const response = await fetch(
-            'http://localhost:8080/api/admin/planning/resolution/appliquer-solution',
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }
-        );
-
-        if (!response.ok) {
-            const err = await response.text();
-            throw new Error(err);
+        //  CAS CHANGER_CRENEAU
+        if (solutionType === 'CHANGER_CRENEAU' || solutionType === 'CHANGER_CRENEAU_COMPLET') {
+            solutionData.nouveauCreneauId = rawData.options?.[0]?.id;
         }
 
-        alert('✅ Solution appliquée');
-    } catch (e) {
-        console.error(e);
-        alert('❌ ' + e.message);
+        //  CAS CHANGER_FORMATEUR
+        if (solutionType === 'CHANGER_FORMATEUR') {
+            solutionData.formateurId = rawData.options?.[0]?.id;
+        }
+
+        // DEBUG AVANT ENVOI
+        console.log(" STRUCTURE RÉELLE DU RESULT :", {
+            conflitId: parseInt(conflitId),
+            solutionType: solutionType,
+            solutionData
+        });
+
+        const payload = {
+            conflitId: parseInt(conflitId),
+            solutionType: solutionType,
+            solutionData: solutionData
+        };
+
+        // 4. Copier toutes les données dans solutionData
+        Object.keys(rawData).forEach(key => {
+            payload.solutionData[key] = rawData[key];
+        });
+
+        // 5. Afficher pour debug
+        console.log('Payload envoyé au backend:', JSON.stringify(payload, null, 2));
+
+        // 6. Envoyer la requête
+        const response = await fetch(API_ENDPOINTS.appliquerSolution, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        // 7. Traiter la réponse
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Erreur backend:', errorData);
+            throw new Error(errorData.message || 'Erreur lors de l\'application de la solution');
+        }
+
+        const result = await response.json();
+        console.log('Réponse du backend:', result);
+
+        // 8. Afficher le succès
+        showToast('success', 'Succès', result.message || 'Solution appliquée avec succès');
+
+        // 9. Fermer le modal et rafraîchir
+        setTimeout(() => {
+            document.getElementById('solutionsModal').classList.remove('active');
+            refreshConflits();
+        }, 1500);
+
+    } catch (error) {
+        console.error(' Erreur:', error);
+        showToast('error', 'Erreur', error.message);
     }
 }
 
+// ========================================================================
+// 8. FONCTION POUR APPLIQUER TOUTES LES SOLUTIONS D'UN CONFLIT
+// ========================================================================
 
+/**
+ * FONCTION POUR APPLIQUER TOUTES LES SOLUTIONS D'UN CONFLIT
+ */
+async function appliquerToutesSolutions() {
+    if (!currentConflitId) {
+        showToast('warning', 'Attention', 'Aucun conflit sélectionné');
+        return;
+    }
+
+    const conflit = getConflitById(currentConflitId);
+    if (!conflit) {
+        showToast('error', 'Erreur', 'Conflit introuvable');
+        return;
+    }
+
+    // Confirmation de l'utilisateur
+    const confirmation = confirm(
+        `Voulez-vous appliquer TOUTES les solutions disponibles pour ce conflit ?\n\n` +
+        `Conflit: ${conflit.description}\n` +
+        `Type: ${conflit.typeDisplay}\n\n` +
+        `Toutes les solutions applicables seront exécutées successivement.`
+    );
+
+    if (!confirmation) return;
+
+    try {
+        showLoading('Application de toutes les solutions...');
+
+        // ==================================================================
+        // 1. RÉCUPÉRATION DU PLANNING ID
+        // ==================================================================
+        let planningId =
+            conflit.planningId ??
+            conflit.sessionsFull?.[0]?.planningId ??
+            currentPlanningId ??
+            DEFAULT_PLANNING_ID;
+
+        if (!planningId) {
+            throw new Error('Impossible de déterminer le planning ID');
+        }
+
+        // ==================================================================
+        // 2. RÉCUPÉRATION DES SOLUTIONS DISPONIBLES
+        // ==================================================================
+        console.log(' Récupération des solutions pour le planning:', planningId);
+        const url = API_ENDPOINTS.analyseResolution(planningId);
+        
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('Résultat analyse complète:', result);
+
+        // ==================================================================
+        // 3. TROUVER LE CONFLIT DANS LA RÉPONSE
+        // ==================================================================
+        const conflitData = result.conflits?.find(c => c.id === currentConflitId);
+        
+        if (!conflitData) {
+            showToast('error', 'Erreur', 'Conflit non trouvé dans l\'analyse');
+            return;
+        }
+
+        if (!Array.isArray(conflitData.solutions) || conflitData.solutions.length === 0) {
+            showToast('info', 'Information', 'Aucune solution disponible pour ce conflit');
+            return;
+        }
+
+        console.log(`${conflitData.solutions.length} solution(s) trouvée(s)`);
+
+        // ==================================================================
+        // 4. FILTRER LES SOLUTIONS APPLICABLES
+        // ==================================================================
+        const solutionsApplicables = conflitData.solutions.filter(
+            solution => solution.applicable !== false
+        );
+
+        if (solutionsApplicables.length === 0) {
+            showToast('warning', 'Attention', 'Aucune solution applicable');
+            return;
+        }
+
+        console.log(`${solutionsApplicables.length} solution(s) applicable(s)`);
+
+        // ==================================================================
+        // 5. APPLIQUER CHAQUE SOLUTION SUCCESSIVEMENT
+        // ==================================================================
+        const resultats = [];
+        let solutionsAppliquees = 0;
+        let solutionsEchouees = 0;
+
+        for (let i = 0; i < solutionsApplicables.length; i++) {
+            const solution = solutionsApplicables[i];
+            
+            try {
+                showLoading(`Application de la solution ${i + 1}/${solutionsApplicables.length}...`);
+                
+                console.log(`🔄 Application de la solution ${i + 1}:`, solution.type);
+
+                let solutionData = {};
+                
+                if (solution.data) {
+                    Object.keys(solution.data).forEach(key => {
+                        solutionData[key] = solution.data[key];
+                    });
+                }
+
+
+                if (solution.type === 'CHANGER_CRENEAU' || solution.type === 'CHANGER_CRENEAU_COMPLET') {
+                    if (solution.data?.options?.[0]?.id) {
+                        solutionData.nouveauCreneauId = solution.data.options[0].id;
+                    }
+                } else if (solution.type === 'CHANGER_FORMATEUR') {
+                    if (solution.data?.options?.[0]?.id) {
+                        solutionData.formateurId = solution.data.options[0].id;
+                    }
+                } else if (solution.type === 'CHANGER_SALLE') {
+                    if (solution.data?.options?.[0]?.id) {
+                        solutionData.salleId = solution.data.options[0].id;
+                    }
+                }
+
+                const payload = {
+                    conflitId: currentConflitId,
+                    solutionType: solution.type,
+                    solutionData: solutionData
+                };
+
+                console.log(' Payload envoyé:', JSON.stringify(payload, null, 2));
+
+                // Appliquer la solution via l'API
+                const response = await fetch(API_ENDPOINTS.appliquerSolution, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `Erreur HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    solutionsAppliquees++;
+                    resultats.push({
+                        index: i + 1,
+                        type: solution.type,
+                        label: solution.label || solution.type,
+                        status: 'SUCCÈS',
+                        message: result.message
+                    });
+                    
+                    console.log(`Solution ${i + 1} appliquée avec succès`);
+                } else {
+                    solutionsEchouees++;
+                    resultats.push({
+                        index: i + 1,
+                        type: solution.type,
+                        label: solution.label || solution.type,
+                        status: 'ÉCHEC',
+                        message: result.message || 'Échec inconnu'
+                    });
+                    
+                    console.warn(`Solution ${i + 1} a échoué`);
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+            } catch (error) {
+                solutionsEchouees++;
+                resultats.push({
+                    index: i + 1,
+                    type: solution.type,
+                    label: solution.label || solution.type,
+                    status: 'ERREUR',
+                    message: error.message
+                });
+                
+                console.error(`Erreur sur la solution ${i + 1}:`, error);
+                continue;
+            }
+        }
+
+        // ==================================================================
+        // 6. AFFICHER LE RÉCAPITULATIF
+        // ==================================================================
+        hideLoading();
+        
+        let messageFinal = '';
+        if (solutionsAppliquees > 0) {
+            messageFinal += `${solutionsAppliquees} solution(s) appliquée(s) avec succès. `;
+        }
+        if (solutionsEchouees > 0) {
+            messageFinal += `${solutionsEchouees} solution(s) ont échoué. `;
+        }
+
+        console.log('RÉCAPITULATIF DES SOLUTIONS:');
+        resultats.forEach(r => {
+            console.log(`${r.status} - ${r.label}: ${r.message}`);
+        });
+
+        if (solutionsAppliquees > 0) {
+            await refreshConflits();
+            
+
+            document.getElementById('solutionsModal').classList.remove('active');
+            
+            showToast('success', 'Résumé', messageFinal);
+
+            setTimeout(() => {
+                afficherRecapitulatifSolutions(resultats);
+            }, 1000);
+            
+        } else {
+            showToast('error', 'Échec', 'Aucune solution n\'a pu être appliquée');
+        }
+
+    } catch (error) {
+        console.error('Erreur lors de l\'application de toutes les solutions:', error);
+        showToast('error', 'Erreur', error.message || 'Erreur lors de l\'application des solutions');
+        hideLoading();
+    }
+}
+
+// ========================================================================
+// 9. FONCTION POUR AFFICHER LE RÉCAPITULATIF DÉTAILLÉ
+// ========================================================================
+
+
+function afficherRecapitulatifSolutions(resultats) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'recapModal';
+    
+    let recapHTML = `
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-medium">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-list-check"></i>
+                    Récapitulatif des solutions appliquées
+                </h2>
+                <button class="modal-close" onclick="document.getElementById('recapModal').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="recap-container">
+                    <div class="recap-summary">
+                        <div class="summary-stat">
+                            <div class="stat-value">${resultats.filter(r => r.status.includes('SUCCÈS')).length}</div>
+                            <div class="stat-label">Succès</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="stat-value">${resultats.filter(r => r.status.includes('ÉCHEC')).length}</div>
+                            <div class="stat-label">Échecs</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="stat-value">${resultats.filter(r => r.status.includes('ERREUR')).length}</div>
+                            <div class="stat-label">Erreurs</div>
+                        </div>
+                    </div>
+                    
+                    <div class="recap-details">
+                        <h3><i class="fas fa-clipboard-list"></i> Détails des solutions:</h3>
+                        <div class="solutions-list">
+    `;
+    
+    resultats.forEach((resultat, index) => {
+        const statusClass = resultat.status.includes('SUCCÈS') ? 'success' : 
+                          resultat.status.includes('ÉCHEC') ? 'warning' : 'error';
+        
+        recapHTML += `
+            <div class="solution-result ${statusClass}">
+                <div class="result-header">
+                    <span class="result-index">${resultat.index}.</span>
+                    <span class="result-type">${resultat.label}</span>
+                    <span class="result-status ${statusClass}">${resultat.status}</span>
+                </div>
+                <div class="result-message">${resultat.message}</div>
+            </div>
+        `;
+    });
+    
+    recapHTML += `
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('recapModal').remove()">
+                    <i class="fas fa-check"></i>
+                    Fermer
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="refreshConflits(); document.getElementById('recapModal').remove()">
+                    <i class="fas fa-sync-alt"></i>
+                    Actualiser les conflits
+                </button>
+            </div>
+        </div>
+    `;
+    
+    modal.innerHTML = recapHTML;
+    document.body.appendChild(modal);
+    
+    setTimeout(() => {
+        modal.classList.add('active');
+    }, 10);
+
+    modal.querySelector('.modal-overlay').addEventListener('click', function() {
+        modal.remove();
+    });
+}
+
+// ========================================================================
+// 10. METTRE À JOUR L'EXPORTATION GLOBALE
+// ========================================================================
+
+
+// Vérifier que la fonction est exposée
+console.log('Fonction appliquerToutesSolutions exposée globalement');
 
 function closeModal() {
     document.getElementById('conflitModal').classList.remove('active');
@@ -1159,21 +1527,21 @@ async function resoudreTousConflits() {
         showToast('info', 'Information', 'Aucun conflit à résoudre');
         return;
     }
-    
+
     const planningId = currentPlanningId || DEFAULT_PLANNING_ID;
-    
+
     const confirmation = confirm(
         `Voulez-vous résoudre automatiquement TOUS les conflits ?\n\n` +
         `${conflits.length} conflit(s) seront traités.\n` +
         `Planning ID: ${planningId}\n\n` +
         `Cette action modifiera le planning et ne peut pas être annulée.`
     );
-    
+
     if (!confirmation) return;
-    
+
     try {
         showLoading('Résolution automatique en cours...');
-        
+
         const response = await fetch(API_ENDPOINTS.resoudreTout(planningId), {
             method: 'POST',
             headers: {
@@ -1187,16 +1555,16 @@ async function resoudreTousConflits() {
         }
 
         const result = await response.json();
-        
+
         if (result.success) {
             showToast('success', 'Succès', result.message || 'Conflits résolus avec succès');
-            
+
             await loadConflitsFromAPI();
             updateUI();
         } else {
             showToast('error', 'Erreur', result.message || 'Échec de la résolution automatique');
         }
-        
+
     } catch (error) {
         console.error('Erreur lors de la résolution automatique:', error);
         showToast('error', 'Erreur', 'Impossible de résoudre les conflits automatiquement');
@@ -1208,7 +1576,7 @@ async function resoudreTousConflits() {
 // Initialiser l'application au chargement du DOM
 document.addEventListener('DOMContentLoaded', initializeApp);
 
-// Exposer les fonctions nécessaires au scope global pour les onclick HTML
+
 window.viewConflitDetails = viewConflitDetails;
 window.showSolutions = showSolutions;
 window.refreshConflits = refreshConflits;
@@ -1221,7 +1589,7 @@ window.deselectAllSolutions = deselectAllSolutions;
 window.applySelectedSolutions = applySelectedSolutions;
 window.appliquerSolutionUnique = appliquerSolutionUnique;
 window.resoudreTousConflits = resoudreTousConflits;
-
+window.appliquerToutesSolutions = appliquerToutesSolutions;
 function onPlanningChange(planningId) {
     setCurrentPlanningId(parseInt(planningId));
     refreshConflits();

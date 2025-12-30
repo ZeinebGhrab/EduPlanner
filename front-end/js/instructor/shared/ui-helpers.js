@@ -1,4 +1,4 @@
-// CONSTANTES
+
 export const JOURS_MAP = {
     1: 'LUNDI', 2: 'MARDI', 3: 'MERCREDI', 4: 'JEUDI',
     5: 'VENDREDI', 6: 'SAMEDI', 7: 'DIMANCHE'
@@ -31,7 +31,6 @@ export const TIME_SLOTS = [
     { start: '18:00', end: '20:00' }
 ];
 
-// DATE & TIME UTILS
 export function normalizeTime(time) {
     return time ? time.substring(0, 5) : '';
 }
@@ -60,7 +59,6 @@ export function getTodayISO() {
     return formatDateISO(new Date());
 }
 
-// STATUS UTILS
 export function getStatusClass(statut) {
     if (!statut) return 'planned';
     const normalized = statut.normalize('NFD').toLowerCase();
@@ -91,7 +89,6 @@ export function getStatusLabel(statut) {
     return map[normalized] || 'Planifié';
 }
 
-// UI UTILS
 export function showNotification(msg, type = 'info') {
     const notif = document.createElement('div');
     notif.className = `notification ${type}`;
@@ -146,12 +143,12 @@ export function updateUserUI(formateur) {
     updateUserAvatar(formateur.prenom, formateur.nom);
     const welcomeTitle = document.querySelector('.welcome-content h1');
     if (welcomeTitle) {
-        welcomeTitle.innerHTML = `Bonjour, ${fullName} ! <span class="welcome-emoji">👋</span>`;
+        welcomeTitle.innerHTML = `Bonjour, ${fullName} ! <span class="welcome-emoji"></span>`;
     }
     return fullName;
 }
 
-// MODAL UTILS
+
 export function closeModal(modal) {
     if (!modal) return;
     modal.style.display = 'none';
@@ -169,7 +166,6 @@ export function initModalCloseEvents(modal) {
     });
 }
 
-// DROPDOWN MENU
 export function toggleDropdown(parentElement, dropdownClass = 'user-dropdown') {
     let dropdown = parentElement.querySelector(`.${dropdownClass}`);
     if (dropdown) {
@@ -183,7 +179,6 @@ export function closeAllDropdowns(dropdownClass = 'user-dropdown') {
     document.querySelectorAll(`.${dropdownClass}`).forEach(d => d.remove());
 }
 
-// VALIDATION
 export function validateTimeSlot(heureDebut, heureFin) {
     if (!heureDebut || !heureFin) {
         return { valid: false, error: 'Les heures de début et fin sont requises' };
@@ -194,7 +189,6 @@ export function validateTimeSlot(heureDebut, heureFin) {
     return { valid: true };
 }
 
-// CALENDAR UTILS
 export function getDaysInMonth(year, month) {
     return new Date(year, month + 1, 0).getDate();
 }

@@ -17,7 +17,7 @@ export async function initPlanningUI() {
         updateWeekDisplay();
         displayCurrentWeekSessions();
         setupWeekNavigation();
-        console.log('📅 Planning initialisé', allSessions);
+        console.log('Planning initialisé', allSessions);
     }
 
     function updateWeekDisplay() {
@@ -60,7 +60,7 @@ export async function initPlanningUI() {
             dayColumn.className = 'day-column';
             dayColumn.dataset.day = day;
 
-            // Cellules vides
+  
             for (let i = 0; i < 11; i++) {
                 const timeCell = document.createElement('div');
                 timeCell.className = 'time-cell';

@@ -1,6 +1,4 @@
-// --------------------------
-// Groupes
-// --------------------------
+
 export function displayGroups(groupes) {
     const container = document.getElementById('groupsContainer');
     if (!container) {

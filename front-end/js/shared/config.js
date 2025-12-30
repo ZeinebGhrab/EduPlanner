@@ -1,8 +1,7 @@
-// Configuration API
+
 export const API_BASE_URL = 'http://localhost:8080/api';
 
 
-// AUTH
 export function getAuthToken() {
     return localStorage.getItem('authToken');
 }
@@ -43,7 +42,7 @@ export function updateUserUI(formateur) {
     updateUserAvatar(formateur.prenom, formateur.nom);
     const welcomeTitle = document.querySelector('.welcome-content h1');
     if (welcomeTitle) {
-        welcomeTitle.innerHTML = `Bonjour, ${fullName} ! <span class="welcome-emoji">👋</span>`;
+        welcomeTitle.innerHTML = `Bonjour, ${fullName} ! <span class="welcome-emoji"></span>`;
     }
     return fullName;
 }
@@ -64,7 +63,6 @@ export const SESSION_STATUS = {
     A_VENIR: 'A_VENIR'
 };
 
-// Constantes de dates
 export const DATE_CONFIG = {
     JOURS: ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'],
     JOURS_LABELS: {
@@ -90,7 +88,7 @@ export const DATE_CONFIG = {
     MOIS_COURTS: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
 };
 
-// Créneaux horaires
+
 export const TIME_SLOTS = [
     { start: '08:00', end: '10:00' },
     { start: '10:00', end: '12:00' },

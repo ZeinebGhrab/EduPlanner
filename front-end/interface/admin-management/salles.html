@@ -1,62 +1,50 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Salles - CentreFormation Pro</title>
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-    <!-- Styles CSS -->
-    <link rel="stylesheet" href="../../style/salles.css">
-    <!-- Script JavaScript -->
-    <script src="../../js/salles.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../style/admin-management/salles.css">
+    <link rel="stylesheet" href="../../style/admin-management/shared.css">
+    <script src="../../js/admin/salles-management/salles-api.js" defer></script>
+    <script src="../../js/admin/salles-management/salles-ui.js" defer></script>
+    <script src="../../js/admin/salles-management/salles-filtres.js" defer></script>
+    <script src="../../js/admin/salles-management/salles-modals.js" defer></script>
+    <script src="../../js/admin/salles-management/salles-main.js" defer></script>
 </head>
-<body>
 
-    <!-- BACKGROUND SHAPES -->
+<body>
     <div class="bg-shapes">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
         <div class="shape shape-3"></div>
     </div>
-
-    <!-- HEADER -->
     <header>
         <div class="logo">
             <i class="fas fa-graduation-cap"></i>
-            <span class="my">Centre</span><span class="scol">Formation Pro</span>
+            <span class="my">Centre</span><span class="scol">EduPlanner</span>
         </div>
-        
+
         <nav>
             <a href="../../interface/accueil/index.html">Accueil</a>
             <a href="../../interface/admin-management/formateurs.html">Formateurs</a>
             <a href="../../interface/admin-management/etudiants.html">Étudiants</a>
-            <a href="../../interface/admin-management/salles.html"class="active">Salles</a>
+            <a href="../../interface/admin-management/salles.html" class="active">Salles</a>
             <a href="../../interface/admin-management/equipement.html">Equipements</a>
             <a href="../../interface/admin-management/planning.html">Planning</a>
-            <a href="../../interface/admin-management/statistique.html">Statistiques</a>
-            <a href="../../interface/admin-management/contraintes.html" >Contraintes</a>
+            <a href="../../interface/admin-management/admin-conflicts.html">Conflits</a>
         </nav>
 
         <div class="nav-icons">
-            <i class="fas fa-bell"></i>
             <i class="fas fa-user"></i>
-            <button class="menu-btn">
-                <i class="fas fa-th"></i>
-            </button>
         </div>
     </header>
-
-    <!-- MAIN CONTENT -->
     <main class="main-content">
         <div class="container">
-            
-            <!-- PAGE HEADER -->
             <div class="page-header">
                 <div class="page-title-section">
                     <h1 class="page-title">
@@ -70,116 +58,90 @@
                     <span>Ajouter une salle</span>
                 </button>
             </div>
-
-            <!-- STATISTICS CARDS -->
-            <div class="stats-cards">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon purple">
-                            <i class="fas fa-door-open"></i>
-                        </div>
-                        <div>
-                            <h3 class="stat-number">0</h3>
-                        </div>
-                    </div>
-                    <p class="stat-label">Total Salles</p>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon green">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <h3 class="stat-number">0</h3>
-                        </div>
-                    </div>
-                    <p class="stat-label">Salles Disponibles</p>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon blue">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div>
-                            <h3 class="stat-number">0</h3>
-                        </div>
-                    </div>
-                    <p class="stat-label">Capacité Totale</p>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon orange">
-                            <i class="fas fa-building"></i>
-                        </div>
-                        <div>
-                            <h3 class="stat-number">Salle Cours</h3>
-                        </div>
-                    </div>
-                    <p class="stat-label">Type Principal</p>
+            <div id="loadingState" class="loading-state">
+                <div class="spinner">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <p>Chargement des salles...</p>
                 </div>
             </div>
+            <div id="mainContent" style="display: none;">
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon purple">
+                                <i class="fas fa-door-open"></i>
+                            </div>
+                            <div>
+                                <h3 class="stat-number" id="totalSalles">0</h3>
+                            </div>
+                        </div>
+                        <p class="stat-label">Total Salles</p>
+                    </div>
 
-            <!-- FILTERS & SEARCH -->
-            <div class="filters-section">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Rechercher une salle...">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <h3 class="stat-number" id="sallesDisponibles">0</h3>
+                            </div>
+                        </div>
+                        <p class="stat-label">Salles Disponibles</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon blue">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <h3 class="stat-number" id="capaciteTotale">0</h3>
+                            </div>
+                        </div>
+                        <p class="stat-label">Capacité Totale</p>
+                    </div>
+
                 </div>
+                <div class="filters-section">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Rechercher une salle...">
+                    </div>
 
-                <select class="sort-select" id="sortSelect">
-                    <option value="nom">Trier par nom</option>
-                    <option value="capacite">Trier par capacité</option>
-                    <option value="type">Trier par type</option>
-                </select>
-            </div>
-
-            <!-- SALLES TABLE -->
-            <div class="table-container">
-                <table class="salles-table">
-                    <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Capacité</th>
-                            <th>Type</th>
-                            <th>Équipements</th>
-                            <th>Batiment</th>
-                            <th>Disponibilité</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sallesTableBody">
-                        <!-- Les salles seront ajoutées ici dynamiquement -->
-                        <tr class="empty-state">
-                            <td colspan="7">
-                                <div class="empty-content">
-                                    <i class="fas fa-door-closed"></i>
-                                    <h3>Aucune salle enregistrée</h3>
-                                    <p>Commencez par ajouter votre première salle</p>
-                                    <button class="btn btn-primary" onclick="document.getElementById('addSalle').click()">
-                                        <i class="fas fa-plus"></i>
-                                        Ajouter une salle
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- PAGINATION -->
-            <div class="pagination">
-                <button class="page-btn" id="prevPage">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <div class="page-numbers" id="pageNumbers">
-                    <button class="page-number active">1</button>
+                    <select class="sort-select" id="sortSelect">
+                        <option value="nom">Trier par nom</option>
+                        <option value="capacite">Trier par capacité</option>
+                        <option value="type">Trier par type</option>
+                    </select>
                 </div>
-                <button class="page-btn" id="nextPage">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
+                <div class="table-container">
+                    <table class="salles-table">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Capacité</th>
+                                <th>Type</th>
+                                <th>Batiment</th>
+                                <th>Disponibilité</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sallesTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button class="page-btn" id="prevPage">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="page-numbers" id="pageNumbers">
+                        <button class="page-number active">1</button>
+                    </div>
+                    <button class="page-btn" id="nextPage">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -200,25 +162,31 @@
             </div>
 
             <form id="salleForm" class="modal-body">
-                <!-- INFORMATIONS DE BASE -->
                 <div class="form-section">
                     <h3 class="form-section-title">
                         <i class="fas fa-info-circle"></i>
                         Informations de base
                     </h3>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="nom">Nom de la salle *</label>
-                            <input type="text" id="nom" name="nom" required placeholder="Ex: Salle A1, Amphithéâtre B...">
+                            <input type="text" id="nom" name="nom" required
+                                placeholder="Ex: Salle A1, Amphithéâtre B...">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="capacite">Capacité *</label>
+                            <input type="number" id="capacite" name="capacite" required min="1" placeholder="Ex: 25">
+                        </div>
+                        <div class="form-group">
+                            <label for="batiment">Batiment *</label>
+                            <input type="text" id="batiment" name="batiment" required placeholder="Ex: Bâtiment A">
                         </div>
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="capacite">Capacité *</label>
-                            <input type="number" id="capacite" name="capacite" required placeholder="Ex: 25">
-                        </div>
                         <div class="form-group">
                             <label for="type">Type de salle *</label>
                             <select id="type" name="type" required>
@@ -228,58 +196,11 @@
                                 <option value="salle_informatique">Salle informatique</option>
                                 <option value="laboratoire">Laboratoire</option>
                                 <option value="salle_reunion">Salle de réunion</option>
+                                <option value="autre">Autre</option>
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="batiment">Batiment *</label>
-                        <input type="text" id="batiment" name="batiment" required>
-                    </div>
                 </div>
-
-                <!-- ÉQUIPEMENTS -->
-                <div class="form-section">
-                    <h3 class="form-section-title">
-                        <i class="fas fa-tools"></i>
-                        Équipements
-                    </h3>
-                    
-                    <div class="form-row">
-                        <div class="checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="equipements" value="video_projecteur">
-                                Vidéoprojecteur
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="equipements" value="tableau_blanc">
-                                Tableau blanc
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="equipements" value="climatisation">
-                                Climatisation
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="equipements" value="ordinateurs">
-                                Ordinateurs
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="equipements" value="wifi">
-                                Wi-Fi
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="equipements" value="prises_electriques">
-                                Prises électriques
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MODAL FOOTER -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="cancelBtn">
                         <i class="fas fa-times"></i>
@@ -323,4 +244,5 @@
         </div>
     </div>
 </body>
+
 </html>

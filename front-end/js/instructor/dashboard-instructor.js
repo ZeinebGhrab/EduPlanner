@@ -22,7 +22,7 @@ let currentFormateur = null;
 let todaySessions = [];
 let upcomingSessions = [];
 
-// INIT
+
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await loadFormateurInfo();
@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// FORMATEUR
 async function loadFormateurInfo() {
     try {
         currentFormateur = await fetchFormateurProfile();
@@ -52,7 +51,7 @@ async function loadFormateurInfo() {
     }
 }
 
-// STATISTIQUES
+
 async function loadStatistics() {
     if (!currentFormateur) return;
     try {
@@ -71,7 +70,6 @@ function updateStatCard(index, value) {
     if (statCards[index]) animateNumber(statCards[index], value);
 }
 
-// SESSIONS AUJOURD'HUI
 async function loadTodaySessions() {
     if (!currentFormateur) return;
     try {
@@ -122,7 +120,6 @@ function createSessionCard(session) {
     `;
 }
 
-// SESSIONS À VENIR
 async function loadUpcomingSessions() {
     if (!currentFormateur) return;
     try {
@@ -165,7 +162,7 @@ function createUpcomingCard(session) {
     `;
 }
 
-// MENU UTILISATEUR
+
 function initializeUserMenu() {
     const menu = document.querySelector('.user-menu');
     if (!menu) return;

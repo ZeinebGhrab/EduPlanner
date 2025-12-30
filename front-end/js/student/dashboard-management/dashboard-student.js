@@ -5,9 +5,7 @@ import { displayGroups } from './modules/groups.js';
 import { displayNextSessions } from './modules/sessions.js';
 import './modules/styles.js';
 
-// ----------------------
-// Configuration des sections
-// ----------------------
+
 const sectionsConfig = {
     statistics: { fetch: fetchStatistiques, render: updateStatistics, default: null },
     planning: { fetch: fetchPlanning, render: displayUpcomingSessions, default: [] },
@@ -15,9 +13,6 @@ const sectionsConfig = {
     sessions: { fetch: fetchSessionsVenir, render: displayNextSessions, default: [] },
 };
 
-// ----------------------
-// État global
-// ----------------------
 let dashboardData = {
     stats: null,
     planning: null,
@@ -27,9 +22,6 @@ let dashboardData = {
 
 let isLoading = false;
 
-// ----------------------
-// Chargement de toutes les données
-// ----------------------
 async function loadAllData() {
     const fetchPromises = Object.entries(sectionsConfig).map(async ([key, config]) => {
         try {
@@ -43,9 +35,6 @@ async function loadAllData() {
     await Promise.all(fetchPromises);
 }
 
-// ----------------------
-// Rendu de toutes les sections
-// ----------------------
 function renderAllSections() {
     Object.entries(sectionsConfig).forEach(([key, config]) => {
         const data = dashboardData[key];
@@ -56,9 +45,7 @@ function renderAllSections() {
     });
 }
 
-// ----------------------
-// État de chargement
-// ----------------------
+
 function showLoadingState() {
     const selectors = ['.schedule-cards', '#groupsContainer', '.sessions-container'];
     selectors.forEach(sel => {
@@ -76,9 +63,7 @@ function hideLoadingState() {
     document.querySelectorAll('.loading-state').forEach(el => el.remove());
 }
 
-// ----------------------
-// Gestion des erreurs
-// ----------------------
+
 function showErrorState(error) {
     const container = document.querySelector('.dashboard-main');
     if (!container) return;
@@ -98,9 +83,6 @@ function showErrorState(error) {
     container.prepend(errorDiv);
 }
 
-// ----------------------
-// Rafraîchissement global ou par section
-// ----------------------
 async function refreshDashboard() {
     if (isLoading) return;
     isLoading = true;
@@ -130,17 +112,11 @@ async function refreshSection(sectionName) {
     }
 }
 
-// ----------------------
-// Initialisation au chargement
-// ----------------------
 document.addEventListener('DOMContentLoaded', () => {
     window.dashboardManager = { refreshDashboard, refreshSection };
     refreshDashboard();
 });
 
-// ----------------------
-// Rafraîchissement automatique
-// ----------------------
 const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000;
 if (AUTO_REFRESH_INTERVAL > 0) {
     setInterval(() => {

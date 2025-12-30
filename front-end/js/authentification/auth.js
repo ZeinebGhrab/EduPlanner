@@ -2,9 +2,9 @@ import { API_BASE_URL } from './config.js';
 import { showToast, showLoadingState, hideLoadingState, showSuccessState } from './toast.js';
 import { switchTab } from './ui.js';
 
-// Redirection selon le rôle
+
 export function redirectToDashboard(role) {
-    switch(role.toUpperCase()) { // pour éviter les problèmes de casse
+    switch(role.toUpperCase()) { 
         case 'ADMIN':
             window.location.href = '../admin-management/formateurs.html';
             break;
@@ -19,7 +19,7 @@ export function redirectToDashboard(role) {
     }
 }
 
-// Gestion du login "passe-partout"
+
 export async function handleLogin(e) {
     e.preventDefault();
 
@@ -50,7 +50,7 @@ export async function handleLogin(e) {
                 localStorage.setItem('userRole', normalizedRole);
                 redirectToDashboard(normalizedRole);
                 loggedIn = true;
-                break; // arrêter la boucle si login réussi
+                break; 
             }
         }
 
@@ -198,7 +198,7 @@ function resetForm(form) {
         msg.classList.remove('show');
     });
 
-    // Réinitialiser les disponibilités
+
     document.querySelectorAll('.jour-disponibilite').forEach(container => {
         container.classList.remove('active');
     });

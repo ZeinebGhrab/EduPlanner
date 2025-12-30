@@ -1,6 +1,4 @@
-// --------------------------
-// Sessions à venir
-// --------------------------
+
 export function displayNextSessions(sessions) {
     const container = document.querySelector('.next-sessions-section .sessions-container');
     if (!container) {
@@ -36,9 +34,7 @@ export function displayNextSessions(sessions) {
     });
 }
 
-// --------------------------
-// Création d'une carte de session
-// --------------------------
+
 function createSessionCard(session, creneau, heureDebut, heureFin) {
     const [hDebut, mDebut] = heureDebut.split(':').map(Number);
     const [hFin, mFin] = heureFin.split(':').map(Number);

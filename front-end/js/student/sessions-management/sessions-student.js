@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Header scroll effect
+
     const header = document.querySelector('header');
     if (header) {
         window.addEventListener('scroll', () => {
@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Recherche de formations
     const searchInput = document.querySelector('.search-box input');
     if (searchInput) {
         searchInput.addEventListener('input', function () {
@@ -31,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Animation au scroll
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -45,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }, observerOptions);
 
-    // Observer les cartes avec un délai pour laisser le temps de chargement
     setTimeout(() => {
         document.querySelectorAll('.formation-card, .stat-card').forEach(el => {
             observer.observe(el);
