@@ -82,7 +82,7 @@ public class PlanningController {
     public ResponseEntity<PlanningDTO> getById(@PathVariable int id) {
         return service.findById(id)
                 .map(planning -> {
-                    // ✅ CORRECTION : Récupérer les conflits via créneaux
+                    // Récupérer les conflits via créneaux
                     List<ConflitDTO> conflitsDTO = getConflitsFromPlanning(planning);
 
                     PlanningDTO dto = new PlanningDTO();
@@ -187,7 +187,7 @@ public class PlanningController {
 
         if (!success) return ResponseEntity.status(400).body("Erreur lors de l'ajout de la session");
 
-        // ✅ Retourner les conflits via la nouvelle méthode
+        // Retourner les conflits 
         List<ConflitDTO> conflitsDTO = getConflitsFromPlanning(planning);
 
         return ResponseEntity.ok(conflitsDTO);

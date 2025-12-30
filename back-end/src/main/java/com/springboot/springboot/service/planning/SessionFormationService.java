@@ -1,5 +1,3 @@
-// back-end/src/main/java/com/springboot/springboot/service/planning/SessionFormationService.java
-
 package com.springboot.springboot.service.planning;
 
 import com.springboot.springboot.dto.conflit.ConflitDTO;
@@ -40,7 +38,7 @@ public class SessionFormationService {
     }
 
     /* =========================================================
-       🔍 LECTURE SIMPLE (LISTE)
+       LECTURE SIMPLE (LISTE)
        ========================================================= */
 
     @Transactional(readOnly = true)
@@ -49,7 +47,7 @@ public class SessionFormationService {
     }
 
     /* =========================================================
-       🔍 LECTURE DÉTAILLÉE (UNE SESSION)
+       LECTURE DÉTAILLÉE (UNE SESSION)
        ========================================================= */
 
     @Transactional(readOnly = true)
@@ -61,7 +59,7 @@ public class SessionFormationService {
     }
 
     /* =========================================================
-       🧠 DÉTERMINATION DU TYPE DE CONFLIT
+       DÉTERMINATION DU TYPE DE CONFLIT
        ========================================================= */
 
     private Conflit.TypeConflit determineTypeConflit(String description) {
@@ -82,7 +80,7 @@ public class SessionFormationService {
     }
 
     /* =========================================================
-       📅 VALIDATION & CORRECTION DES CRÉNEAUX
+       VALIDATION & CORRECTION DES CRÉNEAUX
        ========================================================= */
 
     private void validerEtCorrigerDatesCreneaux(SessionFormation session) {
@@ -173,7 +171,7 @@ public class SessionFormationService {
     }
 
     /* =========================================================
-       💾 SAUVEGARDE AVEC GESTION DES CONFLITS (VERSION CORRIGÉE)
+       SAUVEGARDE AVEC GESTION DES CONFLITS 
        ========================================================= */
 
     @Transactional
@@ -181,13 +179,13 @@ public class SessionFormationService {
         
         List<ConflitDTO> conflitsDTO = new ArrayList<>();
         
-        // ✅ ÉTAPE 1 : Définir le statut initial
+        // ÉTAPE 1 : Définir le statut initial
         if (session.getStatut() == null || session.getStatut().isEmpty()) {
             session.setStatut("EN_CREATION");
         }
         session.setADesConflits(false);
         
-        // ✅ ÉTAPE 2 : SAUVEGARDER LA SESSION D'ABORD (sans validation)
+        // ÉTAPE 2 : SAUVEGARDER LA SESSION D'ABORD (sans validation)
         sessionRepository.save(session);
         
         // ✅ ÉTAPE 3 : Sauvegarder les créneaux
@@ -197,11 +195,11 @@ public class SessionFormationService {
             }
         }
 
-        // ✅ ÉTAPE 4 : Valider et corriger les dates des créneaux
+        // ÉTAPE 4 : Valider et corriger les dates des créneaux
         try {
             validerEtCorrigerDatesCreneaux(session);
         } catch (RuntimeException e) {
-            // ✅ La session existe déjà, on peut créer le conflit
+            // La session existe déjà, on peut créer le conflit
             session.setStatut("EN_CONFLIT");
             session.setADesConflits(true);
             sessionRepository.save(session);
@@ -215,7 +213,7 @@ public class SessionFormationService {
                 conflit.setCreneau(session.getCreneaux().get(0));
             }
             
-            // ✅ LIER LE CONFLIT À LA SESSION
+            // LIER LE CONFLIT À LA SESSION
             conflit.setSessionsImpliquees(List.of(session));
 
             conflitRepository.save(conflit);
@@ -224,11 +222,11 @@ public class SessionFormationService {
             return conflitsDTO;
         }
 
-        // ✅ ÉTAPE 5 : Détecter les autres conflits
+        // ÉTAPE 5 : Détecter les autres conflits
         List<String> conflitsDetectes = conflitService.detecterConflits(session);
 
         if (!conflitsDetectes.isEmpty()) {
-            // ✅ Marquer la session comme EN_CONFLIT
+            // Marquer la session comme EN_CONFLIT
             session.setStatut("EN_CONFLIT");
             session.setADesConflits(true);
             sessionRepository.save(session);
@@ -243,7 +241,7 @@ public class SessionFormationService {
                     c.setCreneau(session.getCreneaux().get(0));
                 }
                 
-                // ✅ LIER LE CONFLIT À LA SESSION
+                // LIER LE CONFLIT À LA SESSION
                 c.setSessionsImpliquees(List.of(session));
                 
                 return c;
@@ -258,7 +256,7 @@ public class SessionFormationService {
             return conflitsDTO;
         }
 
-        // ✅ ÉTAPE 6 : Pas de conflit, session VALIDE
+        // ÉTAPE 6 : Pas de conflit, session VALIDE
         session.setStatut("VALIDE");
         session.setADesConflits(false);
         sessionRepository.save(session);
@@ -286,7 +284,7 @@ public class SessionFormationService {
     }
 
     /* =========================================================
-       🗑️ SUPPRESSION
+       SUPPRESSION
        ========================================================= */
 
     @Transactional
@@ -295,7 +293,7 @@ public class SessionFormationService {
             throw new RuntimeException("Session introuvable avec ID : " + id);
         }
         
-        // ✅ Supprimer d'abord les conflits liés
+        // Supprimer d'abord les conflits liés
         List<Conflit> conflits = conflitRepository.findAll().stream()
             .filter(c -> c.getSessionsImpliquees() != null && 
                         c.getSessionsImpliquees().stream().anyMatch(s -> s.getId() == id))
@@ -308,7 +306,7 @@ public class SessionFormationService {
     }
 
     /* =========================================================
-       🔎 RECHERCHES
+       RECHERCHES
        ========================================================= */
 
     public List<SessionFormation> findByFormateurId(int id) {
@@ -328,7 +326,7 @@ public class SessionFormationService {
     }
     
     /* =========================================================
-       ✅ MÉTHODES UTILITAIRES POUR LA GESTION DES CONFLITS
+       MÉTHODES UTILITAIRES POUR LA GESTION DES CONFLITS
        ========================================================= */
     
     /**

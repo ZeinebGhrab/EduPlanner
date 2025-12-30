@@ -42,21 +42,4 @@ public class AdminPlanningController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-    
-    /**
-     * Génération automatique du planning (placeholder)
-     * Cette méthode peut être étendue avec un algorithme de génération automatique
-     */
-    @PostMapping("/generer-auto")
-    public ResponseEntity<String> genererPlanningAutomatique() {
-        // TODO: Implémenter l'algorithme de génération automatique
-        // 1. Récupérer toutes les sessions sans planning
-        // 2. Récupérer tous les créneaux disponibles
-        // 3. Appliquer un algorithme de placement (greedy, backtracking, etc.)
-        // 4. Vérifier les contraintes
-        // 5. Créer le planning si valide
-        
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
-                .body("Fonctionnalité de génération automatique en développement");
-    }
 }

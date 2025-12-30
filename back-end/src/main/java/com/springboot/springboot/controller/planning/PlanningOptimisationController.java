@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * ========================================================================
  * CONTRÔLEUR OPTIMISÉ POUR LA RÉSOLUTION AUTOMATIQUE DE CONFLITS
  * ========================================================================
- * Version améliorée avec résolution intelligente en un clic
+ * Avec résolution intelligente en un clic
  */
 @RestController
 @RequestMapping("/api/admin/planning/resolution")

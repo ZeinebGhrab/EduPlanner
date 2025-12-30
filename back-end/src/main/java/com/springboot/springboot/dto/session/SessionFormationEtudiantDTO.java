@@ -10,10 +10,10 @@ public class SessionFormationEtudiantDTO {
     public int duree;
     public String statut;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")  // <-- ajouter ceci
+    @JsonFormat(pattern = "yyyy-MM-dd")  
     public LocalDate dateDebut;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")  // <-- ajouter ceci
+    @JsonFormat(pattern = "yyyy-MM-dd")  
     public LocalDate dateFin;
 
     public String nomFormateur;

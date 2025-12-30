@@ -1,5 +1,3 @@
-// back-end/src/main/java/com/springboot/springboot/entity/planning/SessionFormation.java
-
 package com.springboot.springboot.entity.planning;
 
 import jakarta.persistence.*;
@@ -32,11 +30,9 @@ public class SessionFormation {
     @Column(nullable = false)
     private Integer duree;
 
-    // ✅ AJOUT : Statut de la session
     @Column(length = 50, nullable = false)
     private String statut = "EN_CREATION"; // EN_CREATION, EN_CONFLIT, VALIDE, PLANIFIEE, EN_COURS, TERMINE
 
-    // ✅ AJOUT : Flag pour indiquer si la session a des conflits
     @Column(name = "a_des_conflits", nullable = false)
     private Boolean aDesConflits = false;
 
@@ -150,7 +146,6 @@ public class SessionFormation {
         this.statut = statut; 
     }
     
-    // ✅ AJOUT : Getters/Setters pour aDesConflits
     public Boolean getADesConflits() {
         return aDesConflits;
     }

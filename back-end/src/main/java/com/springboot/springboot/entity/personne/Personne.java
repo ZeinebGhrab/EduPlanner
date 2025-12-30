@@ -40,7 +40,6 @@ public abstract class Personne {
     @Column(nullable = false, length = 20)
     private RoleEnum role;
     
-    // ✅ Protected pour que les classes enfants (Formateur, Etudiant) puissent y accéder
     @Column(name = "password", nullable = false, length = 255)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     protected String password;
@@ -153,7 +152,7 @@ public abstract class Personne {
     
     // Setter avec hachage 
     public void setPassword(String password) {
-        // ✅ Ne rien faire si le mot de passe est null ou vide (pour les updates)
+        // Ne rien faire si le mot de passe est null ou vide (pour les updates)
         if (password == null || password.isEmpty()) {
             return;
         }

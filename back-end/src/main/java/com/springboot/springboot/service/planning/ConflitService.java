@@ -109,7 +109,7 @@ public class ConflitService {
                 }
             }
 
-            // ✅ 2. CORRIGÉ : Conflit formateur - EXCLURE LA SESSION ACTUELLE + SESSIONS EN CONFLIT
+            // 2. CORRIGÉ : Conflit formateur - EXCLURE LA SESSION ACTUELLE + SESSIONS EN CONFLIT
             if (session.getFormateur() != null && creneau.getDate() != null) {
                 List<SessionFormation> sessionsFormateur = sessionRepository.findFormateurConflicts(
                     session.getFormateur().getId(),
@@ -118,7 +118,7 @@ public class ConflitService {
                     creneau.getHeureFin()
                 );
                 
-                // ✅ Filtrer pour exclure :
+                // Filtrer pour exclure :
                 // - La session actuelle
                 // - Les sessions déjà en conflit
                 long nbConflits = sessionsFormateur.stream()
@@ -139,7 +139,7 @@ public class ConflitService {
                 }
             }
 
-            // ✅ 3. CORRIGÉ : Conflit salle - EXCLURE LA SESSION ACTUELLE + SESSIONS EN CONFLIT
+            // 3. CORRIGÉ : Conflit salle - EXCLURE LA SESSION ACTUELLE + SESSIONS EN CONFLIT
             if (session.getSalle() != null && creneau.getDate() != null) {
                 List<SessionFormation> sessionsSalle = sessionRepository.findSalleConflicts(
                     session.getSalle().getId(),
@@ -148,7 +148,7 @@ public class ConflitService {
                     creneau.getHeureFin()
                 );
                 
-                // ✅ Filtrer pour exclure :
+                // Filtrer pour exclure :
                 // - La session actuelle
                 // - Les sessions déjà en conflit
                 long nbConflits = sessionsSalle.stream()
@@ -169,7 +169,7 @@ public class ConflitService {
                 }
             }
             
-            // ✅ 4. CORRIGÉ : Conflit groupe - EXCLURE LA SESSION ACTUELLE + SESSIONS EN CONFLIT
+            // 4. CORRIGÉ : Conflit groupe - EXCLURE LA SESSION ACTUELLE + SESSIONS EN CONFLIT
             if (session.getGroupe() != null && creneau.getDate() != null) {
                 List<SessionFormation> sessionsGroupe = sessionRepository.findGroupeConflicts(
                     session.getGroupe().getId(),
@@ -178,7 +178,7 @@ public class ConflitService {
                     creneau.getHeureFin()
                 );
                 
-                // ✅ Filtrer pour exclure :
+                // Filtrer pour exclure :
                 // - La session actuelle
                 // - Les sessions déjà en conflit
                 long nbConflits = sessionsGroupe.stream()
@@ -199,10 +199,10 @@ public class ConflitService {
                 }
             }
             
-            // ✅ 5. CORRIGÉ : Conflit matériel - EXCLURE LA SESSION ACTUELLE + SESSIONS EN CONFLIT
+            // 5. Conflit matériel - EXCLURE LA SESSION ACTUELLE + SESSIONS EN CONFLIT
             if (session.getMaterielRequis() != null) {
                 session.getMaterielRequis().forEach(materiel -> {
-                    // ✅ Récupérer toutes les sessions qui utilisent ce matériel dans ce créneau
+                    // Récupérer toutes les sessions qui utilisent ce matériel dans ce créneau
                     List<SessionFormation> sessionsUtilisant = sessionRepository.findByCreneauId(creneauId).stream()
                         .filter(s -> s.getMaterielRequis() != null && 
                                     s.getMaterielRequis().stream()

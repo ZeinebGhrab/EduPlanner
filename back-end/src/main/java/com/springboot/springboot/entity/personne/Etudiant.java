@@ -27,7 +27,6 @@ public class Etudiant extends Personne {
     @Column(length = 50)
     private String niveau;
 
-    // ✅ Changé LAZY en EAGER pour éviter LazyInitializationException
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "etudiant_groupe",

@@ -15,8 +15,6 @@ public class ConflitDTO {
     private Integer severite;
     private LocalDateTime dateDetection;
     private Integer creneauId;
-
-    // ✅ AJOUTS
     private Integer planningId;
     private List<SessionImpliqueeDTO> sessionsImpliquees;
 

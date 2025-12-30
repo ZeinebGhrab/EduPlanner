@@ -41,8 +41,6 @@ public class Salle {
 		this.id = id;
 	}
 
-
-
 	// Méthodes métier
     public boolean estDisponible(Creneau creneau) {
         if (creneau == null) {

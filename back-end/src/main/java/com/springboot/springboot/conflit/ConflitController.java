@@ -32,11 +32,11 @@ public class ConflitController {
      * Récupère tous les conflits
      */
     @GetMapping
-    @Transactional// ✅ AJOUT pour charger les relations lazy
+    @Transactional// AJOUT pour charger les relations lazy
     public ResponseEntity<List<ConflitDTO>> getAllConflits() {
         List<Conflit> conflits = conflitService.findAll();
         
-        // ✅ Forcer le chargement des sessions et du planning
+        // Forcer le chargement des sessions et du planning
         conflits.forEach(conflit -> {
             if (conflit.getSessionsImpliquees() != null) {
                 conflit.getSessionsImpliquees().forEach(session -> {
@@ -57,11 +57,11 @@ public class ConflitController {
      * Récupère un conflit par ID
      */
     @GetMapping("/{id}")
-    @Transactional // ✅ AJOUT
+    @Transactional 
     public ResponseEntity<ConflitDTO> getConflitById(@PathVariable int id) {
         return conflitService.findById(id)
                 .map(conflit -> {
-                    // ✅ Forcer le chargement des sessions et du planning
+                    // Forcer le chargement des sessions et du planning
                     if (conflit.getSessionsImpliquees() != null) {
                         conflit.getSessionsImpliquees().forEach(session -> {
                             if (session.getPlanning() != null) {

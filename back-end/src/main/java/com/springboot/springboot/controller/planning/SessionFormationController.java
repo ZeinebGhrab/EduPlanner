@@ -75,8 +75,7 @@ public class SessionFormationController {
     }
 
     /**
-     * ✅ GET /api/sessions - Retourne UNIQUEMENT les sessions VALIDES
-     * Paramètre optionnel : ?includeConflits=true pour inclure toutes les sessions
+     * GET /api/sessions - Retourne UNIQUEMENT les sessions VALIDES
      */
     @GetMapping
     @Transactional
@@ -199,7 +198,7 @@ public class SessionFormationController {
         
         List<SessionFormation> sessions = service.findByFormateurId(formateurId);
         
-        // ✅ Filtrer les sessions en conflit sauf si explicitement demandé
+        // Filtrer les sessions en conflit sauf si explicitement demandé
         if (!includeConflits) {
             sessions = sessions.stream()
                 .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && 
@@ -345,7 +344,7 @@ public class SessionFormationController {
         
         List<SessionFormation> sessions = service.findByCreneauId(creneauId);
         
-        // ✅ Filtrer les sessions en conflit sauf si explicitement demandé
+        // Filtrer les sessions en conflit 
         if (!includeConflits) {
             sessions = sessions.stream()
                 .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && 
@@ -378,7 +377,7 @@ public class SessionFormationController {
                 .limit(limit)
                 .collect(Collectors.toList());
         
-        // ✅ Filtrer les sessions en conflit sauf si explicitement demandé
+        // Filtrer les sessions en conflit 
         if (!includeConflits) {
             sessions = sessions.stream()
                 .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && 
@@ -426,6 +425,7 @@ public class SessionFormationController {
 
         SessionFormation session = new SessionFormation();
         session.setNomCours(dto.nomCours);
+        session.setDescription(dto.description);
         session.setDuree(dto.duree);
         session.setStatut(dto.statut);
         session.setFormateur(formateur);
@@ -434,6 +434,8 @@ public class SessionFormationController {
         session.setCreneaux(creneaux);
         session.setPlanning(planning);
         session.setMaterielRequis(materiel);
+        session.setDateDebut(dto.dateDebut);
+        session.setDateFin(dto.dateFin);
 
         return session;
     }

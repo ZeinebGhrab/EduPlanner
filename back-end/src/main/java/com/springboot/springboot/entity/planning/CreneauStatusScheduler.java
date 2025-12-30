@@ -19,7 +19,6 @@ public class CreneauStatusScheduler {
     /**
      * Met à jour automatiquement les statuts des créneaux
      * S'exécute toutes les 5 minutes (300000 ms)
-     * Vous pouvez ajuster cette fréquence selon vos besoins
      */
     @Scheduled(fixedRate = 300000)
     public void updateCreneauStatuses() {
