@@ -45,14 +45,14 @@ public class ConflitService {
     }
     
     /**
-     * Détecte les conflits pour une session donnée.
-     * Retourne une liste de descriptions des conflits détectés.
+     * ✅ CORRIGÉ : Détecte les conflits pour une session donnée
+     * Exclut la session elle-même lors de la vérification
      */
     public List<String> detecterConflits(SessionFormation session) {
         List<String> conflits = new ArrayList<>();
 
         if (session.getCreneaux() == null || session.getCreneaux().isEmpty()) {
-            return conflits; // Pas de créneau, pas de conflit à détecter
+            return conflits;
         }
 
         // Vérifier les conflits pour chaque créneau de la session
@@ -63,12 +63,11 @@ public class ConflitService {
                 creneau.getHeureDebut(), 
                 creneau.getHeureFin());
 
-            // 0. NOUVEAU : Vérifier la disponibilité du formateur
+            // 1. Vérifier la disponibilité du formateur
             if (session.getFormateur() != null && creneau.getJourSemaine() != null) {
                 try {
                     JourEnum jour = JourEnum.valueOf(creneau.getJourSemaine().toUpperCase());
                     
-                    // Chercher les disponibilités du formateur qui couvrent ce créneau
                     List<DisponibiliteFormateur> disponibilites = disponibiliteRepository
                         .findDisponibilitesCouvrantCreneau(
                             session.getFormateur().getId(),
@@ -77,7 +76,6 @@ public class ConflitService {
                             creneau.getHeureFin()
                         );
                     
-                    // Si aucune disponibilité trouvée
                     if (disponibilites.isEmpty()) {
                         conflits.add(String.format(
                             "❌ DISPONIBILITÉ : Le formateur %s %s n'a pas déclaré de disponibilité pour le créneau %d (%s). " +
@@ -88,7 +86,6 @@ public class ConflitService {
                             creneauInfo
                         ));
                     } else {
-                        // Vérifier si au moins une disponibilité a estDisponible = true
                         boolean auMoinsUneDisponible = disponibilites.stream()
                             .anyMatch(d -> d.getEstDisponible() != null && d.getEstDisponible());
                         
@@ -104,7 +101,6 @@ public class ConflitService {
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    // Jour invalide dans le créneau
                     conflits.add(String.format(
                         "⚠️ ERREUR : Jour invalide '%s' dans le créneau %d",
                         creneau.getJourSemaine(),
@@ -113,75 +109,115 @@ public class ConflitService {
                 }
             }
 
-            // 1. Conflit formateur : même formateur au même créneau (déjà assigné ailleurs)
-            if (session.getFormateur() != null) {
-                boolean formateurConflit = sessionRepository.existsByCreneauIdAndFormateurId(
-                        creneauId,
-                        session.getFormateur().getId()
+            // ✅ 2. CORRIGÉ : Conflit formateur - EXCLURE LA SESSION ACTUELLE + SESSIONS EN CONFLIT
+            if (session.getFormateur() != null && creneau.getDate() != null) {
+                List<SessionFormation> sessionsFormateur = sessionRepository.findFormateurConflicts(
+                    session.getFormateur().getId(),
+                    creneau.getDate(),
+                    creneau.getHeureDebut(),
+                    creneau.getHeureFin()
                 );
-                if (formateurConflit) {
+                
+                // ✅ Filtrer pour exclure :
+                // - La session actuelle
+                // - Les sessions déjà en conflit
+                long nbConflits = sessionsFormateur.stream()
+                    .filter(s -> s.getId() != session.getId())
+                    .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && !Boolean.TRUE.equals(s.getADesConflits()))
+                    .count();
+                
+                if (nbConflits > 0) {
                     conflits.add(String.format(
-                        "❌ CONFLIT FORMATEUR : Le formateur %s %s est déjà assigné à une autre session " +
+                        "❌ CONFLIT FORMATEUR : Le formateur %s %s est déjà assigné à %d autre(s) session(s) VALIDE(s) " +
                         "au créneau %d (%s)",
                         session.getFormateur().getPrenom(),
                         session.getFormateur().getNom(),
+                        nbConflits,
                         creneauId,
                         creneauInfo
                     ));
                 }
             }
 
-            // 2. Conflit salle : même salle au même créneau
-            if (session.getSalle() != null) {
-                boolean salleConflit = sessionRepository.existsByCreneauIdAndSalleId(
-                        creneauId,
-                        session.getSalle().getId()
+            // ✅ 3. CORRIGÉ : Conflit salle - EXCLURE LA SESSION ACTUELLE + SESSIONS EN CONFLIT
+            if (session.getSalle() != null && creneau.getDate() != null) {
+                List<SessionFormation> sessionsSalle = sessionRepository.findSalleConflicts(
+                    session.getSalle().getId(),
+                    creneau.getDate(),
+                    creneau.getHeureDebut(),
+                    creneau.getHeureFin()
                 );
-                if (salleConflit) {
+                
+                // ✅ Filtrer pour exclure :
+                // - La session actuelle
+                // - Les sessions déjà en conflit
+                long nbConflits = sessionsSalle.stream()
+                    .filter(s -> s.getId() != session.getId())
+                    .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && !Boolean.TRUE.equals(s.getADesConflits()))
+                    .count();
+                
+                if (nbConflits > 0) {
                     conflits.add(String.format(
-                        "❌ CONFLIT SALLE : La salle '%s' (bâtiment %s) est déjà utilisée " +
+                        "❌ CONFLIT SALLE : La salle '%s' (bâtiment %s) est déjà utilisée par %d autre(s) session(s) VALIDE(s) " +
                         "au créneau %d (%s)",
                         session.getSalle().getNom(),
                         session.getSalle().getBatiment(),
+                        nbConflits,
                         creneauId,
                         creneauInfo
                     ));
                 }
             }
             
-            // 3. Conflit groupe : même groupe au même créneau
-            if (session.getGroupe() != null) {
-                boolean groupeConflit = sessionRepository.existsByCreneauIdAndGroupeId(
-                        creneauId,
-                        session.getGroupe().getId()
+            // ✅ 4. CORRIGÉ : Conflit groupe - EXCLURE LA SESSION ACTUELLE + SESSIONS EN CONFLIT
+            if (session.getGroupe() != null && creneau.getDate() != null) {
+                List<SessionFormation> sessionsGroupe = sessionRepository.findGroupeConflicts(
+                    session.getGroupe().getId(),
+                    creneau.getDate(),
+                    creneau.getHeureDebut(),
+                    creneau.getHeureFin()
                 );
-                if (groupeConflit) {
+                
+                // ✅ Filtrer pour exclure :
+                // - La session actuelle
+                // - Les sessions déjà en conflit
+                long nbConflits = sessionsGroupe.stream()
+                    .filter(s -> s.getId() != session.getId())
+                    .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && !Boolean.TRUE.equals(s.getADesConflits()))
+                    .count();
+                
+                if (nbConflits > 0) {
                     conflits.add(String.format(
-                        "❌ CONFLIT GROUPE : Le groupe '%s' (code: %s) a déjà une session prévue " +
+                        "❌ CONFLIT GROUPE : Le groupe '%s' (code: %s) a déjà %d autre(s) session(s) VALIDE(s) prévue(s) " +
                         "au créneau %d (%s)",
                         session.getGroupe().getNom(),
                         session.getGroupe().getCode(),
+                        nbConflits,
                         creneauId,
                         creneauInfo
                     ));
                 }
             }
             
-            // 4. Conflit matériel : même matériel au même créneau
+            // ✅ 5. CORRIGÉ : Conflit matériel - EXCLURE LA SESSION ACTUELLE + SESSIONS EN CONFLIT
             if (session.getMaterielRequis() != null) {
                 session.getMaterielRequis().forEach(materiel -> {
-                    // Compter combien de sessions utilisent déjà ce matériel dans ce créneau
-                    long nbSessionsUtilisant = sessionRepository.countSessionsUsingMaterielInCreneau(
-                            creneauId,
-                            materiel.getId()
-                    );
+                    // ✅ Récupérer toutes les sessions qui utilisent ce matériel dans ce créneau
+                    List<SessionFormation> sessionsUtilisant = sessionRepository.findByCreneauId(creneauId).stream()
+                        .filter(s -> s.getMaterielRequis() != null && 
+                                    s.getMaterielRequis().stream()
+                                        .anyMatch(m -> m.getId() == materiel.getId()))
+                        .filter(s -> s.getId() != session.getId()) // ✅ Exclure session actuelle
+                        .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && !Boolean.TRUE.equals(s.getADesConflits())) // ✅ Exclure sessions en conflit
+                        .toList();
                     
-                    // Vérifier si la capacité est dépassée (nb sessions + 1 nouvelle > quantité disponible)
+                    long nbSessionsUtilisant = sessionsUtilisant.size();
                     int capacite = materiel.getQuantiteDisponible();
+                    
                     if (nbSessionsUtilisant >= capacite) {
                         conflits.add(String.format(
                             "❌ CAPACITÉ MATÉRIEL DÉPASSÉE : %s a une capacité de %d unité(s), " +
-                            "mais %d session(s) l'utilisent déjà au créneau %d (%s). " +
+                            "mais %d session(s) VALIDE(s) l'utilisent déjà au créneau %d (%s). " +
                             "Impossible d'ajouter une nouvelle session.",
                             materiel.getNom(),
                             capacite,
@@ -190,9 +226,8 @@ public class ConflitService {
                             creneauInfo
                         ));
                     } else if (nbSessionsUtilisant > 0) {
-                        // Avertissement si le matériel est déjà utilisé mais capacité non dépassée
                         conflits.add(String.format(
-                            "⚠️ AVERTISSEMENT MATÉRIEL : %s est déjà utilisé par %d session(s) " +
+                            "⚠️ AVERTISSEMENT MATÉRIEL : %s est déjà utilisé par %d session(s) VALIDE(s) " +
                             "au créneau %d (%s). Capacité restante : %d/%d",
                             materiel.getNom(),
                             nbSessionsUtilisant,

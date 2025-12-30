@@ -6,6 +6,10 @@ import { API_BASE_URL } from '../../shared/config.js';
 
 const DEFAULT_PLANNING_ID = 1;
 
+// ========================================================================
+// GESTION DES MODALS - DÉTAILS DU CONFLIT
+// ========================================================================
+
 export function viewConflitDetails(conflitId) {
     console.log('Ouverture des détails pour le conflit:', conflitId);
 
@@ -55,6 +59,10 @@ export function viewConflitDetails(conflitId) {
 
     document.getElementById('conflitModal').classList.add('active');
 }
+
+// ========================================================================
+// GESTION DES SOLUTIONS
+// ========================================================================
 
 /**
  * Affiche les solutions détaillées depuis le backend
@@ -137,7 +145,7 @@ export async function showSolutions(conflitId) {
 }
 
 /**
- * Affiche les solutions détaillées dans la modal
+ * Affiche les solutions détaillées dans la modal avec sélection multiple
  */
 function afficherSolutionsDetaillees(solutions, conflitId) {
     const solutionsGrid = document.getElementById('solutionsGrid');
@@ -147,6 +155,10 @@ function afficherSolutionsDetaillees(solutions, conflitId) {
     solutions.forEach((solution, index) => {
         const solutionCard = document.createElement('div');
         solutionCard.className = 'solution-card-enhanced';
+        solutionCard.dataset.solutionId = `solution-${conflitId}-${index}`;
+        solutionCard.dataset.conflitId = conflitId;
+        solutionCard.dataset.solutionType = solution.type;
+        solutionCard.dataset.solutionData = JSON.stringify(solution.data);
         
         // Déterminer la couleur selon l'impact
         let impactClass = 'impact-faible';
@@ -160,6 +172,14 @@ function afficherSolutionsDetaillees(solutions, conflitId) {
         const isApplicable = solution.applicable !== false;
         
         solutionCard.innerHTML = `
+            <div class="solution-selection">
+                <input type="checkbox" 
+                       class="solution-checkbox" 
+                       id="checkbox-${conflitId}-${index}"
+                       data-solution-index="${index}"
+                       ${!isApplicable ? 'disabled' : ''}>
+                <label for="checkbox-${conflitId}-${index}" class="checkbox-label"></label>
+            </div>
             <div class="solution-header-enhanced">
                 <div class="solution-icon-enhanced">
                     <i class="${solution.icon || 'fas fa-lightbulb'}"></i>
@@ -193,17 +213,27 @@ function afficherSolutionsDetaillees(solutions, conflitId) {
             <div class="solution-footer-enhanced">
                 <button 
                     class="btn btn-sm ${isApplicable ? 'btn-success' : 'btn-secondary'}" 
-                    onclick="appliquerSolution(${conflitId}, '${solution.type}', ${JSON.stringify(solution.data).replace(/"/g, '&quot;')})"
+                    onclick="appliquerSolutionUnique(${conflitId}, '${solution.type}', ${index})"
                     ${!isApplicable ? 'disabled' : ''}
                 >
                     <i class="fas ${isApplicable ? 'fa-check' : 'fa-ban'}"></i>
-                    ${isApplicable ? 'Appliquer cette solution' : 'Non applicable'}
+                    ${isApplicable ? 'Appliquer seule' : 'Non applicable'}
                 </button>
             </div>
         `;
         
         solutionsGrid.appendChild(solutionCard);
     });
+    
+    // Attacher les événements aux checkboxes
+    document.querySelectorAll('.solution-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            toggleSolutionCard(this);
+        });
+    });
+    
+    // Réinitialiser le compteur de sélection
+    updateSelectionCount();
 }
 
 /**
@@ -236,10 +266,158 @@ function renderSolutionOptions(options, type) {
     }).join('') + (options.length > 5 ? `<li><i>... et ${options.length - 5} autre(s)</i></li>` : '');
 }
 
+// ========================================================================
+// GESTION DE LA SÉLECTION MULTIPLE
+// ========================================================================
+
 /**
- * Applique une solution spécifique
+ * Toggle la sélection d'une carte de solution
  */
-window.appliquerSolution = async function(conflitId, solutionType, solutionData) {
+export function toggleSolutionCard(checkbox) {
+    const card = checkbox.closest('.solution-card-enhanced');
+    if (checkbox.checked) {
+        card.classList.add('selected');
+    } else {
+        card.classList.remove('selected');
+    }
+    updateSelectionCount();
+}
+
+/**
+ * Met à jour le compteur de solutions sélectionnées
+ */
+function updateSelectionCount() {
+    const checkboxes = document.querySelectorAll('.solution-checkbox:not(:disabled)');
+    const checkedCount = document.querySelectorAll('.solution-checkbox:checked').length;
+    
+    const countElement = document.getElementById('selectedCount');
+    const applyBtn = document.getElementById('applySelectedBtn');
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const deselectAllBtn = document.getElementById('deselectAllBtn');
+    
+    if (countElement) {
+        countElement.textContent = `${checkedCount} solution(s) sélectionnée(s)`;
+    }
+    
+    if (applyBtn) {
+        applyBtn.disabled = checkedCount === 0;
+    }
+    
+    // Afficher le bon bouton (Tout sélectionner / Tout désélectionner)
+    if (selectAllBtn && deselectAllBtn) {
+        if (checkedCount === checkboxes.length && checkboxes.length > 0) {
+            selectAllBtn.style.display = 'none';
+            deselectAllBtn.style.display = 'inline-flex';
+        } else {
+            selectAllBtn.style.display = 'inline-flex';
+            deselectAllBtn.style.display = 'none';
+        }
+    }
+}
+
+/**
+ * Sélectionne toutes les solutions applicables
+ */
+export function selectAllSolutions() {
+    const checkboxes = document.querySelectorAll('.solution-checkbox:not(:disabled)');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+        toggleSolutionCard(checkbox);
+    });
+}
+
+/**
+ * Désélectionne toutes les solutions
+ */
+export function deselectAllSolutions() {
+    const checkboxes = document.querySelectorAll('.solution-checkbox:checked');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        toggleSolutionCard(checkbox);
+    });
+}
+
+/**
+ * Applique les solutions sélectionnées
+ */
+export async function applySelectedSolutions() {
+    const selectedCheckboxes = document.querySelectorAll('.solution-checkbox:checked');
+    
+    if (selectedCheckboxes.length === 0) {
+        showToast('warning', 'Attention', 'Veuillez sélectionner au moins une solution');
+        return;
+    }
+    
+    const confirmation = confirm(
+        `Voulez-vous appliquer ${selectedCheckboxes.length} solution(s) ?\n\n` +
+        'Cette action modifiera le planning et résoudra les conflits associés.'
+    );
+    
+    if (!confirmation) return;
+    
+    try {
+        showLoading('Application des solutions sélectionnées...');
+        
+        let nbReussis = 0;
+        let nbEchecs = 0;
+        
+        for (const checkbox of selectedCheckboxes) {
+            const card = checkbox.closest('.solution-card-enhanced');
+            const conflitId = parseInt(card.dataset.conflitId);
+            const solutionType = card.dataset.solutionType;
+            const solutionData = JSON.parse(card.dataset.solutionData);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/planning/resolution/appliquer-solution`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        conflitId: conflitId,
+                        solutionType: solutionType,
+                        solutionData: solutionData
+                    })
+                });
+
+                if (response.ok) {
+                    nbReussis++;
+                } else {
+                    nbEchecs++;
+                }
+            } catch (error) {
+                console.error('Erreur lors de l\'application d\'une solution:', error);
+                nbEchecs++;
+            }
+        }
+        
+        // Afficher le résultat
+        if (nbReussis > 0) {
+            showToast('success', 'Succès', 
+                `${nbReussis} solution(s) appliquée(s) avec succès` + 
+                (nbEchecs > 0 ? ` (${nbEchecs} échec(s))` : ''));
+        } else {
+            showToast('error', 'Erreur', 'Aucune solution n\'a pu être appliquée');
+        }
+        
+        // Fermer la modal et recharger les conflits
+        document.getElementById('solutionsModal').classList.remove('active');
+        await loadConflitsFromAPI();
+        updateUI();
+        
+    } catch (error) {
+        console.error('Erreur lors de l\'application des solutions:', error);
+        showToast('error', 'Erreur', 'Impossible d\'appliquer les solutions');
+    } finally {
+        hideLoading();
+    }
+}
+
+/**
+ * Applique une solution unique
+ */
+export async function appliquerSolutionUnique(conflitId, solutionType, solutionIndex) {
     const confirmation = confirm(
         'Êtes-vous sûr de vouloir appliquer cette solution ?\n\n' +
         'Cette action modifiera le planning et résoudra le conflit.'
@@ -249,6 +427,10 @@ window.appliquerSolution = async function(conflitId, solutionType, solutionData)
     
     try {
         showLoading('Application de la solution...');
+        
+        // Récupérer les données de la solution
+        const card = document.querySelector(`[data-solution-id="solution-${conflitId}-${solutionIndex}"]`);
+        const solutionData = card ? JSON.parse(card.dataset.solutionData) : {};
         
         const response = await fetch(`${API_BASE_URL}/admin/planning/resolution/appliquer-solution`, {
             method: 'POST',
@@ -288,25 +470,21 @@ window.appliquerSolution = async function(conflitId, solutionType, solutionData)
     } finally {
         hideLoading();
     }
-};
+}
 
 /**
- * Résout automatiquement tous les conflits
+ * Résout tous les conflits par type
  */
-window.resoudreTousConflits = async function() {
+export async function resoudreParType(type) {
+    const confirmation = confirm(
+        `Voulez-vous résoudre tous les conflits de type "${type}" ?\n\n` +
+        'Cette action appliquera automatiquement les meilleures solutions disponibles.'
+    );
+    
+    if (!confirmation) return;
+    
     try {
-        const confirmation = confirm(
-            '⚠️ Résolution automatique de tous les conflits\n\n' +
-            'Cette action va :\n' +
-            '- Analyser tous les conflits du planning\n' +
-            '- Appliquer automatiquement les meilleures solutions\n' +
-            '- Modifier les sessions, créneaux, salles et formateurs\n\n' +
-            'Voulez-vous continuer ?'
-        );
-        
-        if (!confirmation) return;
-        
-        showLoading('Résolution automatique en cours...');
+        showLoading('Résolution automatique par type...');
         
         const response = await fetch(
             `${API_BASE_URL}/admin/planning/resolution/resoudre-tout/${DEFAULT_PLANNING_ID}`,
@@ -326,111 +504,25 @@ window.resoudreTousConflits = async function() {
         const result = await response.json();
         
         // Afficher le résultat
-        afficherResultatResolution(result);
+        showToast('success', 'Résolution terminée', 
+            `${result.nbResolus || 0} conflit(s) résolu(s)`);
         
         // Recharger les conflits
         await loadConflitsFromAPI();
         updateUI();
         
     } catch (error) {
-        console.error('Erreur lors de la résolution automatique:', error);
-        showToast('error', 'Erreur', 'Impossible de résoudre les conflits automatiquement');
+        console.error('Erreur lors de la résolution par type:', error);
+        showToast('error', 'Erreur', 'Impossible de résoudre les conflits');
     } finally {
         hideLoading();
     }
-};
-
-/**
- * Affiche le résultat de la résolution automatique
- */
-function afficherResultatResolution(result) {
-    const modal = document.getElementById('resolutionModal');
-    const content = document.getElementById('resolutionContent');
-    
-    if (!result.success) {
-        content.innerHTML = `
-            <div class="resolution-error">
-                <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #e74c3c;"></i>
-                <h3>Échec de la résolution</h3>
-                <p>${result.message || 'Une erreur est survenue'}</p>
-            </div>
-        `;
-        modal.classList.add('active');
-        return;
-    }
-    
-    const { nbConflitsInitial, nbResolus, nbEchecs, tauxReussite, duree, actions } = result;
-    
-    let html = `
-        <div class="resolution-success">
-            <div class="resolution-summary">
-                <div class="summary-card">
-                    <i class="fas fa-check-circle" style="color: #27ae60;"></i>
-                    <div>
-                        <h3>${nbResolus}</h3>
-                        <p>Conflits résolus</p>
-                    </div>
-                </div>
-                <div class="summary-card">
-                    <i class="fas fa-times-circle" style="color: #e74c3c;"></i>
-                    <div>
-                        <h3>${nbEchecs}</h3>
-                        <p>Échecs</p>
-                    </div>
-                </div>
-                <div class="summary-card">
-                    <i class="fas fa-percentage" style="color: #3498db;"></i>
-                    <div>
-                        <h3>${tauxReussite}</h3>
-                        <p>Taux de réussite</p>
-                    </div>
-                </div>
-                <div class="summary-card">
-                    <i class="fas fa-clock" style="color: #f39c12;"></i>
-                    <div>
-                        <h3>${duree}ms</h3>
-                        <p>Durée</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="resolution-details">
-                <h3><i class="fas fa-list"></i> Détails des actions</h3>
-                <div class="actions-list">
-    `;
-    
-    if (actions && actions.length > 0) {
-        actions.forEach(action => {
-            const icon = action.statut.includes('✅') ? 'fa-check-circle' : 'fa-times-circle';
-            const color = action.statut.includes('✅') ? '#27ae60' : '#e74c3c';
-            
-            html += `
-                <div class="action-item">
-                    <i class="fas ${icon}" style="color: ${color};"></i>
-                    <div class="action-content">
-                        <h4>Conflit #${action.conflitId} - ${action.type}</h4>
-                        <p>${action.description}</p>
-                        ${action.solution ? `<span class="solution-badge">Solution: ${action.solution}</span>` : ''}
-                        ${action.erreur ? `<span class="error-badge">Erreur: ${action.erreur}</span>` : ''}
-                    </div>
-                </div>
-            `;
-        });
-    } else {
-        html += '<p style="text-align: center; padding: 20px;">Aucune action effectuée</p>';
-    }
-    
-    html += `
-                </div>
-            </div>
-        </div>
-    `;
-    
-    content.innerHTML = html;
-    modal.classList.add('active');
 }
 
-// Fonctions de fermeture des modals
+// ========================================================================
+// FERMETURE DES MODALS
+// ========================================================================
+
 export function closeModal() {
     document.getElementById('conflitModal').classList.remove('active');
     setCurrentConflitId(null);
@@ -439,7 +531,7 @@ export function closeModal() {
 export function closeAllModals() {
     document.getElementById('conflitModal').classList.remove('active');
     document.getElementById('solutionsModal').classList.remove('active');
-    document.getElementById('solutionAppliedModal').classList.remove('active');
+    document.getElementById('solutionAppliedModal')?.classList.remove('active');
     document.getElementById('deleteModal').classList.remove('active');
     document.getElementById('deleteAllModal').classList.remove('active');
     setCurrentConflitId(null);
@@ -483,16 +575,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
-            document.getElementById('resolutionModal').classList.remove('active');
+            document.getElementById('resolutionModal')?.classList.remove('active');
         });
     }
     
     if (closeX) {
         closeX.addEventListener('click', () => {
-            document.getElementById('resolutionModal').classList.remove('active');
+            document.getElementById('resolutionModal')?.classList.remove('active');
         });
     }
 });
-
-export function toggleSolutionSelection() {}
-export function applySelectedSolutions() {}

@@ -8,6 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../style/admin-management/conflict.css">
     <link rel="stylesheet" href="../../style/shared.css">
+    <script type="module" src="../../js/admin/conflict-management/app.js"></script>
+    <!--
+    
     <script type="module" src="../../js/admin/conflict-management/state.js"></script>
     <script type="module" src="../../js/admin/conflict-management/config.js"></script>
     <script type="module" src="../../js/admin/conflict-management/api.js"></script>
@@ -15,6 +18,7 @@
     <script type="module" src="../../js/admin/conflict-management/modal.js"></script>
     <script type="module" src="../../js/admin/conflict-management/resolution.js"></script>
     <script type="module" src="../../js/admin/conflict-management/main.js"></script>
+    -->
 </head>
 
 <body>
@@ -280,43 +284,67 @@
 
     <!-- MODAL SOLUTIONS -->
     <div class="modal" id="solutionsModal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content modal-wide">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    <i class="fas fa-lightbulb"></i>
-                    <span id="solutionsModalTitle">Solutions Recommandées</span>
-                </h2>
-                <button class="modal-close" id="closeSolutionsModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-wide">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <i class="fas fa-lightbulb"></i>
+                <span id="solutionsModalTitle">Solutions Recommandées</span>
+            </h2>
+            <button class="modal-close" id="closeSolutionsModal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
 
-            <div class="modal-body">
-                <div class="solutions-container">
-                    <div class="solutions-banner">
-                        <div class="banner-content">
-                            <i class="fas fa-info-circle"></i>
-                            <div>
-                                <h3>Solutions disponibles pour ce conflit</h3>
-                                <p>Cliquez sur "Appliquer" pour résoudre le conflit avec la solution choisie</p>
-                            </div>
+        <div class="modal-body">
+            <div class="solutions-container">
+                <!-- Bannière d'information -->
+                <div class="solutions-banner">
+                    <div class="banner-content">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <h3>Solutions disponibles pour ce conflit</h3>
+                            <p>Sélectionnez une ou plusieurs solutions et appliquez-les en groupe</p>
                         </div>
                     </div>
-                    <div class="solutions-grid" id="solutionsGrid">
-                        <!-- Les solutions seront injectées ici -->
+                </div>
+
+                <!-- ✅ BARRE D'ACTIONS AVEC SÉLECTION MULTIPLE -->
+                <div class="solutions-actions-bar">
+                    <div class="selection-info">
+                        <span id="selectedCount">0 solution(s) sélectionnée(s)</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-sm btn-secondary" onclick="selectAllSolutions()" id="selectAllBtn">
+                            <i class="fas fa-check-double"></i>
+                            Tout sélectionner
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="deselectAllSolutions()" id="deselectAllBtn" style="display: none;">
+                            <i class="fas fa-times"></i>
+                            Tout désélectionner
+                        </button>
+                        <button class="btn btn-sm btn-success" onclick="applySelectedSolutions()" id="applySelectedBtn" disabled>
+                            <i class="fas fa-check-circle"></i>
+                            Appliquer la sélection
+                        </button>
                     </div>
                 </div>
-            </div>
-            
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelSolutionsBtn">
-                    <i class="fas fa-arrow-left"></i>
-                    Retour aux détails
-                </button>
+
+                <!-- Grille des solutions -->
+                <div class="solutions-grid" id="solutionsGrid">
+                    <!-- Les solutions seront injectées ici dynamiquement -->
+                </div>
             </div>
         </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="cancelSolutionsBtn">
+                <i class="fas fa-arrow-left"></i>
+                Retour aux détails
+            </button>
+        </div>
     </div>
+</div>
 
     <!-- MODAL CONFIRMATION SUPPRESSION -->
     <div class="modal" id="deleteModal">

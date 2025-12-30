@@ -53,6 +53,7 @@ public class SessionFormationController {
     private final CreneauRepository creneauRepository;
     private final MaterielRepository materielRepository;
     private final PlanningRepository planningRepository;
+    
     @Autowired
     public SessionFormationController(SessionFormationService service,
                                       FormateurRepository formateurRepository,
@@ -73,15 +74,35 @@ public class SessionFormationController {
         this.sessionRepository = sessionRepository;
     }
 
+    /**
+     * ✅ GET /api/sessions - Retourne UNIQUEMENT les sessions VALIDES
+     * Paramètre optionnel : ?includeConflits=true pour inclure toutes les sessions
+     */
     @GetMapping
     @Transactional
-    public ResponseEntity<List<SessionFormationDTO>> getAll() {
-        List<SessionFormationDTO> dtos = service.findAll().stream()
+    public ResponseEntity<List<SessionFormationDTO>> getAll(
+            @RequestParam(required = false, defaultValue = "false") boolean includeConflits) {
+        
+        List<SessionFormation> sessions = service.findAll();
+        
+        // ✅ Filtrer les sessions en conflit sauf si explicitement demandé
+        if (!includeConflits) {
+            sessions = sessions.stream()
+                .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && 
+                            !Boolean.TRUE.equals(s.getADesConflits()))
+                .collect(Collectors.toList());
+        }
+        
+        List<SessionFormationDTO> dtos = sessions.stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+        
         return ResponseEntity.ok(dtos);
     }
 
+    /**
+     * GET /api/sessions/{id} - Retourne une session (même si en conflit)
+     */
     @GetMapping("/{id}")
     @Transactional
     public ResponseEntity<SessionFormationDTO> getById(@PathVariable int id) {
@@ -93,6 +114,9 @@ public class SessionFormationController {
         }
     }
 
+    /**
+     * POST /api/sessions - Crée une session avec détection de conflits
+     */
     @PostMapping
     @Transactional
     public ResponseEntity<?> createSession(@RequestBody SessionFormationRequestDTO dto) {
@@ -105,9 +129,9 @@ public class SessionFormationController {
         if (!conflits.isEmpty()) {
             // ✅ Retourner HTTP 409 AVEC l'ID de la session et les conflits
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
-                    "sessionId", session.getId(),  // ✅ ID de la session créée
-                    "statut", session.getStatut(),  // ✅ "EN_CONFLIT"
-                    "aDesConflits", session.getADesConflits(),  // ✅ true
+                    "sessionId", session.getId(),
+                    "statut", session.getStatut(),
+                    "aDesConflits", session.getADesConflits(),
                     "message", "Session créée avec " + conflits.size() + " conflit(s) détecté(s)",
                     "conflits", conflits
             ));
@@ -116,23 +140,23 @@ public class SessionFormationController {
         // ✅ Pas de conflit, session VALIDE
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                 "sessionId", session.getId(),
-                "statut", session.getStatut(),  // ✅ "VALIDE"
+                "statut", session.getStatut(),
                 "aDesConflits", false,
                 "message", "Session créée avec succès",
                 "session", toDTO(session)
         ));
     }
 
-
+    /**
+     * PUT /api/sessions/{id} - Modifie une session avec détection de conflits
+     */
     @PutMapping("/{id}")
     @Transactional
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody SessionFormationRequestDTO dto) {
         try {
-            // Transformer le DTO en entity et mettre à jour l'ID
             SessionFormation updated = dtoToEntity(dto);
             updated.setId(id);
 
-            // Sauvegarde avec gestion des conflits
             List<ConflitDTO> conflits = service.saveAvecConflit(updated);
 
             if (!conflits.isEmpty()) {
@@ -148,32 +172,51 @@ public class SessionFormationController {
         }
     }
 
-
+    /**
+     * DELETE /api/sessions/{id} - Supprime une session
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
         try {
-            // Supprimer la session
             service.deleteById(id);
-
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
-            // La session n'existe pas
             return ResponseEntity.notFound().build();
         }
     }
 
-    
     // ----- Endpoints de recherche -----
     
+    /**
+     * GET /api/sessions/formateur/{formateurId}
+     * Paramètre optionnel : ?includeConflits=true
+     */
     @GetMapping("/formateur/{formateurId}")
     @Transactional
-    public ResponseEntity<List<SessionFormationDTO>> getByFormateur(@PathVariable int formateurId) {
-        List<SessionFormationDTO> dtos = service.findByFormateurId(formateurId).stream()
+    public ResponseEntity<List<SessionFormationDTO>> getByFormateur(
+            @PathVariable int formateurId,
+            @RequestParam(required = false, defaultValue = "false") boolean includeConflits) {
+        
+        List<SessionFormation> sessions = service.findByFormateurId(formateurId);
+        
+        // ✅ Filtrer les sessions en conflit sauf si explicitement demandé
+        if (!includeConflits) {
+            sessions = sessions.stream()
+                .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && 
+                            !Boolean.TRUE.equals(s.getADesConflits()))
+                .collect(Collectors.toList());
+        }
+        
+        List<SessionFormationDTO> dtos = sessions.stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+        
         return ResponseEntity.ok(dtos);
     }
     
+    /**
+     * GET /api/sessions/formateur/{formateurId}/filter
+     */
     @GetMapping("/formateur/{formateurId}/filter")
     @Transactional
     public ResponseEntity<List<SessionFormationDTO>> getByFormateurWithFilters(
@@ -182,9 +225,18 @@ public class SessionFormationController {
             @RequestParam(required = false) Integer salleId,
             @RequestParam(required = false) String statut,
             @RequestParam(required = false) String dateDebut,
-            @RequestParam(required = false) String dateFin
-    ) {
+            @RequestParam(required = false) String dateFin,
+            @RequestParam(required = false, defaultValue = "false") boolean includeConflits) {
+        
         List<SessionFormation> sessions = service.findByFormateurId(formateurId);
+
+        // ✅ Filtrer les sessions en conflit sauf si explicitement demandé
+        if (!includeConflits) {
+            sessions = sessions.stream()
+                .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && 
+                            !Boolean.TRUE.equals(s.getADesConflits()))
+                .collect(Collectors.toList());
+        }
 
         // Filtrer côté serveur
         if (groupeId != null) {
@@ -201,7 +253,8 @@ public class SessionFormationController {
 
         if (statut != null) {
             sessions = sessions.stream()
-                    .filter(s -> s.getCreneaux().get(0).getStatut() != null && s.getCreneaux().get(0).getStatut().equalsIgnoreCase(statut))
+                    .filter(s -> s.getCreneaux().get(0).getStatut() != null && 
+                                s.getCreneaux().get(0).getStatut().equalsIgnoreCase(statut))
                     .collect(Collectors.toList());
         }
 
@@ -226,36 +279,122 @@ public class SessionFormationController {
         return ResponseEntity.ok(dtos);
     }
 
-    
+    /**
+     * GET /api/sessions/salle/{salleId}
+     * Paramètre optionnel : ?includeConflits=true
+     */
     @GetMapping("/salle/{salleId}")
     @Transactional
-    public ResponseEntity<List<SessionFormationDTO>> getBySalle(@PathVariable int salleId) {
-        List<SessionFormationDTO> dtos = service.findBySalleId(salleId).stream()
+    public ResponseEntity<List<SessionFormationDTO>> getBySalle(
+            @PathVariable int salleId,
+            @RequestParam(required = false, defaultValue = "false") boolean includeConflits) {
+        
+        List<SessionFormation> sessions = service.findBySalleId(salleId);
+        
+        // ✅ Filtrer les sessions en conflit sauf si explicitement demandé
+        if (!includeConflits) {
+            sessions = sessions.stream()
+                .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && 
+                            !Boolean.TRUE.equals(s.getADesConflits()))
+                .collect(Collectors.toList());
+        }
+        
+        List<SessionFormationDTO> dtos = sessions.stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+        
         return ResponseEntity.ok(dtos);
     }
     
+    /**
+     * GET /api/sessions/groupe/{groupeId}
+     * Paramètre optionnel : ?includeConflits=true
+     */
     @GetMapping("/groupe/{groupeId}")
     @Transactional
-    public ResponseEntity<List<SessionFormationDTO>> getByGroupe(@PathVariable int groupeId) {
-        List<SessionFormationDTO> dtos = service.findByGroupeId(groupeId).stream()
+    public ResponseEntity<List<SessionFormationDTO>> getByGroupe(
+            @PathVariable int groupeId,
+            @RequestParam(required = false, defaultValue = "false") boolean includeConflits) {
+        
+        List<SessionFormation> sessions = service.findByGroupeId(groupeId);
+        
+        // ✅ Filtrer les sessions en conflit sauf si explicitement demandé
+        if (!includeConflits) {
+            sessions = sessions.stream()
+                .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && 
+                            !Boolean.TRUE.equals(s.getADesConflits()))
+                .collect(Collectors.toList());
+        }
+        
+        List<SessionFormationDTO> dtos = sessions.stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+        
         return ResponseEntity.ok(dtos);
     }
     
+    /**
+     * GET /api/sessions/creneau/{creneauId}
+     * Paramètre optionnel : ?includeConflits=true
+     */
     @GetMapping("/creneau/{creneauId}")
     @Transactional
-    public ResponseEntity<List<SessionFormationDTO>> getByCreneau(@PathVariable int creneauId) {
-        List<SessionFormationDTO> dtos = service.findByCreneauId(creneauId).stream()
+    public ResponseEntity<List<SessionFormationDTO>> getByCreneau(
+            @PathVariable int creneauId,
+            @RequestParam(required = false, defaultValue = "false") boolean includeConflits) {
+        
+        List<SessionFormation> sessions = service.findByCreneauId(creneauId);
+        
+        // ✅ Filtrer les sessions en conflit sauf si explicitement demandé
+        if (!includeConflits) {
+            sessions = sessions.stream()
+                .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && 
+                            !Boolean.TRUE.equals(s.getADesConflits()))
+                .collect(Collectors.toList());
+        }
+        
+        List<SessionFormationDTO> dtos = sessions.stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+        
         return ResponseEntity.ok(dtos);
     }
     
+    /**
+     * GET /api/sessions/formateur/{formateurId}/upcoming - Sessions à venir
+     */
+    @GetMapping("/formateur/{formateurId}/upcoming")
+    @Transactional
+    public ResponseEntity<List<SessionFormationDTO>> getUpcomingSessions(
+            @PathVariable Long formateurId,
+            @RequestParam(defaultValue = "3") int limit,
+            @RequestParam(required = false, defaultValue = "false") boolean includeConflits) {
+        
+        List<SessionFormation> sessions = sessionRepository
+                .findUpcomingSessionsByFormateurId(formateurId, java.time.LocalDate.now())
+                .stream()
+                .sorted((s1, s2) -> s1.getPlanning().getSemaine()
+                        .compareTo(s2.getPlanning().getSemaine()))
+                .limit(limit)
+                .collect(Collectors.toList());
+        
+        // ✅ Filtrer les sessions en conflit sauf si explicitement demandé
+        if (!includeConflits) {
+            sessions = sessions.stream()
+                .filter(s -> !"EN_CONFLIT".equals(s.getStatut()) && 
+                            !Boolean.TRUE.equals(s.getADesConflits()))
+                .collect(Collectors.toList());
+        }
+        
+        List<SessionFormationDTO> dtos = sessions.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
 
     // ----- Méthodes utilitaires -----
+    
     private SessionFormation dtoToEntity(SessionFormationRequestDTO dto) {
         Formateur formateur = formateurRepository.findById(dto.formateurId)
                 .orElseThrow(() -> new RuntimeException("Formateur introuvable"));
@@ -266,19 +405,16 @@ public class SessionFormationController {
         Groupe groupe = groupeRepository.findById(dto.groupeId)
                 .orElseThrow(() -> new RuntimeException("Groupe introuvable"));
 
-        // Gérer la liste de créneaux
         List<Creneau> creneaux = creneauRepository.findAllById(dto.creneauIds);
         if (creneaux.isEmpty()) {
             throw new RuntimeException("Aucun créneau trouvé pour les IDs fournis: " + dto.creneauIds);
         }
 
-        // Planning optionnel : créer un planning par défaut si non fourni
         Planning planning;
         if (dto.planningId > 0) {
             planning = planningRepository.findById(dto.planningId)
                     .orElseThrow(() -> new RuntimeException("Planning introuvable"));
         } else {
-            // Créer un planning par défaut pour la semaine courante
             planning = new Planning();
             planning.setSemaine(java.time.LocalDate.now());
             planning.setStatut("EN_COURS");
@@ -309,46 +445,38 @@ public class SessionFormationController {
         dto.duree = session.getDuree();
         dto.statut = session.getStatut();
 
-        // Formateur
         if (session.getFormateur() != null) {
             dto.formateurId = session.getFormateur().getId();
             dto.formateurNom = session.getFormateur().getNom() + " " + session.getFormateur().getPrenom();
         }
 
-        // Salle
         if (session.getSalle() != null) {
             dto.salleId = session.getSalle().getId();
             dto.salleNom = session.getSalle().getNom();
         }
 
-        // Groupe
         if (session.getGroupe() != null) {
             dto.groupeId = session.getGroupe().getId();
             dto.groupeNom = session.getGroupe().getNom();
-
-            // Étudiants du groupe
             dto.etudiants = session.getGroupe().getEtudiants().stream()
                     .map(e -> e.getNom() + " " + e.getPrenom())
                     .collect(Collectors.toList());
         }
 
-        // Créneaux
         if (session.getCreneaux() != null && !session.getCreneaux().isEmpty()) {
             dto.creneauId = session.getCreneaux().get(0).getId();
             dto.statut = session.getCreneaux().get(0).getStatut();
-            dto.date= session.getCreneaux().get(0).getDate();
+            dto.date = session.getCreneaux().get(0).getDate();
             dto.creneauxHoraires = session.getCreneaux().stream()
                     .map(c -> c.getHeureDebut() + " - " + c.getHeureFin())
                     .collect(Collectors.toList());
         }
 
-        // Planning
         if (session.getPlanning() != null) {
             dto.planningId = session.getPlanning().getId();
             dto.planningSemaine = session.getPlanning().getSemaine().toString();
         }
 
-        // Matériel
         if (session.getMaterielRequis() != null) {
             dto.materielRequisIds = session.getMaterielRequis().stream()
                     .map(Materiel::getId)
@@ -360,25 +488,4 @@ public class SessionFormationController {
 
         return dto;
     }
-    
-    
- // Prochaines sessions pour un formateur 
-    @GetMapping("/formateur/{formateurId}/upcoming")
-    @Transactional
-    public ResponseEntity<List<SessionFormationDTO>> getUpcomingSessions(
-            @PathVariable Long formateurId,
-            @RequestParam(defaultValue = "3") int limit
-    ) {
-        List<SessionFormationDTO> dtos = sessionRepository
-                .findUpcomingSessionsByFormateurId(formateurId, java.time.LocalDate.now()) // <-- ajouter today
-                .stream()
-                .sorted((s1, s2) -> s1.getPlanning().getSemaine()
-                        .compareTo(s2.getPlanning().getSemaine()))
-                .limit(limit)
-                .map(this::toDTO)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(dtos);
-    }
-    
 }

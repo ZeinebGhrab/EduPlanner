@@ -2,6 +2,13 @@ import { viewConflitDetails, showSolutions, openDeleteModal, closeAllModals, tog
 import { deleteAllConflits, loadConflitsFromAPI, confirmDeleteAll } from './api.js';
 import { resetFilters, changePage, hideLoading, showToast, showEmptyState, debounce, renderConflitsTable, showLoading, updateUI } from './ui.js';
 import { setCurrentPage } from './state.js';
+import { 
+    selectAllSolutions, 
+    deselectAllSolutions, 
+    toggleSolutionCard,
+    appliquerSolutionUnique,
+    resoudreParType
+} from './modal.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log('Initialisation de la gestion des conflits...');
@@ -129,3 +136,12 @@ window.resetFilters = resetFilters;
 window.changePage = changePage;
 window.toggleSolutionSelection = toggleSolutionSelection;
 window.applySelectedSolutions = applySelectedSolutions;
+
+
+// Fonctions de sélection multiple (nouvelles)
+window.selectAllSolutions = selectAllSolutions;
+window.deselectAllSolutions = deselectAllSolutions;
+window.applySelectedSolutions = applySelectedSolutions;
+window.toggleSolutionCard = toggleSolutionCard;
+window.appliquerSolutionUnique = appliquerSolutionUnique;
+window.resoudreParType = resoudreParType;

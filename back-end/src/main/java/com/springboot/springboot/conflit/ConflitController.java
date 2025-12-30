@@ -18,6 +18,8 @@ import com.springboot.springboot.dto.conflit.ConflitDTO;
 import com.springboot.springboot.entity.planning.Conflit;
 import com.springboot.springboot.service.planning.ConflitService;
 
+import jakarta.transaction.Transactional;
+
 @RestController
 @RequestMapping("/api/conflits")
 @CrossOrigin(origins = "*")
@@ -30,8 +32,21 @@ public class ConflitController {
      * Récupère tous les conflits
      */
     @GetMapping
+    @Transactional// ✅ AJOUT pour charger les relations lazy
     public ResponseEntity<List<ConflitDTO>> getAllConflits() {
         List<Conflit> conflits = conflitService.findAll();
+        
+        // ✅ Forcer le chargement des sessions et du planning
+        conflits.forEach(conflit -> {
+            if (conflit.getSessionsImpliquees() != null) {
+                conflit.getSessionsImpliquees().forEach(session -> {
+                    if (session.getPlanning() != null) {
+                        session.getPlanning().getId(); // Force le chargement
+                    }
+                });
+            }
+        });
+        
         List<ConflitDTO> conflitsDTO = conflits.stream()
                 .map(ConflitDTO::fromEntity)
                 .collect(Collectors.toList());
@@ -42,12 +57,24 @@ public class ConflitController {
      * Récupère un conflit par ID
      */
     @GetMapping("/{id}")
+    @Transactional // ✅ AJOUT
     public ResponseEntity<ConflitDTO> getConflitById(@PathVariable int id) {
         return conflitService.findById(id)
-                .map(ConflitDTO::fromEntity)
+                .map(conflit -> {
+                    // ✅ Forcer le chargement des sessions et du planning
+                    if (conflit.getSessionsImpliquees() != null) {
+                        conflit.getSessionsImpliquees().forEach(session -> {
+                            if (session.getPlanning() != null) {
+                                session.getPlanning().getId();
+                            }
+                        });
+                    }
+                    return ConflitDTO.fromEntity(conflit);
+                })
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
 
     /**
      * Crée un nouveau conflit manuellement (si nécessaire)

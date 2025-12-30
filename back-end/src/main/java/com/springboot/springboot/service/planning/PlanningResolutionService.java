@@ -49,7 +49,11 @@ public class PlanningResolutionService {
     public boolean changerCreneauComplet(Map<String, Object> data) {
         try {
             int sessionId = (Integer) data.get("sessionId");
-            int nouveauCreneauId = (Integer) data.get("nouveauCreneauId");
+            Integer nouveauCreneauId =
+            	    data.containsKey("nouveauCreneauId")
+            	        ? (Integer) data.get("nouveauCreneauId")
+            	        : (Integer) ((Map<?, ?>)((List<?>)data.get("options")).get(0)).get("id");
+
             
             SessionFormation session = sessionRepository.findById(sessionId).orElse(null);
             if (session == null) return false;
@@ -132,26 +136,46 @@ public class PlanningResolutionService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public boolean changerCreneau(Map<String, Object> data) {
         try {
-            int sessionId = (Integer) data.get("sessionId");
-            List<Map<String, Object>> options = (List<Map<String, Object>>) data.get("options");
-            if (options == null || options.isEmpty()) return false;
-            
-            int nouveauCreneauId = (Integer) options.get(0).get("id");
-            
+            Integer sessionId = (Integer) data.get("sessionId");
+            if (sessionId == null) return false;
+
+            Integer nouveauCreneauId = null;
+
+            if (data.containsKey("nouveauCreneauId")) {
+                nouveauCreneauId = (Integer) data.get("nouveauCreneauId");
+            } 
+            else if (data.containsKey("options")) {
+                List<?> options = (List<?>) data.get("options");
+                if (options != null && !options.isEmpty()) {
+                    Map<?, ?> option = (Map<?, ?>) options.get(0);
+                    Object id = option.get("id");
+                    if (id instanceof Integer) {
+                        nouveauCreneauId = (Integer) id;
+                    }
+                }
+            }
+
+            if (nouveauCreneauId == null) {
+                throw new IllegalArgumentException("ID du créneau manquant");
+            }
+
             SessionFormation session = sessionRepository.findById(sessionId).orElse(null);
             if (session == null) return false;
-            
-            Creneau nouveauCreneau = creneauRepository.findById(nouveauCreneauId).orElse(null);
+
+            Creneau nouveauCreneau =
+                creneauRepository.findById(nouveauCreneauId).orElse(null);
             if (nouveauCreneau == null) return false;
-            
+
             session.setCreneaux(List.of(nouveauCreneau));
             sessionRepository.save(session);
             return true;
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
+
 
     /**
      * Crée une nouvelle disponibilité pour un formateur
